@@ -100,7 +100,7 @@ All Cargo crates in the `agent-assembly` workspace are Apache-2.0:
 | `aa-core` | Apache-2.0 | Core domain types — always OSS |
 | `aa-proto` | Apache-2.0 | Protobuf definitions — always OSS |
 | `aa-runtime` | Apache-2.0 | Async runtime utilities — always OSS |
-| `aa-gateway` | Apache-2.0 | Gateway with policy engine — OSS core; enterprise features gated behind SaaS config |
+| `aa-gateway` | Apache-2.0 | Gateway with policy engine — always OSS |
 | `aa-api` | Apache-2.0 | REST API surface — OSS |
 | `aa-proxy` | Apache-2.0 | Sidecar proxy — always OSS |
 | `aa-ebpf` | Apache-2.0 | eBPF user-space loader — always OSS |
@@ -122,7 +122,7 @@ workspace — each lives in its own SDK repo and carries that repo's own license
 
 The Apache License 2.0 grants users the right to use, reproduce, prepare derivative works, distribute, and sublicense the software with or without modification. It does not grant trademark rights, and it requires preservation of copyright notices and attribution in distributed works. See the full license text at https://www.apache.org/licenses/LICENSE-2.0.
 
-Enterprise features (SSO, SCIM, tamper-evident audit, dedicated regions) are delivered via SaaS-side configuration — not via separate closed-source crates. The OSS codebase contains all interception and enforcement logic.
+The commercial capabilities described above are intended to be delivered by the managed control plane rather than by separate closed-source crates, so the boundary is a deployment boundary rather than a second licence over the enforcement path. The interception and enforcement logic listed in [What is in the Apache-2.0 core today](#what-is-in-the-apache-20-core-today) is Apache-2.0.
 
 ---
 
@@ -135,16 +135,23 @@ The Apache-2.0 crates welcome community contributions. See `CONTRIBUTING.md` in 
 - The CLA requirement for non-trivial contributions
 - How to file issues and feature requests
 
-Enterprise feature requests (SSO, SCIM, audit extensions) are tracked as AAASM JIRA tickets in the Enterprise component and delivered by the AI Agent Assembly team.
+Requests for the capabilities intended for the commercial tier are tracked internally by the AI Agent Assembly team. Filing one is not a delivery commitment.
 
 ---
 
 ## Related documentation
 
 - [Security model](security-model.md) — cryptographic primitives and audit log details
-- [Cloud deployment](cloud-deployment.md) — SSO, SCIM, SLA tier comparison
+- [Cloud deployment](cloud-deployment.md) — the managed control plane, which is planned and not available
+- [Source of truth & status](source-of-truth.md) — the canonical maturity label for every area of this hub
+- [SaaS claim publication checklist](saas-claim-publication-checklist.md) — what must be evidenced before commercial-tier claims are published
 - [Why AI Agent Assembly?](comparison.md) — open-source posture vs. competitors
 
 ---
 
-*Last reviewed: 2026-06-11 · Legal approver: @legal-team*
+*Last reviewed: 2026-08-06 · AI Agent Assembly Team*
+
+> This page describes a licensing and deployment boundary. It is not legal advice
+> and it is not a licence grant beyond the Apache-2.0 terms of the published
+> crates. Commercial-tier licence terms are not published; nothing here creates
+> one.
