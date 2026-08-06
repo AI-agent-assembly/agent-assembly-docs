@@ -99,7 +99,7 @@ not depend on trusting anything inside the agent's process.
 | **Governed path** | The agent is started through a managed launch (`aasm run`), which writes the proxy settings and the CA into the child process's environment, so the tool's outbound connections are dialled through `aa-proxy` rather than directly (`aa-devtool-claude-code/src/lib.rs:356-383`). The operator has configured which hosts are approved. |
 | **Policy decision** | **Denied before execution.** The proxy evaluates the CONNECT target and returns 403 before it dials upstream (`aa-proxy/src/proxy/mod.rs:934`, run at `:1308`). **The decider is the proxy's own local egress configuration, not the gateway** — this code path contains no gateway call. Copy that attributes this refusal to the policy engine is wrong. |
 | **Prevented outcome** | No TCP connection to the destination is established, so no byte of the working tree leaves the machine by that route. |
-| **Evidence** | **Observed** — a decision record for the refused connection. Bounded: emission is best-effort, and a dropped record is indistinguishable from a deleted one (AAASM-5626). Standing tests: `aa-integration-tests/tests/e2e_policy_proxy.rs`, `cli_proxy_remote_bind_refusal.rs`. |
+| **Evidence** | **Observed** — the proxy records the refusal as a `Blocked` decision (`aa-proxy/src/proxy/mod.rs:969`, alongside the deny at `:934`). **Bounded twice, and both bounds are default-off or best-effort — see below.** Standing tests: `aa-integration-tests/tests/e2e_policy_proxy.rs`, `cli_proxy_remote_bind_refusal.rs`. |
 | **Known boundary** | See below — this one has five parts and all five are load-bearing. |
 
 **Known boundary, in full:**
@@ -127,6 +127,16 @@ not depend on trusting anything inside the agent's process.
   running a crates.io build, not a released artifact.
 - **Failure posture is fail-open** on this path. If the proxy is not in front of the
   connection, the connection is simply made.
+- **The proxy writes no local evidence unless you configure a path.** The proxy's
+  JSONL sink is built from `AA_PROXY_AUDIT_JSONL_PATH`
+  (`aa-proxy/src/config.rs:482-483`, wired at `aa-proxy/src/lib.rs:81`); with the
+  variable unset there is no writer and nothing lands on disk, which the crate's own
+  test pins as the default. The refusal still happens — this is a bound on the
+  *evidence*, not on the decision — but a demo that promises a record must set the
+  variable, and a page that promises one must say it is configured. Note also that
+  this sink is the **proxy's own**; the separate best-effort emission defect tracked
+  as AAASM-5626 is on the *gateway's* audit path, and attributing it here would be the
+  wrong component.
 
 **Determination: executable, default-off.** Rows N1 (`reachability:
 shipped_with_platform_exception`, standing evidence), N2, L1 (`reachability:
@@ -166,7 +176,9 @@ fact is evidence.
       execute before anything that can throw, return early, or short-circuit.
    2. **Then:** the caller observed a refusal (403).
    3. **Then:** a decision record exists attributing the refusal to the proxy's
-      CONNECT-time egress check.
+      CONNECT-time egress check. The harness must set `AA_PROXY_AUDIT_JSONL_PATH` for
+      this to be checkable at all — unset, the proxy writes no local evidence, and
+      the assertion would fail for a reason that has nothing to do with enforcement.
 
 3. **Attempt witness — the agent actually tried.** In the negative run, assert that
    the proxy recorded a CONNECT attempt for that host. Without this, zero connections
