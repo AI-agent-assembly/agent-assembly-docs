@@ -116,8 +116,16 @@ to a refusal through the same path.
 
 **3. Show it.** The decision is written to a hash-chained audit log that you can
 verify yourself with `aasm audit verify-chain` — that command ships in the
-open-source build. Where nothing inspected an action, the record reports it as
-**Unmeasured** rather than as clean.
+open-source build. Where nothing inspected an action, the rule is that the record
+reports it as **Unmeasured** rather than as clean, because an uninspected action must
+never be reported as allowed.
+
+> **State this as a rule, not as finished behaviour.** ADR 0033 §4 mandates it, and
+> the transparent-tunnel path implements it — it persists "forwarded, and nothing
+> looked at it". But §2 records a live defect on the same path: the CONNECT-level
+> decision event still emits an *allow* for a connection the proxy is about to tunnel
+> uninspected. Until that is fixed, do not write copy that promises the property
+> holds everywhere today.
 
 > **Who actually refuses.** The control plane decides but holds no traffic; a refusal
 > takes effect through the component in front of the action. Today that is the proxy,
@@ -134,7 +142,11 @@ plus the evidence trail that shows what it decided.
 reach, how much it may spend, and which actions need a person's sign-off first.
 Policy is versioned YAML/JSON you review through normal Git workflows.
 
-**Where the decision is applied.** Three places, with different authority:
+**Where the decision is applied.** In several places, with genuinely different
+authority. Resist the urge to number them: they are not an ordered chain, one does
+not cover for another, and an absent one is a reportable state rather than a silent
+hand-off to the next. That inference — "the SDK did not see it, so the kernel did" —
+is the specific error the current architecture exists to stop.
 
 - The **sidecar proxy** is the strongest one. It refuses at CONNECT time, re-checks
   the host inside the tunnel, blocks or redacts recognised credentials, and
