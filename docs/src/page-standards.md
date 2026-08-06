@@ -236,7 +236,13 @@ different subject, and that **no axis may be applied to another's subject**:
 
 Forbidden design 12 then bans *"applying a maturity label as a behaviour claim, a
 claim term as a completeness claim, or a portfolio lifecycle value to either … and
-coining a term ADR 0033 §6 does not define."*
+coining a term **on the claim axis** — one naming a behaviour-on-evidence outcome —
+that ADR 0033 §6 does not define."*
+
+That second clause is **scoped to the claim axis, and to it alone**. §6 owns the first
+axis only; `🧪 Release candidate` and `🗺️ Planned` are the Docs Hub's terms and the
+portfolio lifecycle values are the company registry's, and §6 defines none of them.
+**A new term on a non-claim axis is governed by that axis's owner, not by §6.**
 
 Three consequences, all of which this page obeys:
 
@@ -248,24 +254,19 @@ Three consequences, all of which this page obeys:
 2. **No §6 term as a completeness value.** `experimental` and `planned` are claim
    terms; carrying them under a key named for completeness is forbidden design 12's
    second clause exactly. They are in `claims[]`.
-3. **`availability` ranges over a fourth subject, and coins nothing on the claim
-   axis.** Its subject — *a capability's presence in a published artifact* — is none
-   of hand-off 7's three: not an action, not a documentation area, not a portfolio
-   product. It is the subject this ticket exists to make recordable, because
-   distribution here is per channel and per platform and no existing vocabulary
-   expresses it. §6 supplies the **negative** value for that subject (`Unsupported`,
-   whose stated evidence is the platform matrix row) but has no positive counterpart,
-   which is why the positives are defined here and the negative is reused verbatim.
+3. **`availability` coins nothing on the claim axis, so its owner is this page.** Its
+   subject — *a capability's presence in a published artifact* — is none of hand-off
+   7's three: not an action, not a documentation area, not a portfolio product. It is
+   the subject this ticket exists to make recordable, because distribution here is per
+   channel and per platform and no existing vocabulary expresses it. Being a non-claim
+   axis, it is governed by its own axis owner under forbidden design 12's scoping, and
+   the four values below are that owner's to define. §6 supplies the **negative** value
+   for the same subject (`Unsupported`, whose stated evidence is the platform matrix
+   row) but has no positive counterpart, which is why the positives are defined here
+   and the negative is reused verbatim.
 
-> **One interpretive judgement, flagged rather than buried.** Forbidden design 12's
-> closing clause — *"coining a term ADR 0033 §6 does not define"* — is read here as
-> scoped to the **claim axis**, i.e. as banning a new *behaviour* term outside §6's
-> eleven. The broader literal reading would also forbid `🧪 Release candidate`, which
-> hand-off 7 explicitly **ratifies**, so the narrow reading is the only self-consistent
-> one. This page depends on that reading. If ADR 0034's authors intend the broader
-> one, `availability` needs their sign-off before this page is treated as normative —
-> that is an ownership decision, not an editorial one, and it goes back to AAASM-5621
-> rather than being settled here.
+Nothing on this page is a term on the claim axis. Every behaviour-on-evidence
+statement a page makes is a §6 term in `claims[]`, spelled exactly as §6 spells it.
 
 ### Visual treatment
 
@@ -854,7 +855,7 @@ END AA-PAGE-META -->
 | --- | --- |
 | **AAASM-5601** | Implement the validator: the parsing contract, the field reference, the 16 cross-field rules and the freshness thresholds are intended to be sufficient with no further decisions. If a rule needs judgement to implement, that is a defect in this page — report it rather than choosing. **Also**: replace the hand-maintained [`area` id table](#area-ids) with a generated one, by adding a stable `id` to each row of `hub-components.toml` and to the five literal rows in `generate_hub_components.py`. |
 | **AAASM-5610** | Apply metadata blocks to existing hub content. This page carries the only block today. Expect the three `🗺️ Planned` areas — `cloud`, `enterprise`, `operations` — to take the [rule 4](#cross-field-rules) path with `platforms: []`, and expect `product-promise.md` to need a block plus a rule 14 review. |
-| **AAASM-5621 / ADR 0034** | Precedence between the three axes, waivers, and cross-repository adoption records. Also the one interpretive judgement this page flags: whether forbidden design 12's *"coining a term ADR 0033 §6 does not define"* is scoped to the claim axis, which is the reading `availability` depends on. |
+| **AAASM-5621 / ADR 0034** | Precedence between the three axes, waivers, and cross-repository adoption records. The scope of forbidden design 12's coining clause is **settled** — it is claim-axis only — and is applied here, not deferred. |
 | **AAASM-5531** | The capability/evidence manifest. When it lands, `capability_ids` becomes validated and required, at `schema_version: 2`. |
 
 ---
