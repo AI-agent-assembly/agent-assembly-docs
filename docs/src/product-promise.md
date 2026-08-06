@@ -116,11 +116,26 @@ the proxy settings into the tool's own configuration, or calling a policy checkp
 from an SDK. Routing is a thing you do, per agent and per launch. An agent you did
 not route is not on the path.
 
-**2. Decide it.** Before the action takes effect, the control plane answers against
-your policy, your team budgets and your approval rules. The answer is one of: allow
-it, refuse it, hold it for a person, or forward it with recognised credentials
-removed. Budget exhaustion, a suspended agent and an anomaly detection each resolve
-to a refusal through the same path.
+**2. Decide it.** Before the action takes effect, something on the path decides
+whether it may proceed — and *which* thing depends on the path. The control plane
+answers policy, budget and approval questions: allow, refuse, or block pending an
+approval. Budget exhaustion, a suspended agent and an anomaly detection each resolve
+to a refusal through that same path.
+
+But the control plane is not always the decider, and copy that says it is will be
+wrong more often than right. The proxy refuses on its **own local configuration** for
+CONNECT-time egress and for LLM-provider hosts — those code paths contain no gateway
+call at all. A gateway `Deny` stops bytes in exactly one place: an MCP tool-call
+envelope on a non-LLM intercepted host with a gateway endpoint configured — and since
+`llm_only` defaults to on, those hosts are not intercepted unless an operator says so.
+Attribute the refusal to whichever component actually made it.
+
+Redaction is a separate stage, not a fourth branch of the same answer: it is the
+proxy's outbound credential scan, applied *after* the connection decision, and it
+defaults to redact-and-forward. Do not present allow/refuse/hold/redact as one
+four-way per-action verdict — the API's five-way `RuntimeVerdict` is a frozen
+vocabulary whose derivation is unimplemented and which is surfaced as `null`, and
+presenting it as a live outcome is a forbidden design.
 
 **3. Show it.** The decision is written to a hash-chained audit log that you can
 verify yourself with `aasm audit verify-chain` — that command ships in the
@@ -135,11 +150,11 @@ never be reported as allowed.
 > uninspected. Until that is fixed, do not write copy that promises the property
 > holds everywhere today.
 
-> **Who actually refuses.** The control plane decides but holds no traffic; a refusal
-> takes effect through the component in front of the action. Today that is the proxy,
-> which refuses before dialling upstream, or an SDK shim that honours the answer. This
-> distinction is not pedantry — it is why "route it" is step one rather than a
-> footnote.
+> **Why "route it" is step one.** The control plane holds no traffic, so a decision
+> only stops something when a component in front of the action blocks on it. That set
+> has exactly two members today — the proxy's MCP path, and an SDK shim that honours
+> the answer — not "the proxy" generally. Routing is what puts an action in front of
+> one of them.
 
 ### Level 3 — for an evaluator
 
