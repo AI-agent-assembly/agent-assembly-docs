@@ -93,7 +93,7 @@ and it needs its own evidence.
 | "decides whether an … action is allowed" | **Evaluated** | The control plane produces a decision for the action; a decision record exists. |
 | "before that action runs" | **Denied before execution** | Reached where the refusing component sits before the effect — today the proxy, pre-dial, or an SDK shim that honours the answer. |
 | "on the paths you route through it" | **Unmeasured** (by contrast) | Names the boundary. Anything off the path is Unmeasured; the clause exists so the promise does not quantify over agent behaviour. |
-| "records what was decided" | **Observed** | A durable event attributed to the action, on a verifiable hash chain. |
+| "records what was decided" | **Observed** | An event attributed to the action. §6 requires this to be *durable*; emission is best-effort under backpressure, so the clause is bounded by the note at Level 2 step 3 and by its own Provisional row — do not publish it unqualified. |
 | "refused" | **Denied before execution** | As above. |
 | "blocked pending a decision" | **Approval required** | The action is held and a pending approval record exists. **§6's term does not assert that a person can act on it** — see the [Provisional](#provisional) row. An earlier draft of this promise said "held for a person"; the plain-language rendering silently added a human who, today, has no shipped surface to answer on. |
 | "instead of discovered afterwards" | — | A contrast with after-the-fact observability, not a capability claim. Carries no evidence burden. |
@@ -137,11 +137,23 @@ four-way per-action verdict — the API's five-way `RuntimeVerdict` is a frozen
 vocabulary whose derivation is unimplemented and which is surfaced as `null`, and
 presenting it as a live outcome is a forbidden design.
 
-**3. Show it.** The decision is written to a hash-chained audit log that you can
-verify yourself with `aasm audit verify-chain` — that command ships in the
-open-source build. Where nothing inspected an action, the rule is that the record
-reports it as **Unmeasured** rather than as clean, because an uninspected action must
-never be reported as allowed.
+**3. Show it.** Decisions are written to a hash-chained audit log that you can verify
+yourself with `aasm audit verify-chain` — that command ships in the open-source build.
+Where nothing inspected an action, the rule is that the record reports it as
+**Unmeasured** rather than as clean, because an uninspected action must never be
+reported as allowed.
+
+> **Emission is best-effort — say so in the same sentence.** The gateway advances the
+> chain head *before* attempting the send, and on a full channel it logs a warning,
+> increments a drop counter and returns the RPC anyway; several sibling emit sites
+> discard the error with no counter at all. So a decision can be made and its record
+> lost, and a dropped entry is indistinguishable from a deleted one. Three bounds
+> belong together wherever this is claimed: **which** actions are decided (the
+> governed path), **whether the record survives** (best-effort), and **what
+> verification proves** (chain integrity, not completeness). The boundary clause in
+> the promise covers only the first. This is the same rule-plus-open-defect shape as
+> the note above, and the hub's own security model already states that absence of an
+> entry is not proof of absence.
 
 > **State this as a rule, not as finished behaviour.** ADR 0033 §4 mandates it, and
 > the transparent-tunnel path implements it — it persists "forwarded, and nothing
@@ -196,7 +208,7 @@ evaluation:
 | Credential handling | **Redact and forward.** Blocking on a detected credential is opt-in. Model *responses* are not scanned. |
 | SDK enforcement | **Off in the default mode.** A policy refusal blocks a wrapped tool only in the check-capable mode; asking for enforcement without it is refused loudly at init rather than silently allowed. |
 | eBPF | **Off unless deployed.** Linux only, needs a privileged loader daemon, and its syscall guard needs an explicit opt-in on top of that. |
-| Audit | **On.** Hash-chained JSONL, verifiable. |
+| Audit | **On, best-effort.** Hash-chained JSONL, verifiable. Writing is not guaranteed: the chain head advances before the send and a full channel drops the entry, so the log is a record of what got through, not a ledger of what happened. |
 
 **What it does not do.** It does not govern an agent you did not route. It does not
 inspect payloads to hosts it is not intercepting. It does not keep a credential out of
@@ -342,6 +354,8 @@ the evidence blocks in the AAASM-5528 inventory; `§n` refers to ADR 0033.
 | Egress allow/deny lists are empty by default; the SSRF guard is not | — | `E2` |
 | Credential handling defaults to redact-and-forward | Redacted | `E4` |
 | The audit chain is an unkeyed digest over the JSONL sink, verifiable in the open-source build | Observed | `E5` |
+| Emission is best-effort: the chain head advances before the send, a full channel drops the entry and the call returns anyway, and sibling sites discard the error uncounted | Observed, bounded | Read directly in the gateway's audit-record path and its sibling emit sites — **not** `E5`, which covers the chain's cryptography, not whether an entry reaches it. Open as AAASM-5626 |
+| `verify-chain` proves integrity, not completeness — an empty or deleted-and-recreated log verifies clean and exits 0 | Observed, bounded | The verifier's loop body never runs on zero entries and the terminal return is `is_valid: true`; the CLI maps that to `ExitCode::SUCCESS` |
 | Kernel probes observe; the syscall guard is opt-in and terminates asynchronously | Observed / Detected | `E1`, §5.1 |
 | Windows has no local mediation | Unsupported | §5.3 |
 | An unrouted action is not inspected | Unmeasured | §4 |
