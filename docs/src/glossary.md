@@ -101,8 +101,8 @@ carry a random credential token instead. See the
 [Security model](security-model.md#cryptographic-primitives).
 
 **AES-256-GCM**
-: A symmetric authenticated-encryption algorithm. **AI Agent Assembly does not
-use it.** This entry previously described it as encrypting stored secrets at
+: A symmetric authenticated-encryption algorithm.
+🗺️ **AI Agent Assembly does not use it.** This entry previously described it as encrypting stored secrets at
 rest; there is no AES-256-GCM implementation in the workspace crates, no HSM or
 KMS integration, and no managed secret vault. **Do not treat this stack as a
 secret store** — see [Secrets management](security-model.md#secrets-management).
