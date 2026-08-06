@@ -58,7 +58,7 @@ For a hero or a first screen, the promise renders as:
 
 **Headline**
 
-> Decide what your AI agents may do — before they do it.
+> Decide what an AI agent may do — before it does it.
 
 **Subheadline**
 
@@ -68,11 +68,18 @@ For a hero or a first screen, the promise renders as:
 
 **These two are not severable.** The headline is bounded only by the subheadline;
 published alone it reads as a claim over all agent behaviour. That is the `absolute`
-claim class, which accounts for 37 of the 69 audited rows in the
-[AAASM-5528](https://lightning-dust-mite.atlassian.net/browse/AAASM-5528) inventory —
-by some distance the most common defect in this product's published copy. The rule
-for downstream pages is: *the boundary clause appears on the same screen as the
-headline, above the fold, not in a footnote.*
+claim class, which accounts for 37 of the 69 audited rows in the AAASM-5528
+inventory — by some distance the most common defect in this product's published copy.
+The rule for downstream pages is: *the boundary clause appears on the same screen as
+the headline, above the fold, not in a footnote.*
+
+Note what the headline deliberately does **not** say: *"your AI agents"*. The
+possessive quantifies over agents you never routed, which is the wording the table
+below bans, and it is the same correction AAASM-5528 applied to "three boundaries for
+every agent" → "for a **governed** agent". The indefinite article costs nothing and
+survives the places non-severability cannot reach — a `<title>`, an `og:title`, a
+search snippet, a chat unfurl, a slide. **Metadata surfaces must carry the bounded
+form**, because there is no room beside them for a subheadline.
 
 ### Clause map
 
