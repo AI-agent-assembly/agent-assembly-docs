@@ -221,6 +221,64 @@ in this repository:
 - **An empty audit log is evidence about the observer.** It is not evidence that an
   agent did nothing. Never present a quiet log as a result.
 
+## Rejected wording
+
+Each row was removed from published copy, or considered and refused, for the reason
+given. The list is short on purpose: it names the *patterns* that keep recurring,
+not every sentence ever corrected. The audited per-file record is the AAASM-5528
+inventory.
+
+<!-- claim-gate:ignore-start
+     AAASM-5582 / AAASM-5536: the block below necessarily quotes the phrases the
+     banned-absolutes gate looks for — a rejected-wording list cannot name its
+     rejections otherwise. Skip this region rather than adding per-phrase
+     exceptions, which would also silence the phrases in ordinary prose. -->
+
+| Rejected | Why |
+|---|---|
+| "catches everything, including bypass attempts" | The mechanism it described (eBPF) observes. It participates in no allow/deny decision, covers only OpenSSL-linked processes, and its file-I/O probes are x86_64-only. |
+| "an action has nowhere to hide" | Asserts the union of the mechanisms is closed. It is not: an unmanaged launch, unrouted traffic, an unhooked TLS stack and an unsupported platform each leave an action outside the boundary. |
+| "a security checkpoint an AI agent cannot walk around" | Walking around it is a *measured* bypass — start the agent outside `aasm run` and no proxy environment is injected. |
+| "no code changes" | True of the agent's source, false as a prerequisite statement: the tool must be launched so its traffic reaches the proxy and the CA is trusted. Say what is required, not what is not. |
+| "immutable audit log" / "signed with HMAC" | The chain is an unkeyed digest over the JSONL sink; retention pruning deletes rows; the database mirror carries no chain. It is verifiable and that is worth saying — but it is tamper-evident, not immutable and not signed. |
+| "every action" / "every tool call" / "before every agent action" | Quantifies over agent behaviour rather than over what reached a checkpoint. The correct scope is the governed path. |
+| "your whole fleet" / "full fleet" | Coverage is a per-agent, per-launch, per-platform fact. There is no fleet-wide switch. |
+| "universal" / "comprehensive" / "complete" coverage | Each asserts a property no component here provides, and each is unfalsifiable in copy. |
+| "cannot be bypassed" / "unbypassable" | Bypass paths are enumerated and published. Claiming otherwise contradicts our own documentation. |
+| "secrets are injected at runtime and never enter the model context" | Advertises a capability a released build cannot reach. What ships is outbound scanning with redaction before forwarding. |
+| "kernel-level enforcement" | Attributes the guarantee to the wrong component. The kernel mechanism reports; the proxy refuses. |
+| "the SDK denies the action before it runs" | The SDK evaluates and is advisory. Refusal that holds is the proxy's, out of process. |
+| "protects" / "enforces" / "catches", used without a timing and a posture | ADR 0033 §6 forbids the undifferentiated verb. Each of these can mean observed, detected, evaluated or refused, and the reader cannot tell which. |
+| "three layers: SDK, proxy, eBPF" as *the* architecture | A superseded model. An ordered pipeline whose members cover for each other has no way to express an absent member, which is the inference this whole programme exists to stop. |
+| A hero that leads with "a governance layer for AI agents" | Accurate but not a user outcome — it names the category, not what changes for the reader. Correct at company altitude; too abstract for the product's own first screen. |
+
+<!-- claim-gate:ignore-end -->
+
+### On the constellation identity
+
+[AAASM-4084](https://lightning-dust-mite.atlassian.net/browse/AAASM-4084) introduces
+Argo Navis as a product alias and visual identity. It is a naming and design layer,
+and it composes with this brief in one direction only: **the metaphor may decorate
+the promise, it may not stand in for it.** A page whose first screen explains a
+constellation before it explains what happens to an agent's action has not made the
+promise; it has deferred it. Where the two compete for the same space, the promise
+wins.
+
+### Altitude — how this relates to the company-level description
+
+Horonomy describes Agent Assembly at company altitude as *a governance layer for AI
+agents — permissions, approval checkpoints, and evidence*, which *decides which tools,
+domains, and budgets an agent may use, holds risky actions for human review, and
+records what happened*.
+
+That is correct and this brief does not contradict it. The promise on this page sits
+one layer below: it keeps the same three ideas — permissions, approval, evidence — and
+adds the two things a product page must carry that a company page need not, namely
+**when** the decision happens (before the action) and **where it applies** (the paths
+you route through it). Do not "simplify" a product page back up to company altitude;
+the boundary clause is what makes it a product claim rather than a category
+description.
+
 ---
 
 *Last reviewed: 2026-08-06 — AI Agent Assembly Team*
