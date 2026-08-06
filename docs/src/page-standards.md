@@ -29,23 +29,22 @@ does not restate their definitions.
 | Source | What it supplies | Where |
 | --- | --- | --- |
 | **ADR 0033 §6 — claim vocabulary** | The eleven enforcement/claim terms. Four of the badge names below are §6's words, reused verbatim. | [ADR 0033](https://docs.agent-assembly.com/core/latest/adr/0033-canonical-governance-and-enforcement-architecture.html) |
-| **ADR 0034 — one product truth** | The three-axis ruling that decides which vocabulary may describe which subject, and the forbidden designs this page is checked against. | Core `docs/src/adr/` — **not yet published**, see below |
+| **ADR 0034 — one product truth** | The three-axis ruling that decides which vocabulary may describe which subject, and the forbidden designs this page is checked against. | [ADR 0034](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/docs/src/adr/0034-one-product-truth-and-cross-repository-documentation-governance.md) |
 | **Content-layer ownership** | The L0–L6 layer model and the canonical-owner table. | [`content-ownership.md`](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/docs/src/development/content-ownership.md) |
 | **Product promise & message hierarchy** | The worked instance of the four levels, for one page. | [Product promise](product-promise.md) |
 
-> **ADR 0034 is the governing document for the vocabulary question, and it is not yet
-> merged.** It is open as AAASM-5621's deliverable. This page is written against its
-> hand-off 7 and forbidden-design list, and **must not merge ahead of it** — landing
-> first would publish a metadata contract whose central ruling has no published source.
-> If hand-off 7 changes before it merges, the
-> [axis section](#which-axis-owns-which-word--settled-by-adr-0034) and the
-> `availability` key change with it.
+> **ADR 0034 is the governing document for the vocabulary question, and it is merged.**
+> It shipped as AAASM-5621's deliverable, and this page is written against its
+> hand-off 7 and forbidden-design list. This page was deliberately sequenced to land
+> after it, so that its central ruling would never be published without a source; that
+> ordering is now satisfied.
 >
-> It is referenced above as plain text rather than as a link, for the same reason
-> ticket references are: the page does not exist yet, so a link would 404 today —
-> verified, it does. **On merge of ADR 0034, replace that cell with a link to**
-> `https://docs.agent-assembly.com/core/latest/adr/0034-one-product-truth-and-cross-repository-documentation-governance.html`
-> and re-run the link check.
+> It is linked above in the `blob/HEAD` source form rather than to the rendered docs
+> site, because the published page — `docs.agent-assembly.com/core/latest/adr/0034-…` —
+> still returns **404** while the site republishes after the merge, verified with ADR
+> 0033's published URL returning 200 as a control in the same check. **When the
+> rendered page resolves, swap that cell to the published URL**, which is the form
+> `content-ownership.md` prefers for one rendered site linking another.
 
 Ticket references are plain text, not links: the tracker is not publicly readable, so
 a link would only reach a login wall — and a link checker scores that wall as
@@ -83,11 +82,11 @@ general contract.
 
 > **It is not yet a reference instance for the metadata.** `product-promise.md` carries
 > no metadata block — it merged before this contract existed — so running a validator
-> over it today produces a hard error for the missing block, and rule 14 additionally
+> over it today produces a hard error for the missing block, and rule 13 additionally
 > fires on `protects`, `enforces` and `catches`, which appear there in double quotes as
 > examples of *banned* wording. Both results are correct behaviour, not validator bugs.
 > Adding blocks to existing hub pages is AAASM-5610's work; the only page carrying one
-> today is this one. The [rule 14 double-quote exemption](#rule-14--the-unbounded-claim-verbs)
+> today is this one. The [rule 13 double-quote exemption](#rule-13--the-unbounded-claim-verbs)
 > was added precisely because that page quotes the verbs it warns against.
 
 ### Level 4 is never abbreviated
@@ -111,7 +110,7 @@ required; it may never carry fewer. The one exception is level 4 on a `product` 
 `guide` page, which is **forbidden** rather than optional — those types reach level 4
 by handing off, because a page that both summarises and exhausts a subject is the
 "derivative that reproduces its source at the same depth" `content-ownership.md`
-prohibits. [Rule 16](#cross-field-rules) encodes this.
+prohibits. [Rule 15](#cross-field-rules) encodes this.
 
 | `page_type` | Must carry | May also carry | Reaches level 4 by |
 | --- | --- | --- | --- |
@@ -153,8 +152,14 @@ definition for any of them would create exactly the two-vocabularies defect this
 programme exists to eliminate.
 
 So the eight badges are **not one enum**, and — the part that matters — **no §6 term
-is carried by a key this page owns**. Each badge sits on the axis that owns its
-subject, and is carried only by the key for that axis.
+is redefined here, and none is carried on an axis it does not belong to**. Each badge
+sits on the axis that owns its subject, and is carried only by the key for that axis.
+
+Two of the keys below are defined by this page and still carry a §6 term:
+`platforms[].status` carries `unsupported`. That is not a counter-example — §6 itself
+names the platform matrix row as `Unsupported`'s evidence, so the term is on its own
+subject there. What the page never does is give a §6 term a meaning of its own, or put
+one on a key whose subject §6 does not range over.
 
 | Badge | Subject it ranges over | Definition owned by | Carried by |
 | --- | --- | --- | --- |
@@ -307,6 +312,10 @@ metadata that lives away from its page drifts from it, and a new page acquires a
 only if someone remembers. In-page metadata is edited by the same person, in the same
 commit, as the prose it describes.
 
+The shape — this is an illustration of placement, **not** a template to copy; the
+`...` stands for the remaining keys, and a real block never contains it. Copyable
+blocks are in [Page templates](#page-templates):
+
 ```text
 <!-- BEGIN AA-PAGE-META
 schema_version: 1
@@ -324,7 +333,7 @@ END AA-PAGE-META -->
   sentence is not a delimiter.
 - **Delimiters inside fenced code blocks or inline code spans do not open a block.**
   Strip fenced regions **and inline code spans** before scanning — the same exemption
-  [rule 14](#rule-14--the-unbounded-claim-verbs) uses, and for the same reason.
+  [rule 13](#rule-13--the-unbounded-claim-verbs) uses, and for the same reason.
 - This page is the proof that both of the rules above are needed. The literal
   `<!-- BEGIN AA-PAGE-META` occurs on **nine** lines here: **one** real block, **six**
   inside fenced templates, and **two** inline — in the bullet above and in this
@@ -423,13 +432,24 @@ validator author would otherwise have to guess at:
 - **The layer is the content's, not the file's.** This page lives in the `docs` repo
   but a page here that summarises a Core fact carries `L3:agent-assembly` and a
   `canonical_source` link, per rule 9.
+- **`canonical_source: self` is available only to `L2:docs` and the `L3:` surfaces.**
+  Rule 9 turns on the `owner` surface naming the repository the page is in, and only
+  those nine surfaces *are* repository names. `L0:horonomy.dev` is a domain — its
+  repository is `horonomy-official-website`, in a different organisation — and
+  `L1:official-website` and `L4:examples` name repositories this contract is not
+  applied in. Pages under those owners always carry a link.
 
 ### `area` ids
 
 `area` ties a page to one row of the status map in
-[`source-of-truth.md`](source-of-truth.md), which is what lets
-[rule 13](#cross-field-rules) read that row's documentation-area maturity instead of
-restating it per page.
+[`source-of-truth.md`](source-of-truth.md). That row carries the page's
+documentation-area maturity, which is therefore **read from the status map and
+published beside the page's other metadata** rather than restated inside it.
+
+No validation rule derives anything from the area's maturity label — see
+[why there is no such rule](#there-is-no-rule-coupling-the-area-label-to-a-claim-term).
+`area` identifies the row; the reader gets both the area label and the page's
+`claims[]`, each checked against its own owner.
 
 The row cannot be identified by name, because the area names exist in **three
 incompatible forms**: the rendered table cell (`**Node / TypeScript SDK**`), the
@@ -474,6 +494,21 @@ Distribution in this product is **per channel and per platform**: a capability c
 ship on one channel and not another. A single "released" boolean is therefore not
 expressible, and is not offered. Each row is one (channel, platform) pair.
 
+> **Relationship to ADR 0034 §6.1's `released_channels` / `released_platforms` /
+> `released_matrix`.** Same shape, different surface, and deliberately not merged into
+> one name. §6.1's fields belong to the **capability manifest** AAASM-5531 will publish
+> — one record per capability, across the whole product. `platforms[]` here is **page**
+> metadata: what this page's subject ships on, written by the page's author. When 5531
+> lands, `platforms[]` becomes derivable from `released_matrix` and this page should
+> say so rather than keeping a second hand-maintained copy — that is the same hand-off
+> `capability_ids` already carries. Recording the correspondence now is what stops a
+> third spelling appearing later.
+>
+> Note also that `availability` answers only §6.1's **Distributed?** question.
+> *Buildable?* and *Activated?* are separate questions with separate fields
+> (`default_state`, `reachability`), and no value on this page may be read as
+> answering them — a capability can ship in an artifact and still be unreachable in it.
+
 | Key | Type | Req | Allowed values |
 | --- | --- | --- | --- |
 | `channel` | string | R | `github-release` · `homebrew` · `ghcr` · `install-sh` · `crates-io` |
@@ -490,6 +525,14 @@ expressible, and is not offered. Each row is one (channel, platform) pair.
   which case `platforms` is exactly `[]` and no row is written at all.
 - `unsupported` requires no `evidence` string because ADR 0033 §5.3's matrix row is
   its evidence, per §6.
+- **Enumeration is per channel, and platform coverage within a channel is deliberately
+  partial.** The rule closes the gap that matters most — a channel a capability
+  plausibly ships on being passed over in silence — and stops short of the full
+  (channel × platform) cross product, which is twenty rows for a fact that is usually
+  uniform across platforms within a channel. So a page naming `github-release` ×
+  `linux-x86_64` asserts nothing about `github-release` × `windows`. Where the platform
+  distinction is the point, write the extra rows: they are permitted, and only the
+  per-channel minimum is enforced.
 
 ### `last_verified`
 
@@ -519,6 +562,12 @@ Freshness:
 `compatibility.toml` whose `status = "current"` — at time of writing `v0.0.1-rc.6`.
 Naming the key matters: `compatibility.toml` holds one `[[release]]` per supported
 version, so "the version in `compatibility.toml`" would otherwise match several.
+
+**Parse the TOML; do not grep it.** A parser returns exactly one table with
+`status = "current"`. A grep for the string returns **two** — the second occurrence
+is inside a commented-out worked example further down the file, and an implementer who
+takes the last match, or errors on finding two, gets the wrong answer from a file that
+is actually unambiguous.
 
 ### `claims[]`
 
@@ -554,11 +603,44 @@ validation value is.
 | 9 | `canonical_source: self` ⇒ the `owner` surface names the repository the page is in; otherwise `canonical_source` must be a link | error |
 | 10 | `canonical_source` other than `self` must match the canonical-link form: repo-relative, `https://github.com/<org>/<repo>/blob/HEAD/<path>`, or `https://docs.agent-assembly.com/<path>`. A branch-name blob URL is rejected | error |
 | 11 | `max(disclosure_levels) < 4` ⇒ `deeper` present | error |
-| 12 | `disclosure_levels` must include every level [required for the page's `page_type`](#which-levels-a-page-must-carry) | error |
-| 13 | The page's [`area`](#area-ids) row is `🗺️ Planned` ⇒ `claims[]` contains `Planned`. The row is `🧪 Release candidate` ⇒ `claims[]` does **not** contain `Planned` | error |
-| 14 | An unbounded claim verb appears in the body ⇒ `describes_capability: true`, `claims` non-empty, and `limitations` present | error |
-| 15 | `claims[]` contains any of `Denied before execution`, `Redacted`, `Approval required`, `Evaluated`, `Degraded` ⇒ `limitations` present and non-empty | error |
-| 16 | `page_type` is `product` or `guide` ⇒ `4 ∉ disclosure_levels` (those types reach level 4 by a `deeper` link, never in the page) | error |
+| 12 | `disclosure_levels` must be a subset of the page type's **must ∪ may** levels, and include all of its **must** levels — see [the table](#which-levels-a-page-must-carry) | error |
+| 13 | An unbounded claim verb appears in the body ⇒ `describes_capability: true`, `claims` non-empty, and `limitations` present | error |
+| 14 | `claims[]` contains any of `Observed`, `Detected`, `Evaluated`, `Denied before execution`, `Redacted`, `Approval required`, `Degraded` ⇒ `limitations` present and non-empty | error |
+| 15 | `page_type` is `product` or `guide` ⇒ `4 ∉ disclosure_levels` (those types reach level 4 by a `deeper` link, never in the page) | error |
+
+### There is no rule coupling the area label to a claim term
+
+An earlier draft carried a rule 13 requiring a `🗺️ Planned` area's pages to claim
+`Planned`, and forbidding the claim on `🧪 Release candidate` areas. **It is
+withdrawn**, and no rule replaces it.
+
+It was a forbidden design. The area label is on the documentation-area axis and
+`claims[].term` is on the behaviour axis, and ADR 0034 hand-off 7 states that *no axis
+may be applied to another's subject* — a documentation-area label says nothing about
+an action's behaviour. Removing `maturity` took that collapse out of the **key** but
+left it in the **rule**, which is the subtler half of the same defect.
+
+It also produced wrong answers on ordinary pages, in both directions:
+
+- An `operations` page documenting a capability that genuinely ships would have been
+  forced to claim `Planned`, which [rule 4](#cross-field-rules) then forces to
+  `platforms: []` — asserting the capability is in no published artifact, which is
+  false, and which [this page](#platforms) elsewhere calls a validation error.
+- A `core` page documenting a genuinely planned capability — the Windows host adapter,
+  `Unsupported` in ADR 0033 §5.3 — could not have used §6's `Planned` at all, though
+  that is the term §6 defines for exactly this case.
+
+The correct treatment is a **publication** rule, not a metadata one. ADR 0034 hand-off
+1 prescribes it: split the statement into a behaviour claim and a completeness claim,
+check each against its own owner, publish both, and let the more restrictive published
+outcome govern the surface. So a page carries its `area` label and its `claims[]` side
+by side, each validated against its own owner, and neither constrains the other. The
+internal consistency the withdrawn rule was reaching for is already carried by rules 4
+and 6, which govern `claims[]` and `availability` — both on axes this page may bind
+together, because `availability` is not §6's.
+
+Rule numbering was closed up rather than leaving a gap; the rules formerly numbered
+14, 15 and 16 are now 13, 14 and 15.
 
 ### Rule 4 and the enumeration carve-out
 
@@ -570,30 +652,46 @@ platform *result* where §6 requires a ticket reference and **no capability clai
 
 The three `🗺️ Planned` areas today are `cloud`, `enterprise` and `operations`, so this
 is the path AAASM-5610 will take on `quickstart-saas.md` and `cloud-deployment.md` —
-the first hub pages it touches. Rules 4, 6 and 13 are written to agree with each other
+the first hub pages it touches. Rules 4 and 6 are written to agree with each other
 on exactly that case.
 
-### Rule 15 — why the verb list is not enough
+### Rule 14 — why the verb list is not enough
 
-Rule 14 keys off English prose; rule 15 keys off a declared enum, and the second is
-strictly the more reliable of the two. Without rule 15 a page can declare the
+Rule 13 keys off English prose; rule 14 keys off a declared enum, and the second is
+strictly the more reliable of the two. Without rule 14 a page can declare the
 strongest term in §6's vocabulary — `Denied before execution` — with `availability:
 available-verified` and an empty `limitations`, and pass every other rule: rule 3 does
-not fire because the availability value is not `available-with-limits`, and rule 14
-does not fire if the prose avoids the four listed verbs. Publishing the product's
+not fire because the availability value is not `available-with-limits`, and rule 13
+does not fire if the prose avoids the five listed verbs. Publishing the product's
 strongest enforcement claim with no stated limitation is precisely what this page's
 second acceptance criterion forbids, so the rule closes it from the metadata side.
 
-The five terms it covers are the §6 terms that assert something *happened to an
-action*. `Observed`, `Detected`, `Unmeasured`, `Experimental`, `Planned` and
-`Unsupported` are excluded deliberately: they either report an absence of control or
-are already bounded by rules 4, 6 and 13.
+The seven terms it covers are every §6 term that asserts a control **did something**
+to an action or its payload. Only four are excluded, and each because it asserts the
+opposite — that no control acted, or that none exists yet:
 
-### Rule 14 — the unbounded claim verbs
+| Excluded term | Why |
+| --- | --- |
+| `Unmeasured` | §6: no control inspected the action; there is no capability to bound |
+| `Unsupported` | §6: not available on this platform/configuration |
+| `Planned` | Decided but not implemented, and §6 attaches **no capability claim**; rules 4 and 6 already force `platforms: []` and forbid `availability` |
+| `Experimental` | Implemented but not validated for production — §6 requires the missing validation be named, which is itself the bound |
 
-Rule 14 is the mechanical form of *"public pages cannot omit status and limitations
+> **`Observed` and `Detected` are in the rule, not excluded from it.** An earlier draft
+> excluded them as reporting "an absence of control", which is simply wrong: §6 defines
+> `Observed` as *an event reached the evidence pipeline* and `Detected` as *a pattern of
+> interest was found* — both are positive capability claims, and neither is bounded
+> anywhere else in this page. Excluding them left the most historically dangerous claim
+> in this product unbounded: ADR 0033 cites *"eBPF sensor catches kernel-level bypass attempts"*
+> as a forbidden design, and §6 maps the eBPF syscall guard to `Detected`
+> with an explicit *not Denied before execution* caveat. A page claiming `Detected`
+> with no stated limitation is exactly that defect, so rule 14 now covers it.
+
+### Rule 13 — the unbounded claim verbs
+
+Rule 13 is the mechanical form of *"public pages cannot omit status and limitations
 when the claim depends on them"*. [Product promise](product-promise.md) already
-instructs authors to pick a §6 term for every verb; rule 14 restates that requirement
+instructs authors to pick a §6 term for every verb; rule 13 restates that requirement
 from the metadata side, so a page cannot satisfy it by wording alone.
 
 The closed list, matched case-insensitively on word boundaries, **as these literal
@@ -602,9 +700,9 @@ forms only** — no inflection expansion:
 `protects` · `enforces` · `catches` · `prevents` · `guarantees`
 
 The first three are the three verbs ADR 0033 §6 names by name when it requires that
-*"downstream material must pick one of these terms rather than an undifferentiated
-verb like 'protects', 'enforces' or 'catches'."* Taking §6's own examples is the
-least inventive possible choice of list.
+downstream material pick one of its terms rather than an undifferentiated verb like
+`protects`, `enforces` or `catches`. Taking §6's own examples is the least inventive
+possible choice of list.
 
 **Exempt occurrences**, which a validator must strip before matching:
 
@@ -616,6 +714,26 @@ Exemption 3 exists because a page *discussing* the rule quotes the banned verbs 
 prose. It is mechanical — quote characters, not intent — and it is the difference
 between this rule being usable and being wrong on the very pages that explain it.
 
+Two properties of exemption 3 that a prose statement would leave to the implementer,
+and which decide whether two conforming validators agree:
+
+- **Quoted spans are matched across the whole document, not per line.** A quotation
+  that wraps onto a second line is one span. This is the one place the page is *not*
+  line-oriented, and it is called out because every other parsing rule here is —
+  delimiters are matched per line, and an implementer who carried that habit into
+  exemption 3 would get a different answer on a wrapped quotation.
+- **An odd number of straight double quotes in a document is an error**, not a
+  silently-shifted pairing. Quotes are paired left to right; an unmatched final quote
+  means every subsequent pairing is offset, so the honest outcome is to reject the
+  page rather than emit a result that depends on where the imbalance happened to fall.
+  Typographic quotes pair by direction and are exempt from the count.
+
+**Prefer inline code over quotation when naming a banned verb.** This page names all
+five in backticks, so exemption 3 is not load-bearing on it under any implementation —
+the earlier draft quoted three of them in prose and was, correctly, the first page to
+expose the ambiguity above. Exemption 3 remains for pages that genuinely quote a
+source; it should not be the mechanism a page relies on to discuss the rule.
+
 > **The list is deliberately high-precision, and it is a floor rather than a ceiling.**
 > The obvious longer list — adding `blocks`, `stops`, `secures`, `ensures` and the bare
 > infinitives — was tested against this page and rejected: `blocks` alone matches
@@ -624,10 +742,10 @@ between this rule being usable and being wrong on the very pages that explain it
 > that is off finds nothing. Third-person singular is the form an actual capability
 > claim takes (`Agent Assembly protects …`), so that is what is matched.
 >
-> False negatives are therefore expected and accepted. Rule 14 does not replace the
+> False negatives are therefore expected and accepted. Rule 13 does not replace the
 > editorial rule in [Product promise](product-promise.md) — *if the sentence works
 > with an undifferentiated verb, it is not specific enough to publish* — it only makes
-> the most common case unmissable. Rule 15, which keys off a declared enum rather than
+> the most common case unmissable. Rule 14, which keys off a declared enum rather than
 > English, is the stronger of the two.
 
 A page that uses one of these verbs in prose and declares `describes_capability:
@@ -853,8 +971,8 @@ END AA-PAGE-META -->
 
 | To | What |
 | --- | --- |
-| **AAASM-5601** | Implement the validator: the parsing contract, the field reference, the 16 cross-field rules and the freshness thresholds are intended to be sufficient with no further decisions. If a rule needs judgement to implement, that is a defect in this page — report it rather than choosing. **Also**: replace the hand-maintained [`area` id table](#area-ids) with a generated one, by adding a stable `id` to each row of `hub-components.toml` and to the five literal rows in `generate_hub_components.py`. |
-| **AAASM-5610** | Apply metadata blocks to existing hub content. This page carries the only block today. Expect the three `🗺️ Planned` areas — `cloud`, `enterprise`, `operations` — to take the [rule 4](#cross-field-rules) path with `platforms: []`, and expect `product-promise.md` to need a block plus a rule 14 review. |
+| **AAASM-5601** | Implement the validator: the parsing contract, the field reference, the 15 cross-field rules and the freshness thresholds are intended to be sufficient with no further decisions. If a rule needs judgement to implement, that is a defect in this page — report it rather than choosing. **Also**: replace the hand-maintained [`area` id table](#area-ids) with a generated one, by adding a stable `id` to each row of `hub-components.toml` and to the five literal rows in `generate_hub_components.py`. |
+| **AAASM-5610** | Apply metadata blocks to existing hub content. This page carries the only block today. Expect the three `🗺️ Planned` areas — `cloud`, `enterprise`, `operations` — to take the [rule 4](#cross-field-rules) path with `platforms: []`, and expect `product-promise.md` to need a block plus a rule 13 review. |
 | **AAASM-5621 / ADR 0034** | Precedence between the three axes, waivers, and cross-repository adoption records. The scope of forbidden design 12's coining clause is **settled** — it is claim-axis only — and is applied here, not deferred. |
 | **AAASM-5531** | The capability/evidence manifest. When it lands, `capability_ids` becomes validated and required, at `schema_version: 2`. |
 
