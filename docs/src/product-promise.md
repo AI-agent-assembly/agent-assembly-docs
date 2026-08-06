@@ -50,7 +50,8 @@ different depth.
 
 > **Agent Assembly decides whether an AI agent's action is allowed before that action
 > runs — on the paths you route through it — and records what was decided, so a risky
-> call can be refused or held for a person instead of discovered afterwards.**
+> call can be refused, or blocked pending a decision, instead of discovered
+> afterwards.**
 
 ### Headline and subheadline
 
@@ -63,7 +64,7 @@ For a hero or a first screen, the promise renders as:
 **Subheadline**
 
 > Agent Assembly evaluates the actions you route through it against your policy,
-> refuses or holds the ones your policy disallows, and records the decision. An
+> refuses or blocks the ones your policy disallows, and records the decision. An
 > action you have not routed through it is not inspected — and the record says so.
 
 **These two are not severable.** The headline is bounded only by the subheadline;
@@ -94,7 +95,7 @@ and it needs its own evidence.
 | "on the paths you route through it" | **Unmeasured** (by contrast) | Names the boundary. Anything off the path is Unmeasured; the clause exists so the promise does not quantify over agent behaviour. |
 | "records what was decided" | **Observed** | A durable event attributed to the action, on a verifiable hash chain. |
 | "refused" | **Denied before execution** | As above. |
-| "held for a person" | **Approval required** | The action is held pending a human decision; a pending approval record exists. |
+| "blocked pending a decision" | **Approval required** | The action is held and a pending approval record exists. **§6's term does not assert that a person can act on it** — see the [Provisional](#provisional) row. An earlier draft of this promise said "held for a person"; the plain-language rendering silently added a human who, today, has no shipped surface to answer on. |
 | "instead of discovered afterwards" | — | A contrast with after-the-fact observability, not a capability claim. Carries no evidence burden. |
 
 ## Progressive disclosure — four levels
@@ -146,7 +147,7 @@ Agent Assembly is a decision point you place in front of an AI agent's actions,
 plus the evidence trail that shows what it decided.
 
 **What it decides.** Which tools an agent may call, which network destinations it may
-reach, how much it may spend, and which actions need a person's sign-off first.
+reach, how much it may spend, and which actions are blocked pending an approval.
 Policy is versioned YAML/JSON you review through normal Git workflows.
 
 **Where the decision is applied.** In several places, with genuinely different
@@ -174,7 +175,7 @@ evaluation:
 
 | | Default posture |
 |---|---|
-| Approval holds | **On.** The gateway blocks awaiting the decision, and a timeout resolves to a refusal — fail-closed. Reachable in the open-source install. |
+| Approval holds | **Off until a policy asks for one, and unresolvable when it does.** A hold is produced only by an explicit `requires_approval_if` expression; three of the eight shipped policy examples declare one, and `low-risk.yaml` says "No approval gates." When a hold does fire the gateway blocks awaiting the decision and a timeout resolves to a refusal — genuinely fail-closed — but **no shipped operator surface can answer it**, so in practice it blocks and then auto-refuses. See the [Provisional](#provisional) row before writing anything about human review. |
 | Proxy inspection | **Narrow.** `llm_only` defaults to on, which TLS-intercepts three built-in LLM hosts. Any other host is tunnelled without payload inspection: the *connection* is Observed, the *payload* is Unmeasured. |
 | Egress allow/deny lists | **Empty.** You configure them. The one always-on egress control is an SSRF guard that refuses IP-literal targets in loopback, private, link-local and cloud-metadata ranges. |
 | Credential handling | **Redact and forward.** Blocking on a detected credential is opt-in. Model *responses* are not scanned. |
@@ -319,7 +320,8 @@ the evidence blocks in the AAASM-5528 inventory; `§n` refers to ADR 0033.
 | The proxy refuses before dialling upstream | Denied before execution | `E2` (CONNECT 403, in-tunnel host re-check, credential block, MCP adjudication) |
 | The SDK is advisory | Evaluated | `E3`, `E7`; ADR 0002 |
 | A policy refusal blocks a wrapped tool only in the check-capable SDK mode, and asking for enforcement without it is refused at init | Evaluated | Verified directly in the Node SDK's client construction and init guards, not from `E3`/`E7` — those establish that the wrapper raises before the tool body, which is a different question from whether the default transport can produce a refusal at all. Tracked as [AAASM-4991](https://lightning-dust-mite.atlassian.net/browse/AAASM-4991) |
-| Approval holds block and fail closed on timeout | Approval required | Gateway approval path: the check awaits the operator's decision, and an elapsed timeout resolves to a refusal |
+| A hold blocks the check and fails closed on timeout | Approval required | Gateway approval path: the check awaits a decision, and an elapsed timeout yields a `Deny` fallback. Both OSS gateway bootstraps wire the queue, so this is not a degraded-mode artefact |
+| …but the hold has **no shipped operator-facing sender** | — (a gap, not a claim) | The gateway's queue is answerable only over the gRPC `ApprovalService`, and the only clients of it in the tree are two gateway test files. The CLI and dashboard POST to the HTTP API, whose process constructs its **own** in-memory queue and resolves against that one; there is no gRPC channel and no shared store between the two processes. Verified with a positive control — the equivalent `PolicyService` client appears in 20+ files including shipped runtime source and a bench |
 | Budget exhaustion resolves to a refusal | Evaluated → Denied before execution | Atomic spend reservation inside the same decision path |
 | `llm_only` defaults on; three built-in LLM hosts are intercepted | Unmeasured (for other payloads) | `E2` |
 | Egress allow/deny lists are empty by default; the SSRF guard is not | — | `E2` |
@@ -337,6 +339,7 @@ overstatement.
 
 | Statement | Why it is provisional | Owner |
 |---|---|---|
+| **"A person can review and release a held action."** Do not write "held for human review", "approval workflow", "a reviewer approves it", or any hero copy implying a human is in the loop | The hold itself is real and fail-closed, but the gateway's approval queue and the queue the CLI/dashboard resolve against live in **different processes with nothing joining them**. Until a bridge ships, the truthful account is "blocked pending a decision, which today no operator surface can supply, so it refuses at timeout." | Product ticket being filed — reference it here once the key is issued |
 | Any coverage figure — a percentage, a count of governed actions, a fleet-level number | There is no machine-readable manifest to compute it from, and self-reported layer availability is not evidence of coverage (§7) | [AAASM-5531](https://lightning-dust-mite.atlassian.net/browse/AAASM-5531) |
 | "Host enforcement on macOS" | ADR 0030's `HostEnforced` rung *is* reachable there — it is the only platform where it is — but it rests on reading back a managed-settings file, and whether the tool honours those keys at runtime is unmeasured. State the route, not the outcome. | [AAASM-5526](https://lightning-dust-mite.atlassian.net/browse/AAASM-5526) |
 | "eBPF is available to you" as a property of an installed release | The privileged loader daemon that owns every kernel operation is not part of the published release artifacts, and the probe crates build only on a nightly toolchain. Describe eBPF as a Linux mechanism the architecture supports, not as something a reader can switch on today. | [AAASM-5526](https://lightning-dust-mite.atlassian.net/browse/AAASM-5526) |
