@@ -311,6 +311,7 @@ the evidence blocks in the AAASM-5528 inventory; `§n` refers to ADR 0033.
 | The control plane decides but holds no traffic | Evaluated | §2 |
 | The proxy refuses before dialling upstream | Denied before execution | `E2` (CONNECT 403, in-tunnel host re-check, credential block, MCP adjudication) |
 | The SDK is advisory | Evaluated | `E3`, `E7`; ADR 0002 |
+| A policy refusal blocks a wrapped tool only in the check-capable SDK mode, and asking for enforcement without it is refused at init | Evaluated | Verified directly in the Node SDK's client construction and init guards, not from `E3`/`E7` — those establish that the wrapper raises before the tool body, which is a different question from whether the default transport can produce a refusal at all. Tracked as [AAASM-4991](https://lightning-dust-mite.atlassian.net/browse/AAASM-4991) |
 | Approval holds block and fail closed on timeout | Approval required | Gateway approval path: the check awaits the operator's decision, and an elapsed timeout resolves to a refusal |
 | Budget exhaustion resolves to a refusal | Evaluated → Denied before execution | Atomic spend reservation inside the same decision path |
 | `llm_only` defaults on; three built-in LLM hosts are intercepted | Unmeasured (for other payloads) | `E2` |
