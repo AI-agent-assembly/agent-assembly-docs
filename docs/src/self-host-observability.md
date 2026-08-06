@@ -2,7 +2,7 @@
 
 This page is for **operators and SREs running the limited-function OSS stack** — the [self-hostable Apache-2.0 crates](open-core-boundary.md) you can bring up locally (via the published Docker Compose example) for evaluation and development. It answers the operator's first question — *"can I monitor what I run?"* — by showing where the shipped binaries expose their liveness/readiness probes and their Prometheus metrics, so you can wire up a health check and a scrape target **without reading the Rust source**.
 
-> **Scope: this is the limited-function self-host stack, not the managed SaaS.** The uptime SLAs (99.5% / 99.9%), on-call rotation, and managed compliance posture described in [Cloud Deployment](cloud-deployment.md) apply to the **AI Agent Assembly cloud only** — not to a stack you self-host. Self-hosting is intended for local evaluation and development; you are responsible for operating and monitoring it. This page documents the observability surface the OSS binaries already expose; it is **not** a production deployment or orchestration guide (no Helm / Terraform / Kubernetes).
+> **Scope: this is the limited-function self-host stack.** There is no availability, on-call, or compliance commitment from anyone — not for a stack you self-host, and not for the managed control plane, which is [planned and not available](cloud-deployment.md). Self-hosting is intended for local evaluation and development; you are responsible for operating and monitoring it. This page documents the observability surface the OSS binaries already expose; it is **not** a production deployment or orchestration guide (no Helm / Terraform / Kubernetes).
 
 ---
 
@@ -134,8 +134,8 @@ These endpoints live in the Apache-2.0 crates in the [`agent-assembly`](https://
 
 ## Related documentation
 
-- [Open core boundary](open-core-boundary.md) — what the limited-function OSS stack includes vs. the SaaS feature set.
-- [Cloud Deployment](cloud-deployment.md) — the managed SaaS platform, its SLA tiers, and on-call (SaaS only).
+- [Open core boundary](open-core-boundary.md) — what is in the Apache-2.0 core today vs. intended for the commercial tier.
+- [Cloud Deployment](cloud-deployment.md) — the managed control plane, which is planned and not available.
 - [Security model](security-model.md) — the Telemetry layer and the broader defense-in-depth posture.
 - [Troubleshooting](troubleshooting.md) — common issues when running the stack.
 
