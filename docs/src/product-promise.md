@@ -8,7 +8,7 @@ discovers an overstated claim *after* provisioning is a worse outcome than one w
 reads an accurate limit up front.
 
 It is also for evaluators. Levels 1 to 3 below are the fastest accurate account of
-what the product does; if you only read this page, you will not be surprised later.
+what the product does, what is on by default, and what it leaves uncovered.
 
 ## What governs this page
 
@@ -67,10 +67,12 @@ For a hero or a first screen, the promise renders as:
 > action you have not routed through it is not inspected — and the record says so.
 
 **These two are not severable.** The headline is bounded only by the subheadline;
-published alone it reads as a claim over all agent behaviour, which is the exact
-defect [AAASM-5528](https://lightning-dust-mite.atlassian.net/browse/AAASM-5528)
-removed from 69 places. The rule for downstream pages is: *the boundary clause
-appears on the same screen as the headline, above the fold, not in a footnote.*
+published alone it reads as a claim over all agent behaviour. That is the `absolute`
+claim class, which accounts for 37 of the 69 audited rows in the
+[AAASM-5528](https://lightning-dust-mite.atlassian.net/browse/AAASM-5528) inventory —
+by some distance the most common defect in this product's published copy. The rule
+for downstream pages is: *the boundary clause appears on the same screen as the
+headline, above the fold, not in a footnote.*
 
 ### Clause map
 
