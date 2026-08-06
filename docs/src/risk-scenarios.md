@@ -294,12 +294,16 @@ scenario into a blocked request is wrong, and the difference is the default.
   payload inspection: the *connection* is Observed, the *payload* is **Unmeasured**.
   The honest phrasing is "the connection was observed, the payload was not
   inspected" — never "nothing was observed".
-- **Recall is bounded by the pattern set.** There is no Stripe detector, and the
-  OpenAI detector keys on `sk-` while Stripe uses `sk_`. Splitting a secret across a
-  multi-character gap still evades detection
-  (`aa-security/src/scanner.rs:3960-4005`); AAASM-5368 narrowed the single-separator
-  case but did not close the class. State the pattern-set bound wherever recall is
-  implied.
+- **Recall is bounded by the pattern set, and the bound is wider on the release than
+  on `main`.** There is no Stripe detector, and the OpenAI detector keys on `sk-`
+  while Stripe uses `sk_`. Splitting a secret across a multi-character gap still
+  evades detection (`aa-security/src/scanner.rs:3960-4005`) — that is true in both
+  places. **The single-separator case differs:** AAASM-5368 closed it on `main`
+  (`scanner.rs:1346`, implemented at `:1395`, regression test at `:3858`), but it is
+  **still live in the published rc.6**, where AAASM-5368 has zero occurrences. A
+  reader running a released build therefore has a wider hole than a reader of the
+  source. State the pattern-set bound wherever recall is implied, and say which build
+  you mean.
 - **Model responses are not scanned.** A credential coming *back* from the provider
   is Unmeasured.
 - **The stronger variant is real, off by default, and unit-evidenced only.**
