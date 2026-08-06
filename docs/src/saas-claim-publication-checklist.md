@@ -5,6 +5,15 @@ they are true. It exists for two audiences: readers who want to know *why* the
 SaaS pages are almost empty, and maintainers who are about to add a
 managed-service claim back.
 
+> ⚠️ **Provisional.** This page was authored alongside the removals it records, ahead
+> of the canonical claim-governance ADR (AAASM-5621) that will define the approval
+> semantics, owner roles, and evidence grades this org actually uses. Where this page
+> and that ADR disagree, **the ADR wins** and this page gets rewritten to match. It is
+> expected to become an adoption record feeding the capability/evidence manifest
+> (AAASM-5531) rather than a standalone registry. Treat the register below as an
+> accurate record of what was removed and why — that part is evidence — and the
+> approval workflow around it as a placeholder.
+
 The rule it enforces is narrow and absolute in one direction only:
 
 > **A managed-service operational or contractual claim may not be published on
