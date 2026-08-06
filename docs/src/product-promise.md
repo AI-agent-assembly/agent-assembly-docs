@@ -106,7 +106,7 @@ and it needs its own evidence.
 | "on the paths you route through it" | **Unmeasured** (by contrast) | Names the boundary. Anything off the path is Unmeasured; the clause exists so the promise does not quantify over agent behaviour. |
 | "records what was decided" | **Observed** | An event attributed to the action. §6 requires this to be *durable*; emission is best-effort under backpressure, so the clause is bounded by the note at Level 2 step 3 and by its own Provisional row — do not publish it unqualified. |
 | "refused" | **Denied before execution** | As above. |
-| "blocked pending a decision" | **Approval required** | The action is held and a pending approval record exists. **§6's term does not assert that a person can act on it** — see the [Provisional](#provisional) row. An earlier draft of this promise said "held for a person"; the plain-language rendering silently added a human who, today, has no shipped surface to answer on. |
+| "blocked pending a decision" | **Approval required** | The action is held and a pending approval record exists. **§6's term does not assert that a person can act on it** — see the [Provisional](#provisional) row. An earlier draft rendered this clause with a human in it; §6 mapped cleanly, and the plain-language wording still added an actor with no shipped surface to act through. A correct §6 mapping is necessary, not sufficient. |
 | "instead of discovered afterwards" | — | A contrast with after-the-fact observability, not a capability claim. Carries no evidence burden. |
 
 ## Progressive disclosure — four levels
@@ -167,7 +167,7 @@ reported as allowed.
 > lost, and a dropped entry is indistinguishable from a deleted one. Three bounds
 > belong together wherever this is claimed: **which** actions are decided (the
 > governed path), **whether the record survives** (best-effort), and **what
-> verification proves** (chain integrity, not completeness). The boundary clause in
+> verification proves** (chain integrity, not whether the log is whole). The boundary clause in
 > the promise covers only the first. This is the same rule-plus-open-defect shape as
 > the note above, and the hub's own security model already states that absence of an
 > entry is not proof of absence.
@@ -283,7 +283,7 @@ copy; keep the §6 term available wherever a reader might need to verify the cla
 |---|---|---|---|
 | **Governed path** (managed path) | — (a scope, not a verdict) | "the paths you route through Agent Assembly"; "an agent you launched under Agent Assembly"; "traffic you send through the proxy" | "your agents"; "your fleet"; "your environment" — all three quantify over things you did not route |
 | **Pre-execution** | Denied before execution | "before the action runs"; "before the request leaves the machine"; "before the tool body executes" | "in real time"; "instantly"; "at runtime" — these describe *speed*, not *ordering*, and the ordering is the whole claim |
-| **Evidence** | Observed | "a hash-chained audit record you can verify yourself"; "tamper-evident" | "immutable"; "tamper-proof"; "signed" — the chain is an unkeyed digest, and retention pruning deletes rows. Also avoid "verified" as a synonym for "complete": verification checks the links between the entries present, so an empty log — or one deleted and recreated — passes and exits 0 |
+| **Evidence** | Observed | "a hash-chained audit record you can verify yourself"; "tamper-evident" | "immutable"; "tamper-proof"; "signed" — the chain is an unkeyed digest, and retention pruning deletes rows. Also avoid treating "verified" as "nothing is missing": verification checks the links between the entries that are present, so an empty log — or one deleted and recreated — passes and exits 0 |
 | **Host controls** | Observed / Detected (Linux); Unsupported (Windows); macOS is its own case — see below | "operating-system-level controls, where the platform has them"; on Linux, "kernel probes that report activity"; the opt-in guard "terminates a confined process after the fact" | "kernel-level enforcement"; "OS-level protection"; anything implying the Linux mechanism exists on macOS or Windows — **and equally**, any blanket "no host enforcement on macOS" |
 | **Managed action** | Evaluated | "an action presented for a decision before it takes effect"; "an action that reached a checkpoint" | "any action"; "each action an agent takes" — the second silently re-adds the quantifier the first removed |
 | **Planned** | Planned | "planned — decided, not built yet", with the ticket reference | "coming soon"; "available in Enterprise"; a roadmap item written in the present tense |
@@ -390,7 +390,7 @@ the evidence blocks in the AAASM-5528 inventory; `§n` refers to ADR 0033.
 | Credential handling defaults to redact-and-forward | Redacted | `E4` |
 | The audit chain is an unkeyed digest over the JSONL sink, verifiable in the open-source build | Observed | `E5` |
 | Emission is best-effort: the chain head advances before the send, a full channel drops the entry and the call returns anyway, and sibling sites discard the error uncounted | Observed, bounded | Read directly in the gateway's audit-record path and its sibling emit sites — **not** `E5`, which covers the chain's cryptography, not whether an entry reaches it. Open as AAASM-5626 |
-| `verify-chain` proves integrity, not completeness — an empty or deleted-and-recreated log verifies clean and exits 0 | Observed, bounded | The verifier's loop body never runs on zero entries and the terminal return is `is_valid: true`; the CLI maps that to `ExitCode::SUCCESS` |
+| `verify-chain` proves integrity, not that the log is whole — an empty or deleted-and-recreated log verifies clean and exits 0 | Observed, bounded | The verifier's loop body never runs on zero entries and the terminal return is `is_valid: true`; the CLI maps that to `ExitCode::SUCCESS` |
 | Kernel probes observe; the syscall guard is opt-in and terminates asynchronously | Observed / Detected | `E1`, §5.1 |
 | Windows has no local mediation | Unsupported | §5.3 |
 | An unrouted action is not inspected | Unmeasured | §4 |
