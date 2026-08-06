@@ -610,8 +610,8 @@ today. None asserts an averted consequence.
 
 > An agent called a tool that would have dropped a production table. The call was
 > evaluated against your policy and refused before the proxy forwarded it. This
-> covers MCP tool calls sent as ordinary HTTP POSTs; tool servers you run over
-> stdio — the most common setup — SSE, or Streamable HTTP are not on this path.
+> covers MCP tool calls sent as ordinary HTTP POSTs; tool servers you run over stdio
+> (the most common setup), SSE, or Streamable HTTP are not on this path.
 
 **T3 — runaway cost:**
 
