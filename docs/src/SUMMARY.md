@@ -36,5 +36,6 @@
 
 # About
 
+- [SaaS Claim Publication Checklist](saas-claim-publication-checklist.md)
 - [Accessibility](accessibility.md)
 - [Localization](localization.md)

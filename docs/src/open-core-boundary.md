@@ -3,9 +3,15 @@
 AI Agent Assembly follows an **open-core** model. The line is simple:
 
 - **Enforcement is open source.** The interception layers, policy engine, SDK shims, and CLI are Apache-2.0. Anyone can read, audit, and contribute to them.
-- **Enterprise operations are commercial.** Features like SSO, SCIM, advanced audit, and multi-region data residency are covered by the AAA-Commercial license and available on paid SaaS tiers.
+- **Enterprise operations are intended to be commercial.** Capabilities such as SSO, SCIM, advanced audit, and multi-region data residency are planned for a commercial tier. That tier is not available, its licence terms are not published, and there is no paid plan to buy.
 
-> **A limited-function OSS stack is self-hostable; full functionality is SaaS.** You can self-host a limited-function stack from the Apache-2.0 crates — using the published Docker Compose example — for local evaluation and development. The complete feature set (enterprise operations, multi-tenant SLA, and the managed compliance posture) is delivered only through the AI Agent Assembly cloud. See [Cloud Deployment](cloud-deployment.md) and [Quick Start (SaaS)](quickstart-saas.md) for the managed onboarding paths.
+> 🗺️ **The commercial side of this boundary is planned, not available.** You can
+> self-host a limited-function stack from the Apache-2.0 crates today — using the
+> published Docker Compose example — for local evaluation and development. The
+> managed service that is intended to deliver the commercial capabilities is not
+> running; see [Cloud deployment](cloud-deployment.md) and
+> [Quick start (SaaS)](quickstart-saas.md) for what that means in practice, and
+> [Source of truth & status](source-of-truth.md) for the canonical maturity label.
 
 ---
 
@@ -22,9 +28,9 @@ An enterprise cannot take our word for how the policy engine evaluates rules, ho
 The split between open and commercial follows one principle: **enforcement is open; enterprise operations are commercial.**
 
 - If a feature controls *what agents can do*, it belongs in the Apache-2.0 core.
-- If a feature controls *how operators manage, scale, or audit the system at enterprise grade* — SSO federation, SCIM user lifecycle, long-retention tamper-evident audit logs, multi-region data residency — it belongs in the commercial tier.
+- If a feature controls *how operators manage, scale, or audit the system at enterprise grade* — identity federation, directory-driven user lifecycle, longer-retention and higher-assurance audit storage, regional deployment control — it belongs in the commercial tier.
 
-A motivated team can fork, read, or contribute to every security control in the stack, regardless of subscription status.
+A motivated team can fork, read, or contribute to the security controls listed as Apache-2.0 below, regardless of subscription status.
 
 ### Open source strengthens the core
 
@@ -32,50 +38,56 @@ Open-sourcing the enforcement logic creates a community feedback loop. Security 
 
 We chose Apache-2.0 specifically because it permits commercial integration without a copyleft obligation — SDK users can embed the shims in proprietary products without the license spreading to their own code.
 
-### Limited-function self-host, full-function SaaS
+### Limited-function self-host today; managed service planned
 
-Shipping the crates as open source lets teams read, audit, and contribute — and self-host a **limited-function** stack (via the published Docker Compose example) for local evaluation and development.
+Shipping the crates as open source lets teams read, audit, and contribute — and self-host a **limited-function** stack (via the published [Docker Compose example](docker-containers.md#compose)) for local evaluation and development.
 
-The **complete** feature set stays SaaS. Operating a multi-tenant platform with the security and reliability commitments in the [Security model](security-model.md) takes infrastructure, on-call, and operational expertise that a self-managed install cannot match — so enterprise operations, the uptime SLA, and the managed compliance posture are delivered only through the AI Agent Assembly cloud.
+The enterprise-operations capabilities are intended to be delivered as a managed
+service rather than as self-managed software, because operating a multi-tenant
+platform takes infrastructure and on-call capability that a self-managed install
+does not get for free. That is a design intent, not a shipped service: the
+managed platform is not running, and this hub publishes no availability, support,
+or compliance commitment for it.
 
 ---
 
-## Feature matrix
+## What is in the Apache-2.0 core today
 
-> 🚧 **Coming soon.** The AAA-Commercial (Enterprise) tier described below — and the paid SaaS platform that delivers it — is planned and not yet generally available. The Apache-2.0 (OSS) column reflects what ships today; the commercial column reflects the intended design.
+These ship in the public `agent-assembly` monorepo and the three SDK repos, under
+Apache-2.0 (the `python-sdk` shim is MIT — see [crate licensing](#crate-licensing)).
+They run without any managed service.
 
-| Feature | Apache-2.0 (OSS) | AAA-Commercial (Enterprise) |
-|---|---|---|
-| **Core interception layers** | | |
-| Language SDK (Python, TypeScript, Go) | ✅ | ✅ |
-| Sidecar proxy (`aa-proxy`) | ✅ | ✅ |
-| eBPF sensor (`aa-ebpf`) | ✅ | ✅ |
-| **Gateway and policy** | | |
-| Agent registry | ✅ | ✅ |
-| Policy engine (allow/deny/audit) | ✅ | ✅ |
-| Per-team budget enforcement | ✅ | ✅ |
-| Policy-as-code (YAML/JSON) | ✅ | ✅ |
-| **Authentication and access** | | |
-| API key authentication | ✅ | ✅ |
-| SAML 2.0 / OIDC SSO | ❌ | ✅ |
-| SCIM user provisioning | ❌ | ✅ |
-| Role-based access control (RBAC) | Basic | Full (Owner/Admin/Developer/Viewer) |
-| **Audit and compliance** | | |
-| Basic audit log | ✅ | ✅ |
-| Tamper-evident signed audit log | ❌ | ✅ |
-| Audit log retention > 30 days | ❌ | ✅ (configurable, up to 1 year) |
-| SIEM export (JSON / CEF) | ❌ | ✅ |
-| **Deployment and SLA** | | |
-| Limited-function self-host (Docker Compose) | ✅ (local eval/dev) | — |
-| SaaS — shared region | ✅ (Free/Team tier) | ✅ |
-| SaaS — dedicated region | ❌ | ✅ (Enterprise tier) |
-| Multi-region data residency | ❌ | ✅ |
-| 99.9% uptime SLA | ❌ | ✅ (Enterprise tier) |
-| Dedicated SRE contact | ❌ | ✅ (Enterprise tier) |
-| **Support** | | |
-| Community forum | ✅ | ✅ |
-| Business-hours support | ❌ | ✅ (Team tier) |
-| 24/7 support | ❌ | ✅ (Enterprise tier) |
+| Area | In the Apache-2.0 core |
+|---|---|
+| **Interception** | Language SDKs (Python, TypeScript, Go); sidecar proxy (`aa-proxy`); eBPF sensor (`aa-ebpf`, Linux) |
+| **Gateway and policy** | Agent registry; policy engine (allow/deny/audit); policy-as-code (YAML/JSON); budget limits declared in policy and enforced by the gateway — see [Policy reference](policy-reference.md) |
+| **Authentication** | API key authentication |
+| **Audit** | Audit event emission and query — see [Security model](security-model.md) |
+| **Operations** | `aasm` operator CLI; limited-function local stack via the published [Docker Compose example](docker-containers.md#compose); health probes and Prometheus metrics — see [Self-host observability](self-host-observability.md) |
+
+The public issue trackers and pull-request queues on
+[github.com/ai-agent-assembly](https://github.com/orgs/ai-agent-assembly/repositories)
+are open to anyone. They are not a support channel with a response commitment.
+
+## What is intended for the commercial tier
+
+> 🗺️ **Planned — not available.** Everything in this section is design intent.
+> The commercial tier is not for sale, its licence terms are not published, and
+> the managed service that would deliver it is not running. This is not a
+> roadmap commitment, a delivery date, or an offer.
+
+Identity federation, directory-driven user provisioning, longer-lived and
+higher-assurance audit storage, audit export into external security tooling, and
+regional deployment control are the capability areas intended to sit on the
+commercial side of the boundary — because they are operator-management concerns
+rather than enforcement controls.
+
+This hub deliberately does not publish, for any of them: a plan or tier they
+belong to, a price, a quota, a retention period, a region list, a data-residency
+guarantee, an availability or support commitment, or a compliance certification.
+The [SaaS claim publication checklist](saas-claim-publication-checklist.md)
+records what has to be evidenced, and by whom, before any of that can be
+published.
 
 ---
 
@@ -88,7 +100,7 @@ All Cargo crates in the `agent-assembly` workspace are Apache-2.0:
 | `aa-core` | Apache-2.0 | Core domain types — always OSS |
 | `aa-proto` | Apache-2.0 | Protobuf definitions — always OSS |
 | `aa-runtime` | Apache-2.0 | Async runtime utilities — always OSS |
-| `aa-gateway` | Apache-2.0 | Gateway with policy engine — OSS core; enterprise features gated behind SaaS config |
+| `aa-gateway` | Apache-2.0 | Gateway with policy engine — always OSS |
 | `aa-api` | Apache-2.0 | REST API surface — OSS |
 | `aa-proxy` | Apache-2.0 | Sidecar proxy — always OSS |
 | `aa-ebpf` | Apache-2.0 | eBPF user-space loader — always OSS |
@@ -110,7 +122,7 @@ workspace — each lives in its own SDK repo and carries that repo's own license
 
 The Apache License 2.0 grants users the right to use, reproduce, prepare derivative works, distribute, and sublicense the software with or without modification. It does not grant trademark rights, and it requires preservation of copyright notices and attribution in distributed works. See the full license text at https://www.apache.org/licenses/LICENSE-2.0.
 
-Enterprise features (SSO, SCIM, tamper-evident audit, dedicated regions) are delivered via SaaS-side configuration — not via separate closed-source crates. The OSS codebase contains all interception and enforcement logic.
+The commercial capabilities described above are intended to be delivered by the managed control plane rather than by separate closed-source crates, so the boundary is a deployment boundary rather than a second licence over the enforcement path. The interception and enforcement logic listed in [What is in the Apache-2.0 core today](#what-is-in-the-apache-20-core-today) is Apache-2.0.
 
 ---
 
@@ -123,16 +135,23 @@ The Apache-2.0 crates welcome community contributions. See `CONTRIBUTING.md` in 
 - The CLA requirement for non-trivial contributions
 - How to file issues and feature requests
 
-Enterprise feature requests (SSO, SCIM, audit extensions) are tracked as AAASM JIRA tickets in the Enterprise component and delivered by the AI Agent Assembly team.
+Requests for the capabilities intended for the commercial tier are tracked internally by the AI Agent Assembly team. Filing one is not a delivery commitment.
 
 ---
 
 ## Related documentation
 
 - [Security model](security-model.md) — cryptographic primitives and audit log details
-- [Cloud deployment](cloud-deployment.md) — SSO, SCIM, SLA tier comparison
+- [Cloud deployment](cloud-deployment.md) — the managed control plane, which is planned and not available
+- [Source of truth & status](source-of-truth.md) — the canonical maturity label for every area of this hub
+- [SaaS claim publication checklist](saas-claim-publication-checklist.md) — what must be evidenced before commercial-tier claims are published
 - [Why AI Agent Assembly?](comparison.md) — open-source posture vs. competitors
 
 ---
 
-*Last reviewed: 2026-06-11 · Legal approver: @legal-team*
+*Last reviewed: 2026-08-06 · AI Agent Assembly Team*
+
+> This page describes a licensing and deployment boundary. It is not legal advice
+> and it is not a licence grant beyond the Apache-2.0 terms of the published
+> crates. Commercial-tier licence terms are not published; nothing here creates
+> one.

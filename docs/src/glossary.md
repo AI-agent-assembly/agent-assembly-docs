@@ -81,31 +81,60 @@ privilege. Used in the [Security model](security-model.md).
 **SCIM** (System for Cross-domain Identity Management)
 : A standard protocol for automatically provisioning and de-provisioning users
 and groups from your identity provider into an application.
+🗺️ **Planned — not implemented in AI Agent Assembly.** Listed here as a term you
+will meet in identity tooling, not as a capability that ships.
 
 **SSO / SAML 2.0 / OIDC**
 : Single sign-on and the two federation protocols (SAML 2.0 and OpenID
-Connect) used to let operators log in with an enterprise identity provider.
+Connect) that let operators log in with an enterprise identity provider.
+🗺️ **Planned — not implemented in AI Agent Assembly.** There is no SSO
+implementation in `aa-api`, `aa-gateway`, or `aa-auth`, and no console to sign
+in to; operators authenticate with an API key or a JWT. Do not plan an IdP
+integration against it — see
+[Authentication flow](security-model.md#authentication-flow).
 
 **Ed25519**
-: A modern public-key signature algorithm, used here to sign agent identity
-tokens.
+: A modern public-key signature algorithm. Used here for the **one-time
+possession proof** an agent presents at registration — a signature over a
+server-issued nonce. It is not a reusable bearer credential: subsequent calls
+carry a random credential token instead. See the
+[Security model](security-model.md#cryptographic-primitives).
 
 **AES-256-GCM**
-: A symmetric authenticated-encryption algorithm, used here to encrypt stored
-secrets at rest.
+: A symmetric authenticated-encryption algorithm.
+🗺️ **AI Agent Assembly does not use it.** This entry previously described it as encrypting stored secrets at
+rest; there is no AES-256-GCM implementation in the workspace crates, no HSM or
+KMS integration, and no managed secret vault. **Do not treat this stack as a
+secret store** — see [Secrets management](security-model.md#secrets-management).
+The term is retained here only so a reader who met the old claim can find its
+correction.
 
 **HMAC-SHA256**
-: A keyed hash used to sign audit-log entries and webhook payloads so
-tampering is detectable.
+: A keyed hash. Used here for the REST/admin session JWT, and to **verify
+inbound** audit webhooks received from SaaS coding-agent providers — there is no
+outbound webhook signing path. It is **not** used on audit-log entries: there is
+no log-signing key anywhere in the codebase; see **Audit log** below.
 
 **IronClaw five-layer defense**
 : The name for AI Agent Assembly's defense-in-depth model — five security
 *layers* (Boundary, Identity, Policy, Vault, Telemetry). These are distinct
 from the three *interception points* (SDK, proxy, eBPF), which all live inside
-the Boundary layer. See the [Security model](security-model.md).
+the Boundary layer. **The Vault layer is largely aspirational:** an in-memory
+secrets store is mounted but is empty in every shipped build with nothing able to
+populate it, there is no encryption at rest or key management, and where
+resolution does succeed the plaintext is returned to the caller. See
+[Secrets management](security-model.md#secrets-management).
 
 **Audit log**
-: The append-only record of every agent action (policy checks, events, budget
-debits). The open-source build ships a *basic* audit log; the *tamper-evident
-signed* audit log (HMAC-SHA256) is an Enterprise capability — see
-[Open Core Boundary](open-core-boundary.md).
+: The record of policy decisions and agent-reported events, written to
+JSON Lines files, with database tables holding a queryable mirror. A shipped
+gateway writes **one fixed `gateway-default.jsonl`**, not per-session files.
+Four bounds matter and are easy to assume away: the JSONL files are chained with
+an **unkeyed** SHA-256 digest (verify with `aasm audit verify-chain`), so the
+chain detects casual edits but not an actor who can rewrite the file and re-chain
+it; the database mirror carries **no** chain metadata and cannot be verified;
+the log is append-only **by convention**, not by an enforced constraint; and
+emission is **best-effort**, so an entry can be dropped under backpressure and
+budget debits produce none at all. Absence of an entry is not proof that an
+action did not occur. See [Audit log](security-model.md#audit-log) for the full
+statement.
