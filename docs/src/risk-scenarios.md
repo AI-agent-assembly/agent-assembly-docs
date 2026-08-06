@@ -541,10 +541,11 @@ today. None asserts an averted consequence.
 **Flagship, boundary clause — required on the same screen, above the fold:**
 
 > This applies to connections you route through Agent Assembly — today, via the
-> managed launch for Claude Code — on a Linux host where the proxy is installed,
-> against an approved-destination list you configure. An agent you did not route is
-> not inspected, and the record says so. A durable local record of the refusal exists
-> only where the proxy's audit path is configured.
+> managed launch for Claude Code — on a host where the proxy is installed: a released
+> artifact on Linux, and on macOS via `cargo install aa-proxy`. On Windows there is no
+> local mediation. It applies against an approved-destination list you configure. An
+> agent you did not route is not inspected, and the record says so. A durable local
+> record of the refusal exists only where the proxy's audit path is configured.
 
 **T1 — secret exfiltration:**
 
