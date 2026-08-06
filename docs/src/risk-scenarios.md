@@ -27,6 +27,13 @@ Ticket references are plain text, not links: the tracker is not publicly readabl
 a link would only reach a login wall — and a link checker scores that wall as
 reachable, which makes the reference look verified when it is not.
 
+> **Vocabulary precedence is not decided here.** These scenarios are written in ADR
+> 0033 §6's terms because the promise page already is. Where §6's vocabulary collides
+> with another controlled vocabulary on this hub, that conflict belongs to
+> **AAASM-5621**, which owns precedence across the hub's content layers — record it
+> there rather than resolving it on this page. This page follows the same deferral
+> `content-ownership.md` and AAASM-5595 make.
+
 > **The promise these scenarios render.** *Agent Assembly decides whether an AI
 > agent's action is allowed before that action runs — on the paths you route through
 > it — and records what was decided, so a risky call can be refused, or blocked
