@@ -51,42 +51,43 @@ or compliance commitment for it.
 
 ---
 
-## Feature matrix
+## What is in the Apache-2.0 core today
 
-> 🚧 **Coming soon.** The AAA-Commercial (Enterprise) tier described below — and the paid SaaS platform that delivers it — is planned and not yet generally available. The Apache-2.0 (OSS) column reflects what ships today; the commercial column reflects the intended design.
+These ship in the public `agent-assembly` monorepo and the three SDK repos, under
+Apache-2.0 (the `python-sdk` shim is MIT — see [crate licensing](#crate-licensing)).
+They run without any managed service.
 
-| Feature | Apache-2.0 (OSS) | AAA-Commercial (Enterprise) |
-|---|---|---|
-| **Core interception layers** | | |
-| Language SDK (Python, TypeScript, Go) | ✅ | ✅ |
-| Sidecar proxy (`aa-proxy`) | ✅ | ✅ |
-| eBPF sensor (`aa-ebpf`) | ✅ | ✅ |
-| **Gateway and policy** | | |
-| Agent registry | ✅ | ✅ |
-| Policy engine (allow/deny/audit) | ✅ | ✅ |
-| Per-team budget enforcement | ✅ | ✅ |
-| Policy-as-code (YAML/JSON) | ✅ | ✅ |
-| **Authentication and access** | | |
-| API key authentication | ✅ | ✅ |
-| SAML 2.0 / OIDC SSO | ❌ | ✅ |
-| SCIM user provisioning | ❌ | ✅ |
-| Role-based access control (RBAC) | Basic | Full (Owner/Admin/Developer/Viewer) |
-| **Audit and compliance** | | |
-| Basic audit log | ✅ | ✅ |
-| Tamper-evident signed audit log | ❌ | ✅ |
-| Audit log retention > 30 days | ❌ | ✅ (configurable, up to 1 year) |
-| SIEM export (JSON / CEF) | ❌ | ✅ |
-| **Deployment and SLA** | | |
-| Limited-function self-host (Docker Compose) | ✅ (local eval/dev) | — |
-| SaaS — shared region | ✅ (Free/Team tier) | ✅ |
-| SaaS — dedicated region | ❌ | ✅ (Enterprise tier) |
-| Multi-region data residency | ❌ | ✅ |
-| 99.9% uptime SLA | ❌ | ✅ (Enterprise tier) |
-| Dedicated SRE contact | ❌ | ✅ (Enterprise tier) |
-| **Support** | | |
-| Community forum | ✅ | ✅ |
-| Business-hours support | ❌ | ✅ (Team tier) |
-| 24/7 support | ❌ | ✅ (Enterprise tier) |
+| Area | In the Apache-2.0 core |
+|---|---|
+| **Interception** | Language SDKs (Python, TypeScript, Go); sidecar proxy (`aa-proxy`); eBPF sensor (`aa-ebpf`, Linux) |
+| **Gateway and policy** | Agent registry; policy engine (allow/deny/audit); policy-as-code (YAML/JSON); budget limits declared in policy and enforced by the gateway — see [Policy reference](policy-reference.md) |
+| **Authentication** | API key authentication |
+| **Audit** | Audit event emission and query — see [Security model](security-model.md) |
+| **Operations** | `aasm` operator CLI; limited-function local stack via the published [Docker Compose example](docker-containers.md#compose); health probes and Prometheus metrics — see [Self-host observability](self-host-observability.md) |
+
+The public issue trackers and pull-request queues on
+[github.com/ai-agent-assembly](https://github.com/orgs/ai-agent-assembly/repositories)
+are open to anyone. They are not a support channel with a response commitment.
+
+## What is intended for the commercial tier
+
+> 🗺️ **Planned — not available.** Everything in this section is design intent.
+> The commercial tier is not for sale, its licence terms are not published, and
+> the managed service that would deliver it is not running. This is not a
+> roadmap commitment, a delivery date, or an offer.
+
+Identity federation, directory-driven user provisioning, longer-lived and
+higher-assurance audit storage, audit export into external security tooling, and
+regional deployment control are the capability areas intended to sit on the
+commercial side of the boundary — because they are operator-management concerns
+rather than enforcement controls.
+
+This hub deliberately does not publish, for any of them: a plan or tier they
+belong to, a price, a quota, a retention period, a region list, a data-residency
+guarantee, an availability or support commitment, or a compliance certification.
+The [SaaS claim publication checklist](saas-claim-publication-checklist.md)
+records what has to be evidenced, and by whom, before any of that can be
+published.
 
 ---
 
