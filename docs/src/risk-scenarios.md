@@ -551,6 +551,26 @@ tiers**, and the split is not stylistic — it is a publication gate.
 >
 > Tier 1 is publishable today. Tier 2 becomes publishable when those two tickets
 > close and the harness has actually run — not before.
+>
+> **The gate binds the demo lane too.** AAASM-5589 embeds a denied-action proof into
+> the website, which is the prevented-outcome demonstration in its purest form — so it
+> is *more* exposed to this gate than the homepage is, not less. A demo that shows an
+> averted consequence is making the Tier 2 claim in the strongest available medium.
+
+**Three constraints on Tier 1, all inherited from `product-promise.md`:**
+
+1. **Tier 1 sentences are not severable from the flagship boundary clause.** The
+   clause appears on the **same screen, above the fold** — not a footnote, not a
+   tooltip, not a "learn more". A Tier 1 sentence published alone reads as a claim
+   over all agent behaviour, which is the single most common defect in this product's
+   published copy.
+2. **The short form must never appear on a metadata surface without the bounded
+   form.** A `<title>`, an `og:title`, a search snippet, a chat unfurl or a slide has
+   no room for a boundary clause beside it, so the bounded wording has to be the one
+   that ships there.
+3. **Quote, do not paraphrase.** A paraphrase is a new claim and carries its own
+   evidence burden. If a layout needs something shorter than what is here, that is a
+   layout problem, not a wording problem.
 
 ### Tier 1 — publishable now (decision-scoped)
 
