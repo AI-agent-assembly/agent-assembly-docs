@@ -37,12 +37,14 @@ that would need either of those to be verified are collected under
 > the superseded model's favour.
 >
 > The two are not equally owned. `security-model.md` is named in ADR 0033's migration
-> checklist and is covered by AAASM-5586 / AAASM-5609. **`glossary.md` is named by
+> checklist and is covered by AAASM-5586 / AAASM-5609. **`glossary.md` was named by
 > neither** — not by the checklist and not by the claim inventory, whose `docs` rows
-> reach only `README.md` and `comparison.md` — so its residuals are currently
-> unowned and need a ticket of their own. There are at least two: the eBPF entry
+> reach only `README.md` and `comparison.md` — so its residuals sat unowned while
+> looking tracked. Now **AAASM-5658**, which covers both defects: the eBPF entry
 > still says the sensor catches what the layers above miss, and the SDK entry still
 > says the SDK applies allow/deny decisions, which contradicts the advisory finding.
+> That ticket also adds the file to ADR 0033 §E, so the next sweep cannot miss it for
+> the same reason this one did.
 >
 > Note also that this rule is one-directional — a reader who arrives at those pages
 > first never sees it — so the migration tickets, not this note, are the fix.
@@ -106,7 +108,7 @@ and it needs its own evidence.
 | "on the paths you route through it" | **Unmeasured** (by contrast) | Names the boundary. Anything off the path is Unmeasured; the clause exists so the promise does not quantify over agent behaviour. |
 | "records what was decided" | **Observed** | An event attributed to the action. §6 requires this to be *durable*; emission is best-effort under backpressure, so the clause is bounded by the note at Level 2 step 3 and by its own Provisional row — do not publish it unqualified. |
 | "refused" | **Denied before execution** | As above. |
-| "blocked pending a decision" | **Approval required** | The action is held and a pending approval record exists. **§6's term does not assert that a person can act on it** — see the [Provisional](#provisional) row. An earlier draft rendered this clause with a human in it; §6 mapped cleanly, and the plain-language wording still added an actor with no shipped surface to act through. A correct §6 mapping is necessary, not sufficient. |
+| "blocked pending a decision" | **Approval required** | The action is held and a pending approval record exists. **§6's term does not assert that a person can act on it** — see the [Provisional](#provisional) row. An earlier draft rendered this clause with a human in it; §6 mapped cleanly, and the plain-language wording still added an actor with no shipped surface to act through. A correct §6 mapping is necessary, not sufficient. Tracked as AAASM-5657. |
 | "instead of discovered afterwards" | — | A contrast with after-the-fact observability, not a capability claim. Carries no evidence burden. |
 
 ## Progressive disclosure — four levels
@@ -403,7 +405,7 @@ overstatement.
 
 | Statement | Why it is provisional | Owner |
 |---|---|---|
-| **"A person can review and release a held action."** Do not write "held for human review", "approval workflow", "a reviewer approves it", or any hero copy implying a human is in the loop | The hold itself is real and fail-closed, but the gateway's approval queue and the queue the CLI/dashboard resolve against live in **different processes with nothing joining them**. Until a bridge ships, the truthful account is "blocked pending a decision, which today no operator surface can supply, so it refuses at timeout." | Product ticket being filed — reference it here once the key is issued |
+| **"A person can review and release a held action."** Do not write "held for human review", "approval workflow", "a reviewer approves it", or any hero copy implying a human is in the loop | The hold itself is real and fail-closed, but the gateway's approval queue and the queue the CLI/dashboard resolve against live in **different processes with nothing joining them**. Until a bridge ships, the truthful account is "blocked pending a decision, which today no operator surface can supply, so it refuses at timeout." | AAASM-5657 — and it **blocks this page**, so revisit the promise's final clause when it closes rather than leaving the narrower wording in place by default |
 | Any coverage figure — a percentage, a count of governed actions, a fleet-level number | There is no machine-readable manifest to compute it from, and self-reported layer availability is not evidence of coverage (§7) | AAASM-5531 |
 | "Host enforcement on macOS" | ADR 0030's `HostEnforced` rung *is* reachable there — it is the only platform where it is — but it rests on reading back a managed-settings file, and whether the tool honours those keys at runtime is unmeasured. State the route, not the outcome. | AAASM-5526 |
 | "eBPF is available to you" as a property of an installed release | The privileged loader daemon that owns every kernel operation is not part of the published release artifacts, and the probe crates build only on a nightly toolchain. Describe eBPF as a Linux mechanism the architecture supports, not as something a reader can switch on today. | AAASM-5526 |
