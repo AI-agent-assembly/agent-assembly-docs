@@ -207,8 +207,10 @@ here, and who must approve it.
 ## Related documentation
 
 - [Why AI Agent Assembly?](comparison.md) — competitive positioning and governance differentiation
-- [Cloud deployment](cloud-deployment.md) — SSO configuration, SCIM provisioning
-- [Open core boundary](open-core-boundary.md) — which security features are OSS vs. enterprise
+- [Cloud deployment](cloud-deployment.md) — the managed control plane, which is planned and not available
+- [Open core boundary](open-core-boundary.md) — what is in the Apache-2.0 core today vs. intended for the commercial tier
+- [Source of truth & status](source-of-truth.md) — the canonical maturity label for every area of this hub
+- [SaaS claim publication checklist](saas-claim-publication-checklist.md) — what must be evidenced before managed-service or compliance claims are published
 
 <div class="aa-cta-next">
   <span class="aa-cta-next__label">Evaluating for production?</span>
