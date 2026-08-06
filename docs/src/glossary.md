@@ -110,9 +110,10 @@ The term is retained here only so a reader who met the old claim can find its
 correction.
 
 **HMAC-SHA256**
-: A keyed hash. Used here for the REST/admin session JWT and for outbound
-webhook signatures. It is **not** used on audit-log entries — there is no
-log-signing key anywhere in the codebase; see **Audit log** below.
+: A keyed hash. Used here for the REST/admin session JWT, and to **verify
+inbound** audit webhooks received from SaaS coding-agent providers — there is no
+outbound webhook signing path. It is **not** used on audit-log entries: there is
+no log-signing key anywhere in the codebase; see **Audit log** below.
 
 **IronClaw five-layer defense**
 : The name for AI Agent Assembly's defense-in-depth model — five security

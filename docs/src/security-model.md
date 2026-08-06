@@ -44,7 +44,7 @@ The table below maps each STRIDE category to the five primary components of AI A
 | Agent credential token | UUID v4 (CSPRNG) | 122-bit random | Bearer credential presented on every agent-plane gRPC call after registration; validated with a constant-time compare | No expiry — replaced only on re-registration |
 | REST/admin session token | JWT (HMAC-SHA256) | 256-bit | Authenticates REST/admin API callers; only issued when gateway auth is explicitly enabled (off by default) | 24h token TTL |
 | ~~Vault encryption~~ | — | — | **Removed.** No AES-256-GCM implementation exists in the workspace crates — see [Secrets management](#secrets-management) | — |
-| Callback / webhook signature | HMAC-SHA256 | 256-bit | Signs outbound webhook payloads so receivers can verify authenticity | Every 90 days or on rotation of webhook secret |
+| Webhook signature verification (**inbound**) | HMAC-SHA256 | 256-bit | Verifies the signature on audit webhooks **received from** SaaS coding-agent providers (Claude.ai, ChatGPT, Cursor), checked before the body is parsed. There is no outbound webhook signing path — this direction is verification only | Shared secret is issued and rotated by the sending provider, not by this software |
 | TLS (transport) | TLS 1.3 | ECDHE-256 | Operator/external HTTPS traffic; the gRPC agent-plane transport is plaintext by default (see the callout below) | Certificate: every 90 days (auto-renewed) |
 
 Keys listed above are generated using a CSPRNG. MD5, SHA-1 and DES are not used by any primitive in this table — a statement about first-party code in the `agent-assembly` workspace, not about the full transitive dependency tree, which this hub does not audit.
