@@ -729,10 +729,12 @@ and which decide whether two conforming validators agree:
   Typographic quotes pair by direction and are exempt from the count.
 
 **Prefer inline code over quotation when naming a banned verb.** This page names all
-five in backticks, so exemption 3 is not load-bearing on it under any implementation —
-the earlier draft quoted three of them in prose and was, correctly, the first page to
-expose the ambiguity above. Exemption 3 remains for pages that genuinely quote a
-source; it should not be the mechanism a page relies on to discuss the rule.
+five in backticks where it lists them; one further occurrence sits inside a quoted ADR
+citation and does rely on exemption 3, which is the legitimate use — a page genuinely
+quoting a source. Measured: deleting exemption 3 leaves exactly **one** hit on this
+page, that citation. The earlier draft quoted three of the verbs in bare prose and was,
+correctly, the first page to expose the ambiguity above; exemption 3 should not be the
+mechanism a page relies on to *discuss* the rule, only to quote a source.
 
 > **The list is deliberately high-precision, and it is a floor rather than a ceiling.**
 > The obvious longer list — adding `blocks`, `stops`, `secures`, `ensures` and the bare
