@@ -167,10 +167,16 @@ drivers apply a retention policy that prunes rows past a configured age. This hu
 does not publish a default retention period or a per-plan retention figure — there
 is no managed service to enforce one.
 
-**Export is JSON Lines, via the CLI.** `aasm audit export` writes JSONL. There is
-no CEF output and no direct SIEM integration; feeding a SIEM means ingesting the
-exported JSONL. See the [core CLI docs](https://docs.agent-assembly.com/core/) for
-the command surface.
+**Export is via the CLI, in three formats.** `aasm audit export --format
+<csv|json|jsonl>` writes CSV, a JSON array, or JSON Lines; `--format` is required
+and has no default. A second command, `aasm audit compliance-export`, emits
+compliance-shaped records and can prepend a framework metadata header. JSONL is the
+format to prefer for a SIEM or a cold-storage archive, because each line parses
+independently and the stream appends without re-rendering.
+
+There is **no CEF output** and no direct SIEM integration — feeding a SIEM means
+ingesting an exported file. See the
+[core CLI docs](https://docs.agent-assembly.com/core/) for the full command surface.
 
 ---
 
