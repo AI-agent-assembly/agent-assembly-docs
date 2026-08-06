@@ -18,23 +18,26 @@ them:
 | Source | What it supplies | Where |
 |---|---|---|
 | **ADR 0033 — Canonical Governance & Enforcement Architecture** | The architecture, the platform matrix, and §6's **claim vocabulary**. Every clause of the promise below is expressed in one of §6's terms. | [ADR 0033](https://docs.agent-assembly.com/core/latest/adr/0033-canonical-governance-and-enforcement-architecture.html) in the core docs |
-| **AAASM-5528 — public claim inventory** | 69 audited rows of what may and may not be said, each tied to a re-verified evidence block (`E1`–`E7`). | `verification-reports/AAASM-5528-public-claim-inventory.md` in the `agent-assembly` repository |
+| **AAASM-5528 — public claim inventory** | 69 audited rows of what may and may not be said, each tied to a re-verified evidence block (`E1`–`E7`). | [`verification-reports/AAASM-5528-public-claim-inventory.md`](https://github.com/ai-agent-assembly/agent-assembly/blob/main/verification-reports/AAASM-5528-public-claim-inventory.md) |
+
+Ticket references on this page are plain text, not links: the tracker is not publicly
+readable, so a link would only take a reader to a login wall — and a link checker
+scores that wall as reachable, which makes the reference look verified when it is not.
 
 Two further sources are chartered but not yet available, so nothing here depends on
-them: the current-state capability matrix ([AAASM-5527](https://lightning-dust-mite.atlassian.net/browse/AAASM-5527),
-in progress) and the machine-readable capability/evidence manifest
-([AAASM-5531](https://lightning-dust-mite.atlassian.net/browse/AAASM-5531), not
-started). Statements that would need either of those to be verified are collected
-under [Provisional](#provisional) rather than asserted.
+them: the current-state capability matrix (AAASM-5527, in progress) and the
+machine-readable capability/evidence manifest (AAASM-5531, not started). Statements
+that would need either of those to be verified are collected under
+[Provisional](#provisional) rather than asserted.
 
 > **Precedence.** Where this hub still carries the superseded three-layer or
 > "IronClaw five-layer" framing — [Security model](security-model.md) and
 > [Glossary](glossary.md) both do, at the time of writing — **ADR 0033 wins**. Those
-> pages are being migrated under
-> [AAASM-5586](https://lightning-dust-mite.atlassian.net/browse/AAASM-5586) and
-> [AAASM-5609](https://lightning-dust-mite.atlassian.net/browse/AAASM-5609); ADR 0033
-> records the gap as a tracked, accepted window. Do not resolve a conflict in the
-> superseded model's favour.
+> pages are being migrated under AAASM-5586 and AAASM-5609, and ADR 0033 records the
+> gap as a tracked, accepted window. Do not resolve a conflict in the superseded
+> model's favour. Note the rule is one-directional as written — a reader who arrives
+> at those pages first never sees it — so the migration tickets, not this note, are
+> the actual fix.
 
 Maturity labels (🧪 Release candidate, 🗺️ Planned) belong to
 [Source of truth & status](source-of-truth.md) and answer a *different* question —
@@ -330,7 +333,7 @@ inventory.
 
 ### On the constellation identity
 
-[AAASM-4084](https://lightning-dust-mite.atlassian.net/browse/AAASM-4084) introduces
+AAASM-4084 introduces
 Argo Navis as a product alias and visual identity. It is a naming and design layer,
 and it composes with this brief in one direction only: **the metaphor may decorate
 the promise, it may not stand in for it.** A page whose first screen explains a
@@ -364,7 +367,7 @@ the evidence blocks in the AAASM-5528 inventory; `§n` refers to ADR 0033.
 | The control plane decides but holds no traffic | Evaluated | §2 |
 | The proxy refuses before dialling upstream | Denied before execution | `E2` (CONNECT 403, in-tunnel host re-check, credential block, MCP adjudication) |
 | The SDK is advisory | Evaluated | `E3`, `E7`; ADR 0002 |
-| A policy refusal blocks a wrapped tool only in the check-capable SDK mode, and asking for enforcement without it is refused at init | Evaluated | Verified directly in the Node SDK's client construction and init guards, not from `E3`/`E7` — those establish that the wrapper raises before the tool body, which is a different question from whether the default transport can produce a refusal at all. Tracked as [AAASM-4991](https://lightning-dust-mite.atlassian.net/browse/AAASM-4991) |
+| A policy refusal blocks a wrapped tool only in the check-capable SDK mode, and asking for enforcement without it is refused at init | Evaluated | Verified directly in the Node SDK's client construction and init guards, not from `E3`/`E7` — those establish that the wrapper raises before the tool body, which is a different question from whether the default transport can produce a refusal at all. Tracked as AAASM-4991 |
 | A hold blocks the check and fails closed on timeout | Approval required | Gateway approval path: the check awaits a decision, and an elapsed timeout yields a `Deny` fallback. Both OSS gateway bootstraps wire the queue, so this is not a degraded-mode artefact |
 | …but the hold has **no shipped operator-facing sender** | — (a gap, not a claim) | The gateway's queue is answerable only over the gRPC `ApprovalService`, and the only clients of it in the tree are two gateway test files. The CLI and dashboard POST to the HTTP API, whose process constructs its **own** in-memory queue and resolves against that one; there is no gRPC channel and no shared store between the two processes. Verified with a positive control — the equivalent `PolicyService` client appears in 20+ files including shipped runtime source and a bench |
 | Budget exhaustion resolves to a refusal | Evaluated → Denied before execution | Atomic spend reservation inside the same decision path |
@@ -387,18 +390,18 @@ overstatement.
 | Statement | Why it is provisional | Owner |
 |---|---|---|
 | **"A person can review and release a held action."** Do not write "held for human review", "approval workflow", "a reviewer approves it", or any hero copy implying a human is in the loop | The hold itself is real and fail-closed, but the gateway's approval queue and the queue the CLI/dashboard resolve against live in **different processes with nothing joining them**. Until a bridge ships, the truthful account is "blocked pending a decision, which today no operator surface can supply, so it refuses at timeout." | Product ticket being filed — reference it here once the key is issued |
-| Any coverage figure — a percentage, a count of governed actions, a fleet-level number | There is no machine-readable manifest to compute it from, and self-reported layer availability is not evidence of coverage (§7) | [AAASM-5531](https://lightning-dust-mite.atlassian.net/browse/AAASM-5531) |
-| "Host enforcement on macOS" | ADR 0030's `HostEnforced` rung *is* reachable there — it is the only platform where it is — but it rests on reading back a managed-settings file, and whether the tool honours those keys at runtime is unmeasured. State the route, not the outcome. | [AAASM-5526](https://lightning-dust-mite.atlassian.net/browse/AAASM-5526) |
-| "eBPF is available to you" as a property of an installed release | The privileged loader daemon that owns every kernel operation is not part of the published release artifacts, and the probe crates build only on a nightly toolchain. Describe eBPF as a Linux mechanism the architecture supports, not as something a reader can switch on today. | [AAASM-5526](https://lightning-dust-mite.atlassian.net/browse/AAASM-5526) |
-| A named prevented-outcome demonstration ("we stopped X") | The parent Epic requires a proof that a denied side effect did not execute. Until that harness exists, describe the decision, not the averted consequence. | [AAASM-5532](https://lightning-dust-mite.atlassian.net/browse/AAASM-5532), [AAASM-5529](https://lightning-dust-mite.atlassian.net/browse/AAASM-5529) |
-| Any SaaS availability, region, SLA or compliance commitment | Planned, not available. See [Source of truth & status](source-of-truth.md). | [AAASM-5579](https://lightning-dust-mite.atlassian.net/browse/AAASM-5579) |
+| Any coverage figure — a percentage, a count of governed actions, a fleet-level number | There is no machine-readable manifest to compute it from, and self-reported layer availability is not evidence of coverage (§7) | AAASM-5531 |
+| "Host enforcement on macOS" | ADR 0030's `HostEnforced` rung *is* reachable there — it is the only platform where it is — but it rests on reading back a managed-settings file, and whether the tool honours those keys at runtime is unmeasured. State the route, not the outcome. | AAASM-5526 |
+| "eBPF is available to you" as a property of an installed release | The privileged loader daemon that owns every kernel operation is not part of the published release artifacts, and the probe crates build only on a nightly toolchain. Describe eBPF as a Linux mechanism the architecture supports, not as something a reader can switch on today. | AAASM-5526 |
+| A named prevented-outcome demonstration ("we stopped X") | The parent Epic requires a proof that a denied side effect did not execute. Until that harness exists, describe the decision, not the averted consequence. | AAASM-5532, AAASM-5529 |
+| Any SaaS availability, region, SLA or compliance commitment | Planned, not available. See [Source of truth & status](source-of-truth.md). | The Cloud programme — **not** AAASM-5579, which is this page's narrative Epic and owns no SaaS delivery. Route a question here to the maturity map, not to the website backlog |
 
 ## Using this on a page
 
 For the homepage rewrite
-([AAASM-5585](https://lightning-dust-mite.atlassian.net/browse/AAASM-5585)) and the
+(AAASM-5585) and the
 Product / How It Works rewrite
-([AAASM-5586](https://lightning-dust-mite.atlassian.net/browse/AAASM-5586)), and for
+(AAASM-5586), and for
 any page that makes a product claim:
 
 1. **Quote the promise, do not paraphrase it.** A paraphrase is a new claim. If the
