@@ -13,7 +13,7 @@ AI Agent Assembly groups its security controls into five named layers. Each laye
 | 1 | **Boundary** | Network perimeter: sidecar proxy (`aa-proxy`) enforces egress policy; eBPF sensor (`aa-ebpf`) catches kernel-level bypass attempts |
 | 2 | **Identity** | Agent and user authentication: the gRPC agent plane is authenticated by a random per-agent credential token (UUID, constant-time compare, no expiry) minted after a one-time Ed25519 possession-proof at registration. Operator SSO (SAML 2.0 / OIDC) is **not implemented** — see [Authentication flow](#authentication-flow). A separate HMAC-SHA256 JWT (24h TTL) protects the REST/admin surface only, and that surface's auth is **off by default** — see the callout in [Authentication flow](#authentication-flow) below |
 | 3 | **Policy** | Runtime governance: YAML/JSON policy rules evaluated by the gateway policy engine before every agent action |
-| 4 | **Vault** | Secret and credential management: AES-256-GCM encryption at rest for stored secrets; Ed25519-signed tokens for inter-component trust |
+| 4 | **Vault** | 🗺️ **Aspirational — not implemented.** No secret store, encryption-at-rest, or key-management component ships today; see [Secrets management](#secrets-management). Ed25519 is used for the one-time agent registration proof, not for a vault |
 | 5 | **Telemetry** | Audit and observability: per-session JSONL event log with an unkeyed SHA-256 hash chain (verify with `aasm audit verify-chain`), append-only by convention and best-effort on emission — see [Audit log](#audit-log) for the exact bounds; Slack/webhook connectors for alerting on policy violations |
 
 > **How the five layers relate to the three interception points.** The five *defense-in-depth layers* above (Boundary, Identity, Policy, Vault, Telemetry) describe *what* is protected. The three *interception points* named on the landing page and marketing site — the SDK layer, the sidecar proxy (`aa-proxy`), and the eBPF sensor (`aa-ebpf`) — describe *where* enforcement is applied, and all three sit inside the **Boundary** layer. They are two views of one system, not two competing models.
@@ -43,7 +43,7 @@ The table below maps each STRIDE category to the five primary components of AI A
 | Agent registration proof | Ed25519 | 256-bit | One-time possession-proof signature over a server-issued nonce, verified at `RegisterAgent`; not a reusable bearer credential | Agent-supplied keypair; not gateway-managed |
 | Agent credential token | UUID v4 (CSPRNG) | 122-bit random | Bearer credential presented on every agent-plane gRPC call after registration; validated with a constant-time compare | No expiry — replaced only on re-registration |
 | REST/admin session token | JWT (HMAC-SHA256) | 256-bit | Authenticates REST/admin API callers; only issued when gateway auth is explicitly enabled (off by default) | 24h token TTL |
-| Vault encryption | AES-256-GCM | 256-bit | Encrypts secrets and credentials at rest | Every 1 year or on compromise |
+| ~~Vault encryption~~ | — | — | **Removed.** No AES-256-GCM implementation exists in the workspace crates — see [Secrets management](#secrets-management) | — |
 | Callback / webhook signature | HMAC-SHA256 | 256-bit | Signs outbound webhook payloads so receivers can verify authenticity | Every 90 days or on rotation of webhook secret |
 | TLS (transport) | TLS 1.3 | ECDHE-256 | Operator/external HTTPS traffic; the gRPC agent-plane transport is plaintext by default (see the callout below) | Certificate: every 90 days (auto-renewed) |
 
@@ -100,11 +100,22 @@ above. There is no third path.
 
 ## Secrets management
 
-- Secrets (LLM API keys, webhook tokens) are stored encrypted with AES-256-GCM.
-- The encryption key is derived from a master secret held in the SaaS control plane's hardware security module (HSM).
-- Secrets are never written to disk in plaintext.
-- Secrets are never logged, even at `DEBUG` level.
-- Secret rotation is performed from the SaaS console (control plane), which re-encrypts in place without a service restart.
+> 🗺️ **The managed secret vault described here previously does not exist.** This
+> section claimed AES-256-GCM encryption at rest under a master key held in a SaaS
+> control-plane HSM, with rotation driven from a console. There is no AES-256-GCM
+> implementation in the workspace crates, no HSM or KMS integration, and no console
+> — so the whole block was removed rather than softened.
+
+**Do not treat this stack as a secret store.** Nothing here is a managed vault. If
+you self-host, secrets reaching the gateway, proxy, or SDK are handled by whatever
+you supply them through — environment, file, or your own secret manager — and their
+protection at rest is your deployment's responsibility, not this software's.
+
+Two related properties *are* documented elsewhere on this page and do hold:
+credential material is not written to the audit stream (see
+[Audit log](#audit-log)), and the primitives that are actually in use are listed in
+[Cryptographic primitives](#cryptographic-primitives) above. Neither amounts to a
+vault.
 
 ---
 
