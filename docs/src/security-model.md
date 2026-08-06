@@ -130,12 +130,25 @@ sequenceDiagram
 
 ## Compliance posture
 
-| Standard | Status |
-|---|---|
-| SOC 2 Type II | In preparation (target: Q3 2026) |
-| ISO 27001 | Roadmap (post-SOC 2) |
-| GDPR | Architecture is GDPR-compatible; DPA available on request |
-| CCPA | Covered under SaaS Data Processing Agreement |
+**AI Agent Assembly holds no compliance certification, and no compliance
+assessment has been completed.** No SOC 2, ISO 27001, or equivalent audit has been
+performed against the product or against a managed service. No Data Processing
+Agreement or Business Associate Agreement is available.
+
+This section previously published a certification status table with a target date.
+There was no audit report, assessment scope, or executed legal template behind any
+row of it, so the table was removed rather than relabelled — a status table in a
+compliance section reads to a procurement reviewer as a programme with a
+trajectory, which is itself the claim.
+
+What this page *can* tell a security reviewer is what the system does: the layered
+defense model, the STRIDE analysis, the cryptographic primitives actually in use,
+and the audit log's real integrity properties — all documented above, and all
+verifiable against the Apache-2.0 source.
+
+The [SaaS claim publication checklist](saas-claim-publication-checklist.md) records
+what has to exist before any certification or legal-instrument claim is published
+here, and who must approve it.
 
 ---
 
