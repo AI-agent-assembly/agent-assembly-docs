@@ -81,10 +81,17 @@ privilege. Used in the [Security model](security-model.md).
 **SCIM** (System for Cross-domain Identity Management)
 : A standard protocol for automatically provisioning and de-provisioning users
 and groups from your identity provider into an application.
+🗺️ **Planned — not implemented in AI Agent Assembly.** Listed here as a term you
+will meet in identity tooling, not as a capability that ships.
 
 **SSO / SAML 2.0 / OIDC**
 : Single sign-on and the two federation protocols (SAML 2.0 and OpenID
-Connect) used to let operators log in with an enterprise identity provider.
+Connect) that let operators log in with an enterprise identity provider.
+🗺️ **Planned — not implemented in AI Agent Assembly.** There is no SSO
+implementation in `aa-api`, `aa-gateway`, or `aa-auth`, and no console to sign
+in to; operators authenticate with an API key or a JWT. Do not plan an IdP
+integration against it — see
+[Authentication flow](security-model.md#authentication-flow).
 
 **Ed25519**
 : A modern public-key signature algorithm. Used here for the **one-time
