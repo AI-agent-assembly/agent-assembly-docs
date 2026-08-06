@@ -330,8 +330,11 @@ code** and must not be told at all.
 ## T2 — Destructive production action
 
 An agent calls a tool that would drop or rewrite production data. The call is
-evaluated against policy and refused before it is forwarded, so the tool server never
-receives it.
+evaluated against policy and refused before the proxy forwards it.
+
+As with the flagship, this section describes a **decision**. *"The tool server never
+received the call"* is the prevented-outcome form, and it is Tier 2 — held until the
+harness has run.
 
 This is the one scenario in the set where the **control plane** makes the decision
 that stops the bytes. Everywhere else in this page, the refusal is the proxy's own
@@ -417,7 +420,13 @@ governed this way would be showing something that does not happen.
 ## T3 — Runaway cost
 
 An agent enters a retry loop, or fans out across a large repository, and keeps
-spending. The call that would cross the declared cap is refused rather than billed.
+spending. The call that would cross the declared cap is refused by the policy
+decision.
+
+Two disciplines apply here at once. *"Refused rather than billed"* is the
+prevented-outcome form and is Tier 2. And even the decision only *stops* the call
+where something in front of it blocks on the answer — which, for a model call, is not
+the default. See the boundary.
 
 | Field | |
 |---|---|
