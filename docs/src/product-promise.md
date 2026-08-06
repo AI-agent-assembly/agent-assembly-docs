@@ -311,23 +311,23 @@ inventory.
      rejections otherwise. Skip this region rather than adding per-phrase
      exceptions, which would also silence the phrases in ordinary prose. -->
 
-| Rejected | Why |
-|---|---|
-| "catches everything, including bypass attempts" | The mechanism it described (eBPF) observes. It participates in no allow/deny decision, covers only OpenSSL-linked processes, and its file-I/O probes are x86_64-only. |
-| "an action has nowhere to hide" | Asserts the union of the mechanisms is closed. It is not: an unmanaged launch, unrouted traffic, an unhooked TLS stack and an unsupported platform each leave an action outside the boundary. |
-| "a security checkpoint an AI agent cannot walk around" | Walking around it is a *measured* bypass — start the agent outside `aasm run` and no proxy environment is injected. |
-| "no code changes" | True of the agent's source, false as a prerequisite statement: the tool must be launched so its traffic reaches the proxy and the CA is trusted. Say what is required, not what is not. |
-| "immutable audit log" / "signed with HMAC" | The chain is an unkeyed digest over the JSONL sink; retention pruning deletes rows; the database mirror carries no chain. It is verifiable and that is worth saying — but it is tamper-evident, not immutable and not signed. |
-| "every action" / "every tool call" / "before every agent action" | Quantifies over agent behaviour rather than over what reached a checkpoint. The correct scope is the governed path. |
-| "your whole fleet" / "full fleet" | Coverage is a per-agent, per-launch, per-platform fact. There is no fleet-wide switch. |
-| "universal" / "comprehensive" / "complete" coverage | Each asserts a property no component here provides, and each is unfalsifiable in copy. |
-| "cannot be bypassed" / "unbypassable" | Bypass paths are enumerated and published. Claiming otherwise contradicts our own documentation. |
-| "secrets are injected at runtime and never enter the model context" | Advertises a capability a released build cannot reach. What ships is outbound scanning with redaction before forwarding. |
-| "kernel-level enforcement" | Attributes the guarantee to the wrong component. The kernel mechanism reports; the proxy refuses. |
-| "the SDK denies the action before it runs" | The SDK evaluates and is advisory. Refusal that holds is the proxy's, out of process. |
-| "protects" / "enforces" / "catches", used without a timing and a posture | ADR 0033 §6 forbids the undifferentiated verb. Each of these can mean observed, detected, evaluated or refused, and the reader cannot tell which. |
-| "three layers: SDK, proxy, eBPF" as *the* architecture | A superseded model. An ordered pipeline whose members cover for each other has no way to express an absent member, which is the inference this whole programme exists to stop. |
-| A hero that leads with "a governance layer for AI agents" | Accurate but not a user outcome — it names the category, not what changes for the reader. Correct at company altitude; too abstract for the product's own first screen. |
+| Rejected | Why | Inventory rows |
+|---|---|---|
+| "catches everything, including bypass attempts" | The mechanism it described (eBPF) observes. It participates in no allow/deny decision, covers only OpenSSL-linked processes, and its file-I/O probes are x86_64-only. | W1 · W11 · A7 · A17 · A24 · A27 |
+| "an action has nowhere to hide" | Asserts the union of the mechanisms is closed. It is not: an unmanaged launch, unrouted traffic, an unhooked TLS stack and an unsupported platform each leave an action outside the boundary. | A8 · A13 |
+| "a security checkpoint an AI agent cannot walk around" | Walking around it is a *measured* bypass — start the agent outside `aasm run` and no proxy environment is injected. | A2 |
+| "no code changes" | True of the agent's source, false as a prerequisite statement: the tool must be launched so its traffic reaches the proxy and the CA is trusted. Say what is required, not what is not. | D1 · D5 · D8 · A6 · A23 · A26 |
+| "immutable audit log" / "signed with HMAC" | The chain is an unkeyed digest over the JSONL sink; retention pruning deletes rows; the database mirror carries no chain. It is verifiable and that is worth saying — but it is tamper-evident, not immutable and not signed. | D9 · D10 |
+| "every action" / "every tool call" / "before every agent action" | Quantifies over agent behaviour rather than over what reached a checkpoint. The correct scope is the governed path. | A1 · A3 · A4 · A21 · A37 · D2 · D7 |
+| "your whole fleet" / "full fleet" | Coverage is a per-agent, per-launch, per-platform fact. There is no fleet-wide switch. | D1 |
+| "universal" / "comprehensive" / "complete" coverage | Each asserts a property no component here provides, and each is unfalsifiable in copy. | forbidden design 7 |
+| "cannot be bypassed" / "unbypassable" | Bypass paths are enumerated and published. Claiming otherwise contradicts our own documentation. | A20 · forbidden design 7 |
+| "secrets are injected at runtime and never enter the model context" | Advertises a capability a released build cannot reach. What ships is outbound scanning with redaction before forwarding. | W15 · W16 · W17 |
+| "kernel-level enforcement" | Attributes the guarantee to the wrong component. The kernel mechanism reports; the proxy refuses. | D11 · W7 · A12 |
+| "the SDK denies the action before it runs" | The SDK evaluates and is advisory. Refusal that holds is the proxy's, out of process. | W18 · A35 · D13 |
+| "protects" / "enforces" / "catches", used without a timing and a posture | ADR 0033 §6 forbids the undifferentiated verb. Each of these can mean observed, detected, evaluated or refused, and the reader cannot tell which. | A36 · §6 |
+| "three layers: SDK, proxy, eBPF" as *the* architecture | A superseded model. An ordered pipeline whose members cover for each other has no way to express an absent member, which is the inference this whole programme exists to stop. | forbidden design 1 |
+| A hero that leads with "a governance layer for AI agents" | Accurate but not a user outcome — it names the category, not what changes for the reader. Correct at company altitude; too abstract for the product's own first screen. | — (new here) |
 
 <!-- claim-gate:ignore-end -->
 
