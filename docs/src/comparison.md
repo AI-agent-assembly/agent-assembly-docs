@@ -104,8 +104,10 @@ Last validated 2026-05-05 against each vendor's documentation as of that date.
 
 [^proxy]: No change to your *agent's* code, but the agent process must be
     launched so that it honours `HTTP_PROXY`/`HTTPS_PROXY` and trusts the
-    proxy's local root CA (installed automatically at proxy start on macOS, or
-    via `sudo aasm proxy install-ca` on Linux; Windows is unsupported).
+    proxy's local root CA. On macOS the install is *attempted* at proxy start
+    and shells out to `security add-trusted-cert`, which requires admin
+    authorization — macOS prompts, and a refusal fails proxy startup. On Linux
+    run `sudo aasm proxy install-ca`. Windows is unsupported.
     Interception is HTTP/1.1 only — HTTP/2, gRPC, and WebSocket are out of
     scope — and by default only the built-in LLM provider hosts are decrypted;
     other hosts are tunnelled uninspected unless you list them.
