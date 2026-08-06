@@ -11,6 +11,9 @@ It is narrative source material, not a product page. Downstream surfaces
 (AAASM-5585, AAASM-5589) copy the wording in
 [Approved wording for reuse](#approved-wording-for-reuse) verbatim rather than
 paraphrasing it — a paraphrase is a new claim and carries its own evidence burden.
+That section is split into two tiers: **Tier 1 is publishable today; Tier 2 is held
+until the prevented-outcome harness lands** (AAASM-5532, AAASM-5529). Check the tier
+before shipping a sentence.
 
 ## What governs this page
 
@@ -32,7 +35,7 @@ reachable, which makes the reference look verified when it is not.
 > with another controlled vocabulary on this hub, that conflict belongs to
 > **AAASM-5621**, which owns precedence across the hub's content layers — record it
 > there rather than resolving it on this page. This page follows the same deferral
-> `content-ownership.md` and AAASM-5595 make.
+> AAASM-5595 makes.
 
 > **The promise these scenarios render.** *Agent Assembly decides whether an AI
 > agent's action is allowed before that action runs — on the paths you route through
@@ -81,35 +84,43 @@ proves nothing about crates.io.
 | # | Scenario | Mechanism | §6 term reached | Determination | 5527 rows |
 |---|---|---|---|---|---|
 | **F** | **Flagship** — the upload that never happened | `aa-proxy` CONNECT-time egress refusal | **Denied before execution** | Executable, default-off (Linux; macOS crates.io only) | N1, N2, L1 |
-| **S1** | Secret exfiltration | `aa-proxy` outbound credential scan on inspected LLM hosts | **Redacted** | Executable today (redact-and-forward is the default, not block) | C1, C6, N3 · C2 default-off · C3 **dead code** |
-| **S2** | Destructive production action | Gateway adjudication of an MCP `tools/call` | **Denied before execution** | Executable, default-off — **Streamable HTTP only**; stdio and SSE absent | M1, M3 · M5/M6 absent |
-| **S3** | Runaway cost | Gateway budget reservation | **Evaluated → Denied before execution** | Executable today, with a silent fail-open | *(no positive row — see the scenario)* · G9 |
-| **S3b** | Unauthorized payment | — | — | **Illustrative** — no payment capability exists | — |
+| **T1** | Secret exfiltration | `aa-proxy` outbound credential scan on inspected LLM hosts | **Redacted** | Executable today (redact-and-forward is the default, not block) | C1, C6, N3 · C2 default-off · C3 **dead code** |
+| **T2** | Destructive production action | Gateway adjudication of an MCP `tools/call` | **Denied before execution** | Executable, default-off — **HTTP/1.1 POST only**; stdio, SSE and Streamable HTTP all outside it | M1, M3 · M5/M6 absent · M7 broken |
+| **T3** | Runaway cost | Gateway budget reservation | **Evaluated** (reaches *Denied before execution* only through a blocking caller) | Executable today, with a silent fail-open | *(no positive row — see the scenario)* · G9 |
+| **T3b** | Unauthorized payment | — | — | **Illustrative** — no payment capability exists | — |
+
+Scenarios are lettered **F** and **T1-T3** deliberately. AAASM-5527's own row IDs use
+`S` for the **SDK** rows, and this page tells readers to cross-reference those IDs —
+an `S1` here and an `S1` there would collide on exactly the identifier a checking
+reader follows, on a page whose whole claim is that none of its scenarios is an SDK
+scenario.
 
 ---
 
 ## Flagship — the upload that never happened
 
 A coding agent tries to send the repository it is working on to an endpoint nobody
-approved. The connection is refused before it is dialled, and the endpoint never
-receives a byte.
+approved. The connection is refused before it is dialled.
 
 This is the flagship because the denied side effect is *objectively testable in the
 negative*: a socket either accepted a connection or it did not, and the check does
-not depend on trusting anything inside the agent's process.
+not depend on trusting anything inside the agent's process. Note the tense
+discipline — this section describes a **decision** and a **testable design**. The
+claim that the endpoint *never received a byte* is Tier 2, and waits on the harness
+actually being run.
 
 | Field | |
 |---|---|
 | **Threat source** | Not necessarily malice. A coding agent reads an issue, a README or a dependency's docs that contains an instruction to "back up the working tree" to a paste or file-sharing endpoint; or the agent picks a convenient endpoint itself to "share the diff". The agent is doing what it was told by content it was asked to read. |
 | **Requested action** | An outbound HTTPS connection from the agent's process to a host outside the approved set, carrying the contents of the working tree. |
 | **Existing-system gap** | The agent's process has ordinary network access, and nothing in the agent framework distinguishes "fetch the docs page I need" from "POST the repository somewhere". Code review is after the fact; egress happens at machine speed. Outbound logging tells you it happened — it does not stop it. |
-| **Governed path** | The agent is started through a managed launch (`aasm run`), which writes the proxy settings and the CA into the child process's environment, so the tool's outbound connections are dialled through `aa-proxy` rather than directly (`aa-devtool-claude-code/src/lib.rs:356-383`). The operator has configured which hosts are approved. |
-| **Policy decision** | **Denied before execution.** The proxy evaluates the CONNECT target and returns 403 before it dials upstream (`aa-proxy/src/proxy/mod.rs:934`, run at `:1308`). **The decider is the proxy's own local egress configuration, not the gateway** — this code path contains no gateway call. Copy that attributes this refusal to the policy engine is wrong. |
+| **Governed path** | The agent is started through the **Claude Code** managed launch (`aasm run`), which writes the proxy settings and the CA into the child process's environment, so the tool's outbound connections are dialled through `aa-proxy` rather than directly (`aa-devtool-claude-code/src/lib.rs:356-383`). The operator has configured which hosts are approved. **Name the tool:** of the five shipped adapters this is the only one above `Integrated` and the only one with a launch evidence test — Copilot's `build_launch_command` always returns `AdapterError::LaunchFailed` (`aa-devtool-copilot/src/lib.rs:347`), and Codex and Windsurf inject `HTTPS_PROXY` with no `NODE_EXTRA_CA_CERTS` and have no launch evidence test. "Supported tool" and "governable tool" are different lists. |
+| **Policy decision** | **Denied before execution.** The proxy evaluates the CONNECT target and returns 403 before it dials upstream — `connect_deny_reason` (`aa-proxy/src/proxy/mod.rs:1031`), called at `:1431`, returning at `:1454` ahead of both the `200 Connection Established` at `:1459` and any dial. **The decider is the proxy's own local egress configuration, not the gateway** — grepping the whole file for `gateway`/`CheckAction`/`PolicyService`/`check_action` returns zero hits inside `connect_deny_reason` and zero in the deny block, against 30+ elsewhere in the file as a positive control. Copy that attributes this refusal to the policy engine is wrong. |
 | **Prevented outcome** | No TCP connection to the destination is established, so no byte of the working tree leaves the machine by that route. |
-| **Evidence** | **Observed** — the proxy records the refusal as a `Blocked` decision (`aa-proxy/src/proxy/mod.rs:969`, alongside the deny at `:934`). **Bounded twice, and both bounds are default-off or best-effort — see below.** Standing tests: `aa-integration-tests/tests/e2e_policy_proxy.rs`, `cli_proxy_remote_bind_refusal.rs`. |
-| **Known boundary** | See below — this one has five parts and all five are load-bearing. |
+| **Evidence** | **Observed** — the CONNECT refusal is recorded as a `Blocked` decision through `emit_rule_refusal` (defined `aa-proxy/src/proxy/mod.rs:411-423`, called for this path at `:1440`). Not to be confused with the `Blocked` at `:969`, which belongs to the credential-DLP refusal inside `handle_non_llm_mitm` — a different component's decision. **Bounded once, and the bound is default-off — see below.** Standing tests: `aa-integration-tests/tests/e2e_policy_proxy.rs`, `cli_proxy_remote_bind_refusal.rs`. |
+| **Known boundary** | See below — six parts, all load-bearing. |
 
-**Known boundary, in full:**
+**Known boundary, in full — six parts, all load-bearing:**
 
 - **The lists are empty by default.** `AA_PROXY_DENIED_HOSTS` and
   `AA_PROXY_NETWORK_ALLOWLIST` are both empty out of the box
@@ -166,6 +177,23 @@ matters, because it sits on the far side of the boundary — a probe on the near
 can observe that its request went out and that nothing obviously failed, and neither
 fact is evidence.
 
+> **A precondition the harness must set, and cannot set by environment.** A loopback
+> listener is inside the SSRF guard's blocked set, so the guard — not the egress
+> list — would refuse the connection, and the test would pass for the wrong reason
+> while proving nothing about egress policy. The harness must construct its config
+> with `allow_private_connect_targets = true` (`aa-proxy/src/config.rs:161`, default
+> `false` at `:184`). **No environment variable does this**; `from_env` hardcodes it
+> false, which is deliberate — production binaries cannot relax the guard. That makes
+> the loopback-witness form an **in-process test**, not something a shipped binary can
+> be driven into.
+
+> **The test and the demo are different artifacts.** The in-process test above uses a
+> loopback witness and can therefore assert byte-level absence. A *public demo* driving
+> a released `aa-proxy` cannot use a loopback witness at all — it needs a real remote
+> endpoint under the demo's control, and its absence evidence is that endpoint's own
+> access log rather than an in-process counter. Do not present one as the other, and
+> do not claim the demo inherits the test's rigour.
+
 **Three runs are required.** All three, or the result proves nothing.
 
 1. **Positive control — the check can see the effect.** With the destination host
@@ -191,6 +219,13 @@ fact is evidence.
    the proxy recorded a CONNECT attempt for that host. Without this, zero connections
    at the listener is also consistent with an agent that never attempted the upload,
    which would make the test pass for the wrong reason.
+
+   Two honest caveats. It **overlaps step 2(c)** — a decision record for the refusal
+   already implies an attempt reached the proxy — so treat it as a cheap independent
+   restatement, not a separate discovery. And it witnesses only that a *CONNECT* was
+   attempted: it can never establish that the agent would have transmitted the payload,
+   because the refusal precedes any body. The positive control is what establishes
+   that the payload would have flowed.
 
 **Ordering is the whole point, and it has already gone wrong here — twice.** Assert
 the absence **before** the error, never after.
@@ -228,7 +263,7 @@ bypass list above is the honest scope, and it belongs next to the demo.
 
 ---
 
-## S1 — Secret exfiltration
+## T1 — Secret exfiltration
 
 An agent puts a live credential into a request to a model provider. The credential is
 recognised and removed before the request is forwarded.
@@ -244,7 +279,7 @@ scenario into a blocked request is wrong, and the difference is the default.
 | **Governed path** | Traffic routed to the proxy **and** the proxy's CA trusted, so the request is inspected rather than tunnelled. |
 | **Policy decision** | **Redacted.** The `aa-security` scanner runs in line on the intercepted request and the recognised credential is removed before forwarding (`aa-security` scanner via `intercept_request`; the LLM-host path is `aa-proxy/src/proxy/mod.rs:1038`). Local proxy policy, not a gateway decision. |
 | **Prevented outcome** | The recognised credential does not reach the provider in cleartext. **Not** "the request was stopped" — it was forwarded with the credential removed. |
-| **Evidence** | **Redacted** — a redaction record naming the fields. Standing test: `aa-integration-tests/tests/e2e_secret_interception.rs`, whose `proxy_path` module terminates TLS at a capturing upstream and asserts on the bytes it actually received — the redaction marker present and the raw key absent (`:718-731`). That is a true non-arrival assertion, not merely "a redaction occurred". |
+| **Evidence** | **Observed** — a redaction record naming the fields. Standing test: `aa-integration-tests/tests/e2e_secret_interception.rs`, whose **`mod proxy_data_path`** (`:391`) terminates TLS at a capturing upstream and asserts on the bytes it actually received: request count 1 (`:719`), redaction marker present (`:725`), raw key absent (`:729`), labelled in-file as a SECURITY INVARIANT. That is a true non-arrival assertion, not merely "a redaction occurred". **Not** `mod proxy_path` (`:880`), the older scanner-only slice, which terminates no TLS and reaches no upstream. |
 | **Known boundary** | See below. |
 
 **Known boundary, in full:**
@@ -292,7 +327,7 @@ code** and must not be told at all.
 
 ---
 
-## S2 — Destructive production action
+## T2 — Destructive production action
 
 An agent calls a tool that would drop or rewrite production data. The call is
 evaluated against policy and refused before it is forwarded, so the tool server never
@@ -315,12 +350,24 @@ local configuration.
 
 **Known boundary, in full:**
 
-- **Streamable HTTP only. stdio and SSE are absent mechanisms.** MCP over **stdio**
-  (subprocess pipes) and over **SSE** both carry `reachability: absent_mechanism`
-  (rows M5, M6), and MCP over WebSocket is Unsupported (M8). Since stdio is the
-  default transport for most locally-run MCP servers, **the common case is not
-  covered**. This sentence must travel with the scenario; without it the story
-  implies a coverage that does not exist.
+- **One transport is covered, and it is not the one people assume.** M1's transport
+  is plain **HTTP/1.1 `POST` with an explicit `Content-Length`**. Every other MCP
+  transport is outside it, and M1's own `known_bypasses` says so by listing "M2
+  through M9":
+  - **stdio** (subprocess pipes) — `absent_mechanism` (M5). This is the most common
+    MCP transport in practice, and it is entirely unmediated. The product *models*
+    stdio servers (`aa-core/src/dev_tool.rs:112-121`) and cannot mediate them.
+  - **SSE** (`text/event-stream`) — `absent_mechanism` (M6); the SSE leg is
+    raw-copied unscanned.
+  - **Streamable HTTP** — **`coverage: unmeasured`, and worse than uncovered**
+    (M7). Its `failure_posture` is `silent_truncation`: the client receives an empty
+    200. `aa-proxy/src/proxy/http.rs:13` claims the MCP path falls back to a
+    transparent relay; it does not. **Never advertise this transport as governed** —
+    an earlier draft of this page did exactly that, which is the inversion this bullet
+    exists to prevent.
+  - **WebSocket** — Unsupported (M8).
+  - **An MCP endpoint on a built-in LLM host** is DLP-scanned but **never
+    adjudicated** (M9, `coverage: redacted`).
 - **Off by default, and coupled to whole-machine interception.** The row's
   `default_state` is false. Turning it on requires disabling the LLM-only default,
   which means the proxy intercepts every host, not just the MCP one. That is a
@@ -337,15 +384,16 @@ local configuration.
   path.
 - **Channel and platform** are the proxy's, identical to the flagship's.
 
-**Determination: executable, default-off**, over Streamable HTTP on Linux — rows M1
-and M3 (`shipped_with_platform_exception`, standing evidence). **Not executable over
-stdio or SSE** (M5, M6: `absent_mechanism`); a demo or a page that shows a local
-stdio MCP server being governed this way would be showing something that does not
-happen.
+**Determination: executable, default-off**, over **HTTP/1.1 `POST` with an explicit
+`Content-Length`** on Linux — rows M1 and M3 (`shipped_with_platform_exception`,
+standing evidence). **Not executable over stdio or SSE** (M5, M6:
+`absent_mechanism`), and **not over Streamable HTTP** (M7: `unmeasured`, and
+functionally broken). A demo or a page that shows a local stdio MCP server being
+governed this way would be showing something that does not happen.
 
 ---
 
-## S3 — Runaway cost
+## T3 — Runaway cost
 
 An agent enters a retry loop, or fans out across a large repository, and keeps
 spending. The call that would cross the declared cap is refused rather than billed.
@@ -356,9 +404,9 @@ spending. The call that would cross the declared cap is refused rather than bill
 | **Requested action** | The next model call, after the team's declared spend cap has been reached. |
 | **Existing-system gap** | Provider dashboards settle hours to a day late, and none of them refuse the next call. By the time the number is visible the spend has happened. |
 | **Governed path** | An action evaluated by the gateway, under a policy that **declares** a budget. |
-| **Policy decision** | **Evaluated → Denied before execution.** Spend is reserved atomically inside the same decision path, serialised per tenant (`aa-gateway/src/budget/tracker.rs:126`, AAASM-4124), and the over-cap case resolves to `BudgetStatus::LimitExceeded` (`tracker.rs:33`, `:617`, `:643`, `:662`). |
-| **Prevented outcome** | The over-cap call is refused instead of billed. |
-| **Evidence** | **Observed** — a decision record. Standing tests: `aa-gateway/tests/policy_service_test.rs:245` and `:339`, which drive `check_action` over the wire and assert `Decision::Deny` with a "budget exceeded" reason; plus the engine unit test `budget_denies_when_exceeded` (`aa-gateway/src/engine/mod.rs:4167`). **Not** `e2e_budget.rs` — see the boundary below. |
+| **Policy decision** | **Evaluated.** Spend is reserved atomically inside the same decision path, serialised per tenant (`aa-gateway/src/budget/tracker.rs:126`; the reservation itself is `tracker.rs:859`, AAASM-4124), and the over-cap case resolves to `BudgetStatus::LimitExceeded` (`tracker.rs:33`, `:617`, `:643`, `:662`). It reaches **Denied before execution only through a caller that blocks on the answer** — and for a *model call* neither blocking caller is in the path by default. See the boundary. |
+| **Prevented outcome** | Conditional, and this is the honest form: the decision to refuse is produced. Whether the call is *stopped* depends on a component in front of it blocking on that decision. Without one, the refusal is recorded and the call still goes out. |
+| **Evidence** | **Observed** — a decision record. Standing tests: `aa-gateway/tests/policy_service_test.rs:245`, which drives `check_action` over the wire and asserts `Decision::Deny` with the budget reason, and `:339`, which asserts `Decision::Deny` only; plus the engine unit test `budget_denies_when_exceeded` (`aa-gateway/src/engine/mod.rs:4167`). **Not** `e2e_budget.rs` — see the boundary below. |
 | **Known boundary** | See below — including an evidence correction and a matrix gap this page must not paper over. |
 
 **Known boundary, in full:**
@@ -370,16 +418,28 @@ spending. The call that would cross the declared cap is refused rather than bill
   none.
 - **A corrupt or unreadable budget store fails open, silently, and resets the cap to
   zero spend.** The gateway falls back on a load failure
-  (`aa-gateway/src/server.rs:155-163`), and a write failure prints to stderr and
+  (`aa-gateway/src/server.rs:260-268`), and a write failure prints to stderr and
   continues (`aa-gateway/src/budget/persistence.rs:85-86`). Row G9's `failure_posture`
   is `fail_open_silent`. This is the sharpest boundary in this page: the control is
-  real, and the mode in which it stops working produces no signal. Any page that
-  claims a spend guarantee must carry it.
-- **A refusal only stops something through a caller that blocks on the answer.** The
-  gateway holds no traffic. Budget exhaustion resolves to a refusal *in the decision*;
-  whether that refusal prevents the call depends on the same two blocking callers as
-  every other gateway decision — the MCP path, and an SDK shim that honours the
-  answer.
+  real, and the mode in which it stops working produces **no signal on the decision
+  path** — it does emit a `tracing::warn!` ("failed to load budget state, starting
+  fresh"), so an operator watching logs can see it; nothing downstream of the decision
+  can. Any page that claims a spend guarantee must carry it.
+- **A refusal only stops something through a caller that blocks on the answer, and
+  for a model call there is no such caller by default.** The gateway holds no
+  traffic. Budget exhaustion resolves to a refusal *in the decision*; whether that
+  refusal prevents the call depends on the same two blocking callers as every other
+  gateway decision — and neither covers this scenario out of the box:
+  - The **MCP path** adjudicates `tools/call` on a non-LLM intercepted host. An MCP
+    endpoint on a built-in LLM host is DLP-scanned but **never adjudicated** (M9), so
+    an ordinary model call is not on it.
+  - The **SDK** is advisory, and the Node default routes every check through an
+    allow-all no-op (S7, AAASM-4991); the documented Python quick-start installs no
+    interceptor at all (AAASM-5661).
+
+  So by default this scenario yields **Evaluated** — a refusal decided and recorded —
+  not a call prevented. Say "the cap was reached and the call was refused" only where
+  one of those callers is genuinely in the path, and say which.
 - **The obvious test does not prove this scenario.**
   `aa-integration-tests/tests/e2e_budget.rs` looks like the evidence and is not: all
   of its tests drive `record_raw_spend` directly and assert on the returned
@@ -402,27 +462,40 @@ the response to a hard `Deny` (`policy_service.rs:1341`, called at `:1669`). Der
 from that path and its gateway tests, **not** from a 5527 capability row, because
 none exists.
 
-### S3b — Unauthorized payment: illustrative only
+### T3b — Unauthorized payment: illustrative only
 
 The parent scope pairs runaway cost with "unauthorized payment". These do not have
 the same answer, and they must not be told as one story.
 
 **There is no payment, purchase, checkout or spend-authorization capability in the
-product.** Nothing evaluates a transaction, understands a payee, or holds a purchase
-for release. A sweep of the core repository for payment, purchase, checkout, invoice
-and charge vocabulary — run with a positive control in the same query, so an empty
-result is a real absence and not a failed search — returns only three unrelated
-classes: `"payments"` used as a team name in test fixtures, a
-`PaymentCardNumber` **detection** category in the credential/PII scanner
-(`aa-security/src/canonical/category.rs:34`), and "charge" in the budget
-sense of accounting for spend. There is no purchase action type and no payment tool.
+product.** The argument is structural, not a grep: the policy engine's action type
+`GovernanceAction` (`aa-core/src/policy.rs:194`) has exactly **six** variants —
+`ToolCall`, `ToolResult`, `FileAccess`, `NetworkRequest`, `ProcessExec`,
+`SendMessage`. None is a payment, and nothing can be evaluated that is not one of
+them. That cannot be falsified by a better search.
+
+**Expect to find payment vocabulary anyway, and do not mistake it for capability.**
+`process_refund` appears roughly 45 times across 25-plus files — as a tool name in
+dashboard E2E fixtures and as an approval action in `aa-cli` approval-client tests —
+and a policy-YAML **documentation example** even grants it with `limit_per_hour` and
+`requires_approval_if: "amount > 100"`. There are `checkout-agent` and `refund-agent`
+identifiers in `aa-api` route tests, and a v1 wireframe sketches an approval queue
+containing *"refund $500 via stripe"*. All of it is fixture, test or design material:
+demo data shaped like a capability, not a capability. An earlier draft of this page
+claimed a sweep "returns only three unrelated classes", which was simply incomplete —
+the determination survived, the methodology boast did not.
+
+> **A methodology note, because it invalidates negatives elsewhere too.**
+> `git grep -E` does **not** support `\b`. A sweep written as `\bcharge|\bspend`
+> matches nothing and looks exactly like a real absence. Any negative finding derived
+> from a `\b` pattern needs re-deriving with a positive control in the same command.
 
 The nearest real controls are generic, and none of them knows what a payment is:
 
 - refusing the connection to a payment API host — the flagship's mechanism, and it
   treats that host like any other unapproved host;
-- refusing an MCP `tools/call` that happens to be a payment tool — S2's mechanism,
-  with S2's transport bound;
+- refusing an MCP `tools/call` that happens to be a payment tool — T2's mechanism,
+  with T2's transport bound;
 - the spend cap above, which counts model tokens, not money moved.
 
 **Determination: illustrative.** If a surface needs a payment story to make the
@@ -435,45 +508,79 @@ AAASM-5657, because no shipped operator surface can answer a hold.
 
 ## Approved wording for reuse
 
-These are the sentences downstream surfaces may use verbatim. They are approved
-because each one is bounded where the underlying capability is bounded. Shortening
-one generally breaks it — the boundary clause is usually the part that gets cut.
+These are the sentences downstream surfaces may use verbatim. They come in **two
+tiers**, and the split is not stylistic — it is a publication gate.
+
+> **Why there is a gate.** `product-promise.md`'s Provisional list defers *"a named
+> prevented-outcome demonstration"* — any "we stopped X" — until the proof harness
+> lands under AAASM-5532 and AAASM-5529. Both are open; this page says so itself. So
+> a sentence asserting that an endpoint *never received a byte*, or that a call was
+> refused *rather than billed*, is a claim this product cannot yet substantiate,
+> however well-designed the negative control on this page is. **Designing the control
+> is not the same as having run it.**
+>
+> Tier 1 is publishable today. Tier 2 becomes publishable when those two tickets
+> close and the harness has actually run — not before.
+
+### Tier 1 — publishable now (decision-scoped)
+
+Each of these describes **what was decided**, which is what the product can evidence
+today. None asserts an averted consequence.
 
 **Flagship, long form (for a homepage section):**
 
 > A coding agent decided to upload the repository it was working on to an endpoint
-> nobody had approved. Because the agent was launched through Agent Assembly, the
-> connection was refused before it was dialled. The endpoint never received a byte —
-> and the refusal is recorded, with the reason.
+> nobody had approved. Because the agent was launched through Agent Assembly's
+> managed launch for Claude Code, the connection was evaluated against the
+> destination list the team configured, and refused before the proxy dialled it.
 
 **Flagship, short form (for a hero panel or a card):**
 
-> The upload was refused before it was dialled. The endpoint never received a byte.
+> The connection was refused before it was dialled.
 
 **Flagship, boundary clause — required on the same screen, above the fold:**
 
-> This applies to the connections you route through Agent Assembly, on a host where
-> the proxy is installed, against an approved-destination list you configure. An
-> agent you did not route is not inspected — and the record says so.
+> This applies to connections you route through Agent Assembly — today, via the
+> managed launch for Claude Code — on a Linux host where the proxy is installed,
+> against an approved-destination list you configure. An agent you did not route is
+> not inspected, and the record says so. A durable local record of the refusal exists
+> only where the proxy's audit path is configured.
 
-**S1 — secret exfiltration:**
+**T1 — secret exfiltration:**
 
 > An agent pasted a live API key into a request to its model provider. On the
 > provider hosts Agent Assembly inspects, the key was recognised and removed before
 > the request was forwarded. Detection is bounded by the patterns it knows, and the
 > default is to redact and forward, not to block.
 
-**S2 — destructive production action:**
+**T2 — destructive production action:**
 
 > An agent called a tool that would have dropped a production table. The call was
-> evaluated against your policy and refused before it was forwarded, so the tool
-> server never received it. This covers MCP tool calls over Streamable HTTP; tool
-> servers you run over stdio are not on this path.
+> evaluated against your policy and refused before the proxy forwarded it. This
+> covers MCP tool calls sent as ordinary HTTP POSTs; tool servers you run over stdio —
+> the most common setup — are not on this path.
 
-**S3 — runaway cost:**
+**T3 — runaway cost:**
 
-> An agent in a retry loop reached the spend cap its team had declared. The next call
-> was refused rather than billed. A cap exists only where a policy declares one.
+> An agent in a retry loop reached the spend cap its team had declared, and the next
+> call was refused by the policy decision. A cap exists only where a policy declares
+> one, and the refusal stops the call only where something in front of it waits for
+> that answer.
+
+### Tier 2 — gated until AAASM-5532 and AAASM-5529 close
+
+**Do not publish these yet.** They are recorded here so that the wording is settled
+in advance and nobody re-derives it under deadline once the gate lifts. Each states a
+prevented outcome, which is precisely what the harness must first demonstrate.
+
+> *(Flagship)* The endpoint never received a byte.
+>
+> *(T2)* The tool server never received the call.
+>
+> *(T3)* The call was refused rather than billed.
+
+When the gate lifts, these attach to the Tier 1 sentences; they do not replace the
+boundary clause.
 
 **The four verbs these scenarios are allowed to use**, and nothing vaguer: *refused
 before it ran* (Denied before execution), *removed before it was forwarded*
@@ -506,8 +613,10 @@ publish.
   sentence. The proxy that delivers three of these four scenarios is a Linux release
   artifact; on macOS it is a crates.io install, and on Windows there is no local
   mediation.
-- **Not** the credential-injection framing for S1. That mechanism is dead code.
-- **Not** S2 over a stdio MCP server. That transport has no interception mechanism.
+- **Not** the credential-injection framing for T1. That mechanism is dead code.
+- **Not** T2 over a stdio MCP server (no interception mechanism), and **not** over
+  Streamable HTTP, which the matrix records as functionally broken rather than merely
+  uncovered.
 
 <!-- claim-gate:ignore-end -->
 
@@ -515,10 +624,10 @@ publish.
 
 | Criterion | How it is met |
 |---|---|
-| The flagship can be demonstrated with a negative control proving the denied side effect did not happen | [Negative control for the flagship](#negative-control-for-the-flagship-ac-1) specifies the observable side effect (accepted connections and bytes at an independent listener), the absence check, the paired positive control that proves the check can see the effect, an attempt witness that proves the agent tried, and the assertion ordering — absence first, error second. |
+| The flagship can be demonstrated with a negative control proving the denied side effect did not happen | [Negative control for the flagship](#negative-control-for-the-flagship-ac-1) specifies the observable side effect (accepted connections and bytes at an independent listener), the absence check, the paired positive control that proves the check can see the effect, an attempt witness, the assertion ordering (absence first, error second), the `allow_private_connect_targets` precondition that no environment variable can supply, and the split between the in-process test and a public demo, which cannot use a loopback witness. Designed here; **running it is AAASM-5532 / AAASM-5529**, which is why the prevented-outcome wording is gated. |
 | Scenarios do not imply host-wide or cross-platform coverage when only a managed path is exercised | Every scenario carries its `boundary_class`, its routing precondition, its default state and its per-channel, per-platform release position. The flagship is stated as **B3 — universal within one process**, and the Windows and macOS positions are stated in each. |
 | The story is understandable without SDK/eBPF knowledge | No scenario in the set is an SDK scenario, and none relies on eBPF. Each is told as an action, a decision and an outcome. The mechanism names appear only in the boundary and evidence fields, where a technical reader needs them to verify. |
-| Scenario wording is approved for reuse by website, Docs Hub and demo assets | [Approved wording for reuse](#approved-wording-for-reuse) gives the verbatim sentences, in long, short and boundary forms, with the required co-location rule for the flagship's boundary clause. |
+| Scenario wording is approved for reuse by website, Docs Hub and demo assets | [Approved wording for reuse](#approved-wording-for-reuse) gives the verbatim sentences in long, short and boundary forms, with the required co-location rule for the flagship's boundary clause — split into **Tier 1**, approved for use now, and **Tier 2**, settled in wording but gated on AAASM-5532 / AAASM-5529 so that a prevented-outcome claim is not published ahead of the proof `product-promise.md` requires for it. |
 
 ---
 
