@@ -47,7 +47,13 @@ it first.
 
 Removed by AAASM-5612 on 2026-08-06 from
 [Quick start (SaaS)](quickstart-saas.md), [Cloud deployment](cloud-deployment.md),
-and [Open core boundary](open-core-boundary.md).
+[Open core boundary](open-core-boundary.md), and
+[Security model](security-model.md).
+
+The security-model rows differ from the rest in one way worth noting: several of
+those claims were not merely unevidenced, they were **contradicted by the
+Apache-2.0 source**. Where that is the case the row says so, because the evidence
+needed to restore such a claim is a code change, not an approval.
 
 Approval owners are roles, not individuals, so the register does not go stale
 when people change. "Evidence required" is the minimum; an owner may ask for
@@ -113,7 +119,10 @@ more.
 
 | Claim removed | Why it was removed | Approval owner | Evidence required to restore |
 |---|---|---|---|
-| "Tamper-evident" or "immutable" audit log | A cryptographic-integrity claim, which requires a named mechanism and a verification procedure — the pages named neither | Head of Security **and** Head of Engineering | The integrity mechanism named and documented; a reader-runnable verification procedure; an independent review of the mechanism |
+| "Tamper-evident" or "immutable" audit log | A cryptographic-integrity claim needs a named mechanism and a verification procedure. A keyless SHA-256 hash chain does exist in `aa-core`, but its hashes are not written to the `audit_events` schema, so the chain cannot be re-verified from the durable store — the guarantee a reader would infer is stronger than the one the code provides | Head of Security **and** Head of Engineering | The chain hashes persisted alongside the rows; a verification procedure a reader can run against the store; an independent review of the mechanism |
+| Audit entries "signed with HMAC-SHA256 using a log-signing key" | **Contradicted by the source** — the mechanism is a keyless SHA-256 hash chain; no HMAC over audit records and no log-signing key exist. A keyless chain does not resist an actor who can rewrite the store and recompute it | Head of Security **and** Head of Engineering | A keyed construction actually implemented, with the key's custody model documented — this needs a code change, not an approval |
+| "Logs are append-only; no delete or update API exists" | **Contradicted by the source** — retention pruning issues `DELETE FROM audit_events` in both the SQLite and Postgres drivers, and no trigger, revoked grant, or WORM setting prevents deletion | Head of Engineering | An enforced constraint at the storage layer, plus a test demonstrating that a delete or update against audit rows is rejected |
+| "Every agent action produces a log entry" | **Contradicted by the source** — emission uses a non-blocking send onto a bounded channel and at least one call site discards the error, so an action can proceed unlogged under backpressure | Head of Engineering | A fail-closed emission path (the action is rejected when the audit write cannot be durably accepted), plus a test covering the backpressure and restart cases |
 | Configurable audit-log retention, and retention periods per plan | Published retention durations that the service does not enforce per plan | Head of Engineering **and** Product Lead | The retention period enforced by the running service per plan, with a test asserting it |
 | SIEM export in named formats (JSON, CEF) | Named specific interchange formats with no export path | Head of Engineering | The export produced by the running service; a sample accepted by at least one named SIEM |
 | Console budget configuration presented as a managed-service capability | The described form did not exist, and the fields did not match the budget schema the gateway enforces — see [Policy reference](policy-reference.md#budget) | Head of Engineering **and** Product Lead | The managed configuration path working in production, and its fields reconciled against the enforced policy schema |
@@ -123,6 +132,8 @@ more.
 | Claim removed | Why it was removed | Approval owner | Evidence required to restore |
 |---|---|---|---|
 | Compliance certifications and frameworks named in an onboarding context (SOC 2, HIPAA, GDPR, ISO 27001) | Named certifications in a way that implied the service holds them, or is ready to be assessed against them | Legal **and** Head of Security | The completed audit report or certificate from the assessing body, with its scope and date; the claim restated to match that scope exactly |
+| A compliance status table with a target date ("SOC 2 Type II — In preparation, target Q3 2026"; "ISO 27001 — Roadmap") | A status table inside a compliance section reads as a programme with a trajectory, and the date makes it a commitment. No audit report, assessment scope, or engagement backed any row | Legal **and** Head of Security | A signed engagement with the assessing body defining scope and timing, before any date is published; the certificate itself before any status beyond "engaged" is published |
+| An export flag or metadata header named after a framework (for example `--compliance soc2`) cited as compliance evidence | A formatting feature that prepends a header is not an attestation, and citing it as one inflates a build flag into a certification | Head of Security | Nothing to restore — the flag may be documented as a formatting option, but never as evidence of compliance |
 | Availability of a Data Processing Agreement (DPA) | Asserted that a specific legal instrument exists and can be requested | Legal | The executed template, approved by counsel, and a named owner for the request process |
 | Availability of a Business Associate Agreement (BAA) | Asserted a HIPAA-specific legal instrument, which additionally presupposes a compliance posture that has not been assessed | Legal **and** Head of Security | The executed template approved by counsel, **and** the underlying compliance evidence the agreement depends on |
 | Countersignature and legal-review workflow descriptions | Described a legal operation that is not running | Legal | A defined process with a named owner |
@@ -138,6 +149,7 @@ These apply even after an owner approves a claim.
 - **Do not use unqualified absolutes** — "all", "every", "complete", "comprehensive", "universal", "unlimited", "immutable", "cannot be bypassed". If one is genuinely correct, name the boundary it holds within and the evidence for it, in the same sentence.
 - **Do not publish a number you have not measured.** Latencies, durations, retention periods, and quotas are measurements, not illustrations.
 - **Do not soften instead of removing.** If the evidence is missing, the claim comes out.
+- **Check the claim against the code, not against the neighbouring prose.** Several claims removed here were restated across three or four pages, and two contradicted the Apache-2.0 source outright. A claim that agrees with another doc is not thereby verified.
 
 ## Related documentation
 
@@ -145,6 +157,7 @@ These apply even after an owner approves a claim.
 - [Quick start (SaaS)](quickstart-saas.md) — managed onboarding, planned
 - [Cloud deployment](cloud-deployment.md) — the managed control plane, planned
 - [Open core boundary](open-core-boundary.md) — the open-source / commercial split
+- [Security model](security-model.md) — the security posture of the open-source enforcement path, including the audit log's actual integrity properties
 
 ---
 
