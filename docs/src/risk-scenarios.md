@@ -342,7 +342,7 @@ local configuration.
 | **Threat source** | An agent asked to "clean up the staging database" that resolves the wrong connection string; or an injected instruction in data the agent was asked to process. The plan reads as reasonable in the transcript. |
 | **Requested action** | An MCP `tools/call` carrying a destructive operation — a `DROP TABLE`, a migration that rewrites rows, a delete against a production namespace. |
 | **Existing-system gap** | Tool servers execute what they are asked. Nothing sits between the agent's intent and the tool server, and the destructive step is indistinguishable in shape from the routine ones the agent is supposed to perform. |
-| **Governed path** | Traffic routed to the proxy, CA trusted, a gateway endpoint configured, and the MCP host intercepted as a non-LLM host. The only supported route sets both and forces whole-machine interception (`aa-cli/src/commands/proxy/start.rs:128-135`). |
+| **Governed path** | Traffic routed to the proxy, CA trusted, a gateway endpoint configured, and the MCP host intercepted as a non-LLM host. Both **CLI** routes — `aasm proxy start --gateway <url>` (`aa-cli/src/commands/proxy/start.rs:129-133`) and an `aa-runtime`-spawned proxy (`aa-runtime/src/runtime.rs:257-258`) — force `AA_PROXY_LLM_ONLY=false`, widening interception to every host on the machine. The mechanism does **not** require that: see the boundary. |
 | **Policy decision** | **Denied before execution**, and the decider is the **gateway**: `evaluate_mcp_request` (`aa-proxy/src/proxy/mod.rs:614`, invoked at `:834`) calls `aa-gateway PolicyService.CheckAction`. This is the only gateway-bound pre-dial block in the system. |
 | **Prevented outcome** | The `tools/call` envelope is not forwarded. The MCP server never receives the call, so the table is not dropped. |
 | **Evidence** | **Observed** — a decision record. Standing tests: `aa-integration-tests/tests/e2e_mcp_interceptor.rs`, `e2e_mcp_redact.rs`. Malformed and batched envelopes carrying `tools/call` are adjudicated too (row M3). |
@@ -368,10 +368,23 @@ local configuration.
   - **WebSocket** — Unsupported (M8).
   - **An MCP endpoint on a built-in LLM host** is DLP-scanned but **never
     adjudicated** (M9, `coverage: redacted`).
-- **Off by default, and coupled to whole-machine interception.** The row's
-  `default_state` is false. Turning it on requires disabling the LLM-only default,
-  which means the proxy intercepts every host, not just the MCP one. That is a
-  material operational consequence, not a footnote.
+- **Off by default, and the shipped CLI routes couple it to whole-machine
+  interception — but the mechanism does not.** The row's `default_state` is false.
+  Both CLI routes widen TLS interception to every host on the machine, which is a
+  material operational consequence and not a footnote. **The capability itself is
+  narrower than that, and understating it is its own defect:** `should_mitm`
+  (`aa-proxy/src/proxy/mod.rs:1385-1388`) unions `mitm_hosts`, so
+  `AA_PROXY_GATEWAY_ENDPOINT` together with `AA_PROXY_MITM_HOSTS`, leaving `llm_only`
+  on, adjudicates exactly the hosts you name. What is missing is a CLI flag that
+  produces that configuration — ergonomics and documentation, not capability. Do not
+  tell an evaluator they must intercept the whole machine to get MCP adjudication.
+
+  > **A source conflict, recorded rather than silently resolved.** AAASM-5527's two
+  > halves disagree here. The YAML's M1 `notes` still says *"the only supported route
+  > … forces `AA_PROXY_LLM_ONLY=false`"*; the threat-model MD carries a bolded
+  > *"Correction to an earlier revision, which called this 'the only supported route'.
+  > It is not."* and finding F7 spells out the targeted alternative. This page follows
+  > the MD. The divergence is worth closing at the source.
 - **Only `tools/call`.** Every other MCP method is **Unmeasured** (row M4).
 - **A hold cannot be reached here.** A gateway `Pending` decision is downgraded to
   `Deny` inside the tunnel (`mcp_enforce.rs:135-144`), so this path cannot produce
