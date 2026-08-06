@@ -21,7 +21,7 @@ AI Agent Assembly is a governance layer for AI agents. It sits between your agen
 
 - **Enforces policy** — decides, before each *governed* action runs, whether an agent is allowed to call a tool, reach a domain, or spend more budget.
 - **Tracks cost** — meters token and dollar spend per team and blocks agents that exceed their budget.
-- **Intercepts unsafe actions** — blocks risky calls at the SDK and proxy layers, and *detects* activity that skipped them at the kernel layer.
+- **Intercepts unsafe actions** — blocks risky calls at the proxy layer, advises in-process at the SDK layer, and *detects* activity that skipped both at the kernel layer.
 
 Governance applies per agent, on the paths you wire up — you do not have to rewrite your agent's logic, but each agent has to be launched through a governed path (an SDK your code initializes, or the sidecar proxy). An agent started outside those paths is not governed. See [Known limitations](https://docs.agent-assembly.com/core/latest/devtools/limitations.html) for what is measured, unmeasured, and unsupported today.
 
@@ -80,9 +80,9 @@ before instrumenting your own agents.
 
 AI Agent Assembly enforces governance through three layers. You can deploy them independently, and each one catches what the layer above it might miss:
 
-1. **SDK layer (in-process)** — the language SDK wraps your agent's framework tool calls and applies an allow/deny decision before the wrapped call runs. Fastest path, but it requires you to adopt the SDK and call its initializer, and it does not intercept raw HTTP, subprocess spawns, or file access.
-2. **Sidecar proxy (`aa-proxy`)** — intercepts outbound HTTP/1.1 that is routed to it, using per-host certificates minted from a local root CA, so it can govern agents that do not use the SDK. No *agent code* changes, but the process must honour `HTTP_PROXY`/`HTTPS_PROXY` and trust the CA (trust-store installation is macOS-only), and HTTP/2, gRPC, and WebSocket are out of scope.
-3. **eBPF sensor (`aa-ebpf`)** — kernel hooks that watch OpenSSL and process syscalls to *detect* activity that skipped the layers above. Observe-only: it reports, it does not block. Linux x86_64 only, and it degrades rather than failing closed if it cannot attach.
+1. **SDK layer (in-process)** — the language SDK wraps your agent's framework tool calls and raises on a deny before the wrapped call runs. Fastest path, but **advisory**: it requires you to adopt the SDK and call its initializer, a non-cooperating process simply never calls it, and it does not intercept raw HTTP, subprocess spawns, or file access. Treat it as defense-in-depth, not the gate.
+2. **Sidecar proxy (`aa-proxy`)** — intercepts outbound HTTP/1.1 that is routed to it, using per-host certificates minted from a local root CA, so it can govern agents that do not use the SDK. No *agent code* changes, but the process must honour `HTTP_PROXY`/`HTTPS_PROXY` and trust the CA (installed automatically at proxy start on macOS, or via `sudo aasm proxy install-ca` on Linux; Windows is unsupported). On MitM'd hosts, HTTP/2, gRPC, and WebSocket cannot be inspected — on other hosts they are tunnelled uninspected.
+3. **eBPF sensor (`aa-ebpf`)** — kernel hooks that watch OpenSSL and process syscalls to *detect* activity that skipped the layers above. Observe-only: it reports, it does not block. Linux only (the file-I/O kprobes are x86_64-only), and it degrades rather than failing closed if it cannot attach.
 
 All three layers report to the **gateway**, which evaluates policy and tracks per-team budgets. Coverage is the union of the layers you deploy, bounded by each layer's own precondition — see [Known limitations](https://docs.agent-assembly.com/core/latest/devtools/limitations.html).
 

@@ -76,7 +76,7 @@ These are capabilities competitors offer that AI Agent Assembly does not yet ful
 These are capabilities where AI Agent Assembly is uniquely strong or differentiated.
 
 1. **Pre-execution runtime enforcement** — AAASM is the only product in this comparison that makes binding allow/deny decisions *before* an agent action executes. All others are observability tools that record what happened after the fact.
-2. **Kernel-level bypass detection via eBPF** — `aa-ebpf` reads TLS plaintext at the OpenSSL library level using Linux uprobes, surfacing bypass attempts that SDK-only solutions cannot see. It is a *detection* layer: the probes emit telemetry and return no verdict, so they report an action rather than preventing it, and they need Linux x86_64 with an OpenSSL-linked process. No competitor in this matrix offers kernel-level visibility at all.
+2. **Kernel-level bypass detection via eBPF** — `aa-ebpf` reads TLS plaintext at the OpenSSL library level using Linux uprobes, surfacing bypass attempts that SDK-only solutions cannot see. It is a *detection* layer: the probes emit telemetry and return no verdict, so they report an action rather than preventing it, and they need a Linux host with an OpenSSL-linked process (the file-I/O kprobes additionally are x86_64-only). No competitor in this matrix offers kernel-level visibility at all.
 3. **Network-layer interception without agent code changes** — `aa-proxy` performs MitM HTTPS interception using per-host certificates minted from a local root CA. Governance can be applied to agents that do not use the SDK, provided the agent process is launched so that it routes through the proxy and trusts that CA. No competitor supports sidecar-proxy-level enforcement.
 4. **Policy-as-code with GitOps workflow** — AAASM policies are YAML/JSON documents that can be versioned, reviewed, and deployed via standard Git workflows. No competitor in this matrix offers a structured policy language; guardrails in other tools are typically configured through UI forms or proprietary DSLs.
 5. **Hash-chained, verifiable audit log** — each entry in the per-session JSONL log carries a SHA-256 digest over its own fields plus the preceding entry's digest, and `aasm audit verify-chain` re-walks that chain. This ships in the **open-source** build, not behind an Enterprise flag. Read the guarantee precisely, because compliance work (PCI-DSS, SOC 2 Type II) depends on the difference: the chain is **unkeyed**, so it detects accidental or careless alteration but is not a signature — anyone who can rewrite the log can recompute the chain. It covers the **JSONL sink only**; the database mirror stores no chain metadata. The log is append-only *by convention*, not by constraint — retention pruning deletes rows — and emission is best-effort, so a dropped entry is indistinguishable from tampering. See [Audit log](security-model.md#audit-log) for the exact bounds. No competitor in this matrix offers a verifiable chain.
@@ -104,7 +104,8 @@ Last validated 2026-05-05 against each vendor's documentation as of that date.
 
 [^proxy]: No change to your *agent's* code, but the agent process must be
     launched so that it honours `HTTP_PROXY`/`HTTPS_PROXY` and trusts the
-    proxy's local root CA (trust-store installation is implemented for macOS).
+    proxy's local root CA (installed automatically at proxy start on macOS, or
+    via `sudo aasm proxy install-ca` on Linux; Windows is unsupported).
     Interception is HTTP/1.1 only — HTTP/2, gRPC, and WebSocket are out of
     scope — and by default only the built-in LLM provider hosts are decrypted;
     other hosts are tunnelled uninspected unless you list them.
@@ -123,8 +124,9 @@ Last validated 2026-05-05 against each vendor's documentation as of that date.
 
 [^ebpf]: Detection, not prevention: the probes emit telemetry and return no
     verdict, so an action they see is one that already happened. TLS visibility
-    covers OpenSSL-linked processes only, and the layer requires Linux x86_64
-    with a kernel that supports it — it degrades with a warning rather than
+    covers OpenSSL-linked processes only, and the layer requires Linux with a
+    kernel that supports it, BTF, and a reachable loader daemon — the file-I/O
+    kprobes additionally are x86_64-only. It degrades with a warning rather than
     failing closed if it cannot attach.
 
 ---
