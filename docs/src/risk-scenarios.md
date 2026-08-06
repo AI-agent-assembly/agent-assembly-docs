@@ -564,10 +564,12 @@ tiers**, and the split is not stylistic — it is a publication gate.
    tooltip, not a "learn more". A Tier 1 sentence published alone reads as a claim
    over all agent behaviour, which is the single most common defect in this product's
    published copy.
-2. **The short form must never appear on a metadata surface without the bounded
-   form.** A `<title>`, an `og:title`, a search snippet, a chat unfurl or a slide has
-   no room for a boundary clause beside it, so the bounded wording has to be the one
-   that ships there.
+2. **No scenario sentence on this page is approved for a metadata surface.** A
+   `<title>`, an `og:title`, a search snippet, a chat unfurl or a slide has no room
+   for a boundary clause beside it — and constraint 3 forbids shortening one to fit.
+   Use `product-promise.md`'s **headline**, which is written to survive exactly those
+   places: *"Decide what an AI agent may do — before it does it."* Its indefinite
+   article is deliberate — "your AI agents" would quantify over agents nobody routed.
 3. **Quote, do not paraphrase.** A paraphrase is a new claim and carries its own
    evidence burden. If a layout needs something shorter than what is here, that is a
    layout problem, not a wording problem.
