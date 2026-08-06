@@ -194,6 +194,33 @@ Send the reader to ADR 0033 §5.3 for the per-platform matrix and §6 for the vo
 itself. Do not restate either here; both are snapshots of a specific release and are
 maintained where they live.
 
+## Approved plain-language wording
+
+ADR 0033 §6's terms are precise but they are engineering vocabulary. Public copy
+needs plain-language equivalents that mean the same thing to a PM, an SRE and a
+security reviewer. These are the approved renderings. Use the plain form in body
+copy; keep the §6 term available wherever a reader might need to verify the claim.
+
+| Concept | §6 term(s) | Approved plain-language wording | Must not shorten to |
+|---|---|---|---|
+| **Governed path** (managed path) | — (a scope, not a verdict) | "the paths you route through Agent Assembly"; "an agent you launched under Agent Assembly"; "traffic you send through the proxy" | "your agents"; "your fleet"; "your environment" — all three quantify over things you did not route |
+| **Pre-execution** | Denied before execution | "before the action runs"; "before the request leaves the machine"; "before the tool body executes" | "in real time"; "instantly"; "at runtime" — these describe *speed*, not *ordering*, and the ordering is the whole claim |
+| **Evidence** | Observed | "a hash-chained audit record you can verify yourself"; "tamper-evident" | "immutable"; "tamper-proof"; "signed" — the chain is an unkeyed digest, and retention pruning deletes rows |
+| **Host controls** | Observed / Detected (Linux); Unsupported (Windows) | "operating-system-level controls, where the platform has them"; on Linux, "kernel probes that report activity"; the opt-in guard "terminates a confined process after the fact" | "kernel-level enforcement"; "OS-level protection"; anything implying the same mechanism exists on macOS or Windows |
+| **Managed action** | Evaluated | "an action presented for a decision before it takes effect"; "an action that reached a checkpoint" | "any action"; "each action an agent takes" — the second silently re-adds the quantifier the first removed |
+| **Planned** | Planned | "planned — decided, not built yet", with the ticket reference | "coming soon"; "available in Enterprise"; a roadmap item written in the present tense |
+| **Not inspected** | Unmeasured | "nothing inspected this action, so nothing is known about it" | "allowed"; "clean"; "no issues found" — absence of a finding is a fact about the observer, not the agent |
+
+Two subtleties worth carrying into copy, because both have already produced defects
+in this repository:
+
+- **Unmeasured is scoped to the action, not the connection.** A host the proxy does
+  not intercept is still adjudicated at CONNECT by local egress policy, and that
+  connection *is* recorded. The honest phrasing is "the connection was observed, the
+  payload was not inspected" — not "nothing was observed".
+- **An empty audit log is evidence about the observer.** It is not evidence that an
+  agent did nothing. Never present a quiet log as a result.
+
 ---
 
 *Last reviewed: 2026-08-06 — AI Agent Assembly Team*
