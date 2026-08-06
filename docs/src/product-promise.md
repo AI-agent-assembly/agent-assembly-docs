@@ -234,13 +234,14 @@ fall-through to another role, and each role's authority is its own.
 | Mechanism | Highest ADR 0033 §6 term it reaches today |
 |---|---|
 | Proxy — CONNECT, in-tunnel host re-check, credential block, MCP adjudication | **Denied before execution**, for traffic routed through it and intercepted |
-| Gateway `check_action` | **Evaluated**; reaches *Denied before execution* only through a caller that blocks on the answer |
+| Gateway `check_action` | **Evaluated**; reaches *Denied before execution* only through a caller that blocks on the answer, and today that set is exactly two — the MCP path, plus an SDK shim that honours the answer |
 | Runtime policy checkpoint | **Evaluated**; *Denied before execution* only if the SDK shim honours the answer |
 | Runtime scanner | **Redacted** — it runs after the action and returns counters, not a verdict |
 | SDK client | **Evaluated** (advisory) |
 | eBPF TLS / file / exec probes | **Observed** / **Detected** |
 | eBPF syscall guard | **Detected**, plus asynchronous process termination |
 | WASM sandbox | **Denied before execution**, for tools handed to it — but it is not on an agent's normal tool-call path, so do not cite it as a general guarantee |
+| Developer-tool config writes (`aa-devtool-*`) | **Not a data-path claim at all.** Writing a tool's own settings file is tool-governance: it takes effect only if the tool honours those keys, and for the macOS managed-settings path whether it does is unmeasured. Any data-path prevention these adapters deliver is the proxy's, borrowed through the launch environment they inject. This row is the bound on the mechanism Level 2 step 1 introduces — an integration writing proxy settings is not itself an enforcement point. |
 
 Send the reader to ADR 0033 §5.3 for the per-platform matrix and §6 for the vocabulary
 itself. Do not restate either here; both are snapshots of a specific release and are
