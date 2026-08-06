@@ -87,12 +87,20 @@ and groups from your identity provider into an application.
 Connect) used to let operators log in with an enterprise identity provider.
 
 **Ed25519**
-: A modern public-key signature algorithm, used here to sign agent identity
-tokens.
+: A modern public-key signature algorithm. Used here for the **one-time
+possession proof** an agent presents at registration — a signature over a
+server-issued nonce. It is not a reusable bearer credential: subsequent calls
+carry a random credential token instead. See the
+[Security model](security-model.md#cryptographic-primitives).
 
 **AES-256-GCM**
-: A symmetric authenticated-encryption algorithm, used here to encrypt stored
-secrets at rest.
+: A symmetric authenticated-encryption algorithm. **AI Agent Assembly does not
+use it.** This entry previously described it as encrypting stored secrets at
+rest; there is no AES-256-GCM implementation in the workspace crates, no HSM or
+KMS integration, and no managed secret vault. **Do not treat this stack as a
+secret store** — see [Secrets management](security-model.md#secrets-management).
+The term is retained here only so a reader who met the old claim can find its
+correction.
 
 **HMAC-SHA256**
 : A keyed hash used to sign audit-log entries and webhook payloads so
@@ -102,7 +110,9 @@ tampering is detectable.
 : The name for AI Agent Assembly's defense-in-depth model — five security
 *layers* (Boundary, Identity, Policy, Vault, Telemetry). These are distinct
 from the three *interception points* (SDK, proxy, eBPF), which all live inside
-the Boundary layer. See the [Security model](security-model.md).
+the Boundary layer. **The Vault layer is aspirational — not implemented:** no
+secret store, encryption-at-rest, or key-management component ships today. See
+the [Security model](security-model.md).
 
 **Audit log**
 : The append-only record of every agent action (policy checks, events, budget
