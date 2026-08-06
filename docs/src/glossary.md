@@ -118,9 +118,11 @@ log-signing key anywhere in the codebase; see **Audit log** below.
 : The name for AI Agent Assembly's defense-in-depth model — five security
 *layers* (Boundary, Identity, Policy, Vault, Telemetry). These are distinct
 from the three *interception points* (SDK, proxy, eBPF), which all live inside
-the Boundary layer. **The Vault layer is aspirational — not implemented:** no
-secret store, encryption-at-rest, or key-management component ships today. See
-the [Security model](security-model.md).
+the Boundary layer. **The Vault layer is largely aspirational:** an in-memory
+secrets store is mounted but is empty in every shipped build with nothing able to
+populate it, there is no encryption at rest or key management, and where
+resolution does succeed the plaintext is returned to the caller. See
+[Secrets management](security-model.md#secrets-management).
 
 **Audit log**
 : The record of policy decisions and agent-reported events, written to

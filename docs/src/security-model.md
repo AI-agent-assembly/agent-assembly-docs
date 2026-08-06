@@ -13,7 +13,7 @@ AI Agent Assembly groups its security controls into five named layers. Each laye
 | 1 | **Boundary** | Network perimeter: sidecar proxy (`aa-proxy`) enforces an egress allowlist on the traffic it intercepts. eBPF sensor (`aa-ebpf`, **Linux only**) is mostly **observation**: uprobes read OpenSSL-family `SSL_*` calls and are blind to Go, `rustls`, Node/BoringSSL, GnuTLS, NSS and LibreSSL, whose traffic never reaches them. One probe does enforce — a syscall allowlist that `SIGKILL`s a monitored process on a non-allowlisted syscall (Linux 5.3+) — but the signal lands *after* the offending syscall has already executed, and unmonitored PIDs are never inspected. Observing a syscall is not preventing it |
 | 2 | **Identity** | Agent and user authentication: the gRPC agent plane is authenticated by a random per-agent credential token (UUID, constant-time compare, no expiry) minted after a one-time Ed25519 possession-proof at registration. Operator SSO (SAML 2.0 / OIDC) is **not implemented** — see [Authentication flow](#authentication-flow). A separate HMAC-SHA256 JWT (24h TTL) protects the REST/admin surface only, and that surface's auth is **off by default** — see the callout in [Authentication flow](#authentication-flow) below |
 | 3 | **Policy** | Runtime governance: YAML/JSON policy rules evaluated by the gateway policy engine — **for the calls that reach it**, which is not every agent action. SDK-instrumented calls and the proxy's non-LLM MitM path consult the gateway. The proxy's LLM path does **not**: it applies a local in-tunnel egress allowlist and returns 403 itself, without a gateway round-trip. Under the `llm_only` default, hosts the proxy does not intercept are transparently tunnelled and evaluated by nothing |
-| 4 | **Vault** | 🗺️ **Aspirational — not implemented.** No secret store, encryption-at-rest, or key-management component ships today; see [Secrets management](#secrets-management). Ed25519 is used for the one-time agent registration proof, not for a vault |
+| 4 | **Vault** | 🗺️ **Largely aspirational.** An in-memory `SecretsStore` is mounted, but it is empty in every shipped build with no route or command able to populate it, there is no encryption at rest or key management, and successful resolution hands the plaintext back to the caller — see [Secrets management](#secrets-management). Ed25519 is used for the one-time agent registration proof, not for a vault |
 | 5 | **Telemetry** | Audit and observability: per-session JSONL event log with an unkeyed SHA-256 hash chain (verify with `aasm audit verify-chain`), append-only by convention and best-effort on emission — see [Audit log](#audit-log) for the exact bounds; Slack/webhook connectors for alerting on policy violations |
 
 > **How the five layers relate to the three interception points.** The five *defense-in-depth layers* above (Boundary, Identity, Policy, Vault, Telemetry) describe *what* is protected. The three *interception points* named on the landing page and marketing site — the SDK layer, the sidecar proxy (`aa-proxy`), and the eBPF sensor (`aa-ebpf`) — describe *where* enforcement is applied, and all three sit inside the **Boundary** layer. They are two views of one system, not two competing models.
@@ -100,22 +100,36 @@ above. There is no third path.
 
 ## Secrets management
 
-> 🗺️ **The managed secret vault described here previously does not exist.** This
-> section claimed AES-256-GCM encryption at rest under a master key held in a SaaS
-> control-plane HSM, with rotation driven from a console. There is no AES-256-GCM
-> implementation in the workspace crates, no HSM or KMS integration, and no console
-> — so the whole block was removed rather than softened.
+> 🗺️ **The managed secret vault this section previously described does not
+> exist.** It claimed AES-256-GCM encryption at rest under a master key in a SaaS
+> control-plane HSM, with rotation from a console. There is no AES-256-GCM
+> implementation in the workspace crates, no HSM or KMS integration, and no
+> console.
 
-**Do not treat this stack as a secret store.** Nothing here is a managed vault. If
-you self-host, secrets reaching the gateway, proxy, or SDK are handled by whatever
-you supply them through — environment, file, or your own secret manager — and their
-protection at rest is your deployment's responsibility, not this software's.
+**Do not treat this stack as a secret store.** That advice is unchanged, but the
+precise state is narrower than "nothing ships" — and less reassuring:
 
-Two related properties *are* documented elsewhere on this page and do hold:
-credential material is not written to the audit stream (see
-[Audit log](#audit-log)), and the primitives that are actually in use are listed in
-[Cryptographic primitives](#cryptographic-primitives) above. Neither amounts to a
-vault.
+- **A store type exists and is mounted.** There is a `SecretsStore` trait with one
+  implementation, `InMemorySecretsStore`, wired into both the API and the gateway.
+- **It is always empty in a shipped build.** Both production constructions
+  instantiate it empty, and nothing can populate it: there is no registration
+  route in the OpenAPI surface and no `aasm secrets` command. Every `${NAME}`
+  placeholder therefore resolves to `UnknownPlaceholder` and the request fails
+  (HTTP 422 / gRPC `FailedPrecondition`).
+- **Where resolution does succeed, the caller receives the plaintext.** The
+  resolver substitutes `${NAME}` tokens and returns the post-substitution
+  arguments to the caller, rather than the gateway making the outbound call
+  itself. The agent process ends up holding the raw credential. The audit entry
+  records placeholder *names* only, so the credential is not written to the audit
+  stream — but the agent has it.
+- **Nothing encrypts it.** In-memory only, no encryption at rest, no key
+  management.
+
+So if you self-host, secrets reaching the gateway, proxy, or SDK are handled by
+whatever you supply them through — environment, file, or your own secret manager —
+and their protection is your deployment's responsibility, not this software's.
+Whether this surface is completed or removed is an open decision; this page
+describes only its current state.
 
 ---
 
