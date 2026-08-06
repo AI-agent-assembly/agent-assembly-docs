@@ -14,7 +14,7 @@ AI Agent Assembly groups its security controls into five named layers. Each laye
 | 2 | **Identity** | Agent and user authentication: the gRPC agent plane is authenticated by a random per-agent credential token (UUID, constant-time compare, no expiry) minted after a one-time Ed25519 possession-proof at registration; operator authentication via SAML 2.0 / OIDC SSO. A separate HMAC-SHA256 JWT (24h TTL) protects the REST/admin surface only, and that surface's auth is **off by default** — see the callout in [Authentication flow](#authentication-flow) below |
 | 3 | **Policy** | Runtime governance: YAML/JSON policy rules evaluated by the gateway policy engine before every agent action |
 | 4 | **Vault** | Secret and credential management: AES-256-GCM encryption at rest for stored secrets; Ed25519-signed tokens for inter-component trust |
-| 5 | **Telemetry** | Audit and observability: append-only event log for every agent action; Slack/webhook connectors for real-time alerting on policy violations |
+| 5 | **Telemetry** | Audit and observability: hash-chained event log for agent actions, append-only by convention and best-effort on emission — see [Audit log](#audit-log) for the exact properties; Slack/webhook connectors for alerting on policy violations |
 
 > **How the five layers relate to the three interception points.** The five *defense-in-depth layers* above (Boundary, Identity, Policy, Vault, Telemetry) describe *what* is protected. The three *interception points* named on the landing page and marketing site — the SDK layer, the sidecar proxy (`aa-proxy`), and the eBPF sensor (`aa-ebpf`) — describe *where* enforcement is applied, and all three sit inside the **Boundary** layer. They are two views of one system, not two competing models.
 
@@ -27,7 +27,7 @@ The table below maps each STRIDE category to the five primary components of AI A
 | Component | **S**poofing | **T**ampering | **R**epudiation | **I**nfo Disclosure | **D**enial of Service | **E**levation of Privilege |
 |---|---|---|---|---|---|---|
 | **Language SDK** | One-time Ed25519 possession-proof at registration, then a random per-agent credential token (constant-time compare) on every call | SDK integrity verified by Cargo/npm/PyPI package hash | Every call logged with agent ID and timestamp | gRPC transport is plaintext by default — the app-layer credential-token interceptor authenticates every call; mTLS is an optional, unwired hardening layer; secrets never logged | Rate limiting enforced by gateway budget tracker | Policy engine enforces agent scope; no ambient privilege |
-| **Gateway (aa-gateway)** | Credential-token interceptor validates every agent-plane gRPC call (fail-closed on approval/audit/topology/secrets); REST/admin surface can opt into JWT validation, off by default | Input validation on all RPCs; schema-enforced policy rules | Append-only audit log with tamper-evident signatures | Internal-only gRPC endpoint; never exposed directly | Per-team budget caps block runaway agent spending | RBAC on all administrative API endpoints |
+| **Gateway (aa-gateway)** | Credential-token interceptor validates every agent-plane gRPC call (fail-closed on approval/audit/topology/secrets); REST/admin surface can opt into JWT validation, off by default | Input validation on all RPCs; schema-enforced policy rules | Audit log with a keyless SHA-256 hash chain; the chain is not persisted and emission is best-effort, so repudiation cover is partial — see [Audit log](#audit-log) | Internal-only gRPC endpoint; never exposed directly | Per-team budget caps block runaway agent spending | RBAC on all administrative API endpoints |
 | **Sidecar Proxy (aa-proxy)** | Per-host CA pinning prevents MitM spoofing by agents | TLS termination with certificate validation on every upstream | All intercepted requests logged by proxy before forwarding | Proxy does not log request/response bodies by default | Connection pool limits per agent; circuit breaker on upstream failure | Proxy runs as unprivileged user; no write access to host filesystem |
 | **eBPF Sensor (aa-ebpf)** | eBPF program loaded only by privileged system service | BPF verifier rejects unsafe programs at load time | Kernel event timestamps are monotonic; cannot be retroactively altered | eBPF only reads SSL buffers; no access to unrelated memory regions | eBPF programs have bounded execution; verifier enforces loop limits | Loaded via CAP_BPF only; capability is dropped after program load |
 | **REST API (aa-api)** | SAML/OIDC token validation on every request | OpenAPI schema validation rejects malformed inputs | All mutating API calls logged with actor identity | HTTPS-only; HSTS enforced; no sensitive data in query strings | Rate limiting per IP and per tenant; DDoS mitigation via upstream load balancer | Tenant isolation enforced at API layer; cross-tenant access rejected |
@@ -120,9 +120,35 @@ sequenceDiagram
 
 ## Audit log
 
-- Every agent action (policy check, event record, budget debit) produces an immutable log entry.
-- Log entries are signed with HMAC-SHA256 using a log-signing key.
-- Logs are append-only; no delete or update API exists.
+The gateway records governance events — policy decisions, event records, budget
+debits — to an `audit_events` table in its configured store (SQLite or Postgres).
+The properties below are stated precisely, because "immutable audit log" is a
+claim a security reviewer should be able to check rather than take on trust.
+
+**The integrity mechanism is a keyless SHA-256 hash chain.** Each `AuditEntry`
+carries a digest computed over its own fields plus the preceding entry's digest,
+and the in-memory log exposes `verify_integrity()` (one entry) and `verify_chain()`
+(the whole log) to detect alteration. See `aa-core/src/audit.rs` in the Apache-2.0
+[`agent-assembly`](https://github.com/ai-agent-assembly/agent-assembly) repository.
+
+**It is not a signature, and it is not persisted.** The chain is keyless — there is
+no log-signing key and no HMAC over audit records anywhere in the codebase — so it
+detects alteration of an entry but does not resist an actor who can rewrite the
+store and recompute the chain from scratch. The chain hashes are also not written
+to the database: the `audit_events` schema holds timestamp, event id, agent, team,
+action, decision, dry-run and shadow fields, matched rule, and payload — no entry
+hash, no previous hash, no sequence number. **The chain therefore cannot be
+re-verified from the durable store today.**
+
+**The log is append-only by convention, not by constraint.** Retention pruning
+issues `DELETE FROM audit_events` against rows older than the cutoff, in both the
+SQLite and Postgres drivers. There is no database trigger, revoked grant, or WORM
+setting preventing deletion or update.
+
+**Emission is best-effort.** Entries are handed to a bounded in-process channel
+with a non-blocking send; under backpressure that send can fail, and at least one
+call site discards the error. An action can proceed without a persisted entry, so
+absence of an entry is not proof that an action did not occur.
 - Log retention: configurable per tenant (default: 90 days).
 - Logs are exportable in JSON or CEF format for SIEM integration.
 
