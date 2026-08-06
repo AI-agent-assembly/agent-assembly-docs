@@ -77,7 +77,7 @@ For a hero or a first screen, the promise renders as:
 **Subheadline**
 
 > Agent Assembly evaluates the actions you route through it against your policy,
-> refuses or blocks the ones your policy disallows, and records the decision. An
+> refuses them, or blocks them pending a decision, and records what it decided. An
 > action you have not routed through it is not inspected — and the record says so.
 
 **These two are not severable.** The headline is bounded only by the subheadline;
@@ -162,6 +162,13 @@ Where nothing inspected an action, the rule is that the record reports it as
 **Unmeasured** rather than as clean, because an uninspected action must never be
 reported as allowed.
 
+> **State this as a rule, not as finished behaviour.** ADR 0033 §4 mandates it, and
+> the transparent-tunnel path implements it — it persists "forwarded, and nothing
+> looked at it". But §2 records a live defect on the same path: the CONNECT-level
+> decision event still emits an *allow* for a connection the proxy is about to tunnel
+> uninspected. Until that is fixed, do not write copy that promises the property
+> holds everywhere today.
+
 > **Emission is best-effort — say so in the same sentence.** The gateway advances the
 > chain head *before* attempting the send, and on a full channel it logs a warning,
 > increments a drop counter and returns the RPC anyway; several sibling emit sites
@@ -174,18 +181,12 @@ reported as allowed.
 > the note above, and the hub's own security model already states that absence of an
 > entry is not proof of absence.
 
-> **State this as a rule, not as finished behaviour.** ADR 0033 §4 mandates it, and
-> the transparent-tunnel path implements it — it persists "forwarded, and nothing
-> looked at it". But §2 records a live defect on the same path: the CONNECT-level
-> decision event still emits an *allow* for a connection the proxy is about to tunnel
-> uninspected. Until that is fixed, do not write copy that promises the property
-> holds everywhere today.
-
 > **Why "route it" is step one.** The control plane holds no traffic, so a decision
-> only stops something when a component in front of the action blocks on it. That set
-> has exactly two members today — the proxy's MCP path, and an SDK shim that honours
-> the answer — not "the proxy" generally. Routing is what puts an action in front of
-> one of them.
+> only stops something when a component in front of the action blocks on it. That
+> set — components that block on a **gateway** answer — has exactly two members today:
+> the proxy's MCP path, and an SDK shim that honours the answer. It is not the set of
+> everything that can refuse: the proxy's own CONNECT, DLP and LLM-host refusals are
+> local, and they are real. Routing is what puts an action in front of any of them.
 
 ### Level 3 — for an evaluator
 
@@ -233,7 +234,7 @@ evaluation:
 | eBPF | **Off unless deployed.** Linux only, needs a privileged loader daemon, and its syscall guard needs an explicit opt-in on top of that. |
 | Launching an ungoverned session | **Refused.** `aasm run` will not start a tool when no effective policy resolves, and it will not start one whose policy parses but declares no rule — *"an absent policy is not permission"*, *"an empty policy is unconfigured, not allow-all"*. Both refuse before anything launches. This is the strongest default-on behaviour in the product and the easiest to leave out of a comparison. |
 | The policy engine's fallthrough | **Allow.** Once a policy is in force, an action matching no network, tool, capability or approval rule is allowed. Default-open *within* a policy, default-refuse on *having* one — state both or the pair is misleading. |
-| Budget caps | **None unless declared.** Limit resolution returns nothing when neither a per-agent nor a global limit is configured, so an undeclared budget means uncapped spend. Most shipped policy examples *do* declare daily and monthly caps, so an evaluator who starts from one gets a cap — but a hand-written policy that omits the block has none. |
+| Budget caps | **None unless declared.** Limit resolution returns nothing when neither a per-agent nor a global limit is configured, so an undeclared budget means uncapped spend. Five of the eight shipped policy examples declare a daily cap, two of those a monthly one as well, so an evaluator who starts from one usually gets a cap — but a hand-written policy that omits the block has none. |
 | Audit | **On, best-effort.** Hash-chained JSONL, verifiable. Writing is not guaranteed: the chain head advances before the send and a full channel drops the entry, so the log is a record of what got through, not a ledger of what happened. |
 
 **What it does not do.** It does not govern an agent you did not route. It does not
@@ -406,6 +407,7 @@ overstatement.
 | Statement | Why it is provisional | Owner |
 |---|---|---|
 | **"A person can review and release a held action."** Do not write "held for human review", "approval workflow", "a reviewer approves it", or any hero copy implying a human is in the loop | The hold itself is real and fail-closed, but the gateway's approval queue and the queue the CLI/dashboard resolve against live in **different processes with nothing joining them**. Until a bridge ships, the truthful account is "blocked pending a decision, which today no operator surface can supply, so it refuses at timeout." | AAASM-5657 — and it **blocks this page**, so revisit the promise's final clause when it closes rather than leaving the narrower wording in place by default |
+| **"Every decision is recorded."** Do not write "a full audit trail", "nothing goes unrecorded", or any phrasing that treats the log as a ledger of what happened rather than of what got through | Emission is best-effort: the chain head advances before the send, a full channel drops the entry and the call returns anyway, and sibling emit sites discard the error uncounted — so a decision can be made and its record lost, indistinguishably from a deletion. Verification does not close the gap, because it checks the links between the entries that are present. Say "records what was decided" with the durability bound attached, never as a claim that nothing is missing | AAASM-5626 |
 | Any coverage figure — a percentage, a count of governed actions, a fleet-level number | There is no machine-readable manifest to compute it from, and self-reported layer availability is not evidence of coverage (§7) | AAASM-5531 |
 | "Host enforcement on macOS" | ADR 0030's `HostEnforced` rung *is* reachable there — it is the only platform where it is — but it rests on reading back a managed-settings file, and whether the tool honours those keys at runtime is unmeasured. State the route, not the outcome. | AAASM-5526 |
 | "eBPF is available to you" as a property of an installed release | The privileged loader daemon that owns every kernel operation is not part of the published release artifacts, and the probe crates build only on a nightly toolchain. Describe eBPF as a Linux mechanism the architecture supports, not as something a reader can switch on today. | AAASM-5526 |
