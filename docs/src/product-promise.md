@@ -195,7 +195,11 @@ is the specific error the current architecture exists to stop.
   execution and file I/O; they do not participate in any allow/deny decision. There is
   one opt-in syscall guard that terminates a confined process, and it does so
   asynchronously — the offending syscall runs once before the process dies, so it is
-  **Detected**, not *Denied before execution*.
+  **Detected**, not *Denied before execution*. **macOS has no equivalent adapter, and
+  is simultaneously the only platform where the host-enforcement rung is reachable** —
+  through an opt-in, authorized managed-settings write. Both halves are required;
+  writing only the first is the understatement this page bans two sections down.
+  Windows has neither.
 
 **What is on by default, and what is not.** This is the question that most changes an
 evaluation:
@@ -245,7 +249,9 @@ fall-through to another role, and each role's authority is its own.
 
 Send the reader to ADR 0033 §5.3 for the per-platform matrix and §6 for the vocabulary
 itself. Do not restate either here; both are snapshots of a specific release and are
-maintained where they live.
+maintained where they live. One thing §5.3 says that a summariser reliably drops: its
+macOS row ends *"Do not read this as 'no host enforcement on macOS'."* Carry that
+sentence with the row, not just the row.
 
 ## Approved plain-language wording
 
