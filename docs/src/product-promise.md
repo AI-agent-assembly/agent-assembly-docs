@@ -279,6 +279,64 @@ you route through it). Do not "simplify" a product page back up to company altit
 the boundary clause is what makes it a product claim rather than a category
 description.
 
+## Claim-to-evidence mapping
+
+Every material statement above traces to a merged, re-verified source. `E1`–`E7` are
+the evidence blocks in the AAASM-5528 inventory; `§n` refers to ADR 0033.
+
+| Statement | §6 term | Evidence |
+|---|---|---|
+| The decision happens before the action runs, where the refusing component sits in front of it | Denied before execution | §2 caller table; §6 mechanism table; `E7` |
+| The control plane decides but holds no traffic | Evaluated | §2 |
+| The proxy refuses before dialling upstream | Denied before execution | `E2` (CONNECT 403, in-tunnel host re-check, credential block, MCP adjudication) |
+| The SDK is advisory | Evaluated | `E3`, `E7`; ADR 0002 |
+| Approval holds block and fail closed on timeout | Approval required | Gateway approval path: the check awaits the operator's decision, and an elapsed timeout resolves to a refusal |
+| Budget exhaustion resolves to a refusal | Evaluated → Denied before execution | Atomic spend reservation inside the same decision path |
+| `llm_only` defaults on; three built-in LLM hosts are intercepted | Unmeasured (for other payloads) | `E2` |
+| Egress allow/deny lists are empty by default; the SSRF guard is not | — | `E2` |
+| Credential handling defaults to redact-and-forward | Redacted | `E4` |
+| The audit chain is an unkeyed digest over the JSONL sink, verifiable in the open-source build | Observed | `E5` |
+| Kernel probes observe; the syscall guard is opt-in and terminates asynchronously | Observed / Detected | `E1`, §5.1 |
+| Windows has no local mediation | Unsupported | §5.3 |
+| An unrouted action is not inspected | Unmeasured | §4 |
+
+## Provisional
+
+Not asserted in public copy until the owning work lands. Each is here because it is
+*plausible and unverified*, which is exactly the category that produces an
+overstatement.
+
+| Statement | Why it is provisional | Owner |
+|---|---|---|
+| Any coverage figure — a percentage, a count of governed actions, a fleet-level number | There is no machine-readable manifest to compute it from, and self-reported layer availability is not evidence of coverage (§7) | [AAASM-5531](https://lightning-dust-mite.atlassian.net/browse/AAASM-5531) |
+| "Host enforcement on macOS" | ADR 0030's `HostEnforced` rung *is* reachable there — it is the only platform where it is — but it rests on reading back a managed-settings file, and whether the tool honours those keys at runtime is unmeasured. State the route, not the outcome. | [AAASM-5526](https://lightning-dust-mite.atlassian.net/browse/AAASM-5526) |
+| "eBPF is available to you" as a property of an installed release | The privileged loader daemon that owns every kernel operation is not part of the published release artifacts, and the probe crates build only on a nightly toolchain. Describe eBPF as a Linux mechanism the architecture supports, not as something a reader can switch on today. | [AAASM-5526](https://lightning-dust-mite.atlassian.net/browse/AAASM-5526) |
+| A named prevented-outcome demonstration ("we stopped X") | The parent Epic requires a proof that a denied side effect did not execute. Until that harness exists, describe the decision, not the averted consequence. | [AAASM-5532](https://lightning-dust-mite.atlassian.net/browse/AAASM-5532), [AAASM-5529](https://lightning-dust-mite.atlassian.net/browse/AAASM-5529) |
+| Any SaaS availability, region, SLA or compliance commitment | Planned, not available. See [Source of truth & status](source-of-truth.md). | [AAASM-5579](https://lightning-dust-mite.atlassian.net/browse/AAASM-5579) |
+
+## Using this on a page
+
+For the homepage rewrite
+([AAASM-5585](https://lightning-dust-mite.atlassian.net/browse/AAASM-5585)) and the
+Product / How It Works rewrite
+([AAASM-5586](https://lightning-dust-mite.atlassian.net/browse/AAASM-5586)), and for
+any page that makes a product claim:
+
+1. **Quote the promise, do not paraphrase it.** A paraphrase is a new claim. If the
+   layout needs a shorter line, use the headline — and put the subheadline with it.
+2. **Keep the boundary clause above the fold.** Not a footnote, not a tooltip, not a
+   "learn more".
+3. **Pick a §6 term for every verb.** If the sentence works with "protects",
+   "enforces" or "catches", it is not yet specific enough to publish.
+4. **Name the mechanism that delivers the guarantee.** The right guarantee attributed
+   to the wrong component is its own defect class, and it is the one a technical
+   evaluator notices first.
+5. **State the default.** A capability that exists but is off is a different product
+   from one that is on. The Level 3 table is the reference.
+6. **Check the direction of the error both ways.** Understatement is also a defect —
+   approval holds, pre-dial refusal, the SSRF guard and chain verification all ship,
+   and a page that hedges them away is as wrong as one that overstates.
+
 ---
 
 *Last reviewed: 2026-08-06 — AI Agent Assembly Team*
