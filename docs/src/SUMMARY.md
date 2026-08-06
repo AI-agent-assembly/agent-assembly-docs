@@ -37,6 +37,7 @@
 # About
 
 - [Product Promise & Message Hierarchy](product-promise.md)
+- [Page Standards — Disclosure & Metadata](page-standards.md)
 - [SaaS Claim Publication Checklist](saas-claim-publication-checklist.md)
 - [Accessibility](accessibility.md)
 - [Localization](localization.md)
