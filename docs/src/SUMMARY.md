@@ -12,6 +12,7 @@
 # Platform & Security
 
 - [Security Model](security-model.md)
+- [Risk Scenarios](risk-scenarios.md)
 - [Why AI Agent Assembly?](comparison.md)
 - [Open Core Boundary](open-core-boundary.md)
 
@@ -37,7 +38,6 @@
 # About
 
 - [Product Promise & Message Hierarchy](product-promise.md)
-- [Risk Scenarios](risk-scenarios.md)
 - [SaaS Claim Publication Checklist](saas-claim-publication-checklist.md)
 - [Accessibility](accessibility.md)
 - [Localization](localization.md)
