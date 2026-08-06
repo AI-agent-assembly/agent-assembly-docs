@@ -1,6 +1,6 @@
 # Why AI Agent Assembly?
 
-**AI Agent Assembly is a governance layer for AI agents** — a control that sits in the agent's action path and *enforces* policy, tracks cost, and intercepts unsafe actions (unsafe tool calls, network egress, and budget overruns) *before* they execute. Think of it as a security checkpoint in front of every agent action, not a dashboard that reports on actions after they happen. That category distinction is what this comparison is about.
+**AI Agent Assembly is a governance layer for AI agents** — a control that sits in the agent's action path and *enforces* policy, tracks cost, and intercepts unsafe actions (unsafe tool calls, network egress, and budget overruns) *before* they execute. Think of it as a security checkpoint in front of each *governed* agent action — the tool calls your SDK wraps and the outbound requests routed through its proxy — not a dashboard that reports on actions after they happen. Which actions reach that checkpoint depends on how the agent is wired up and launched; see [Known limitations](https://docs.agent-assembly.com/core/latest/devtools/limitations.html). That category distinction is what this comparison is about.
 
 This page helps readers see where AI Agent Assembly fits next to other tools in the AI governance and observability space. All competitor data is taken from each vendor's public documentation as of 2026-05-05.
 
@@ -28,8 +28,8 @@ Legend: ✓ = full support · partial = limited or gated behind a paid tier · �
 | **Policy enforcement** | | | | | |
 | Pre-execution allow / deny (runtime block) | ✓ | ✗ | ✗ | ✗ | partial |
 | Policy-as-code (YAML / JSON versioned rules) | ✓ | ✗ | ✗ | ✗ | ✗ |
-| Network-level interception (no code change) | ✓ (aa-proxy) | ✗ | ✗ | ✗ | ✗ |
-| Kernel-level bypass detection (eBPF) | ✓ | ✗ | ✗ | ✗ | ✗ |
+| Network-level interception (no agent code change) [^proxy] | ✓ (aa-proxy) | ✗ | ✗ | ✗ | ✗ |
+| Kernel-level bypass detection (eBPF) [^ebpf] | ✓ | ✗ | ✗ | ✗ | ✗ |
 | PII / secret detection at gateway | ✓ (regex rules) | partial (post-hoc) | ✗ | partial (evaluators) | ✓ |
 | **Vault-backed secrets management** | | | | | |
 | Secrets vault integration | ✗ | ✗ | ✗ | ✗ | ✓ |
@@ -102,6 +102,19 @@ Last validated 2026-05-05 against each vendor's documentation as of that date.
 - [Open core boundary](open-core-boundary.md) — what is OSS vs. enterprise
 - [Quick start (SaaS)](quickstart-saas.md) — get started in minutes
 
+[^proxy]: No change to your *agent's* code, but the agent process must be
+    launched so that it honours `HTTP_PROXY`/`HTTPS_PROXY` and trusts the
+    proxy's local root CA (trust-store installation is implemented for macOS).
+    Interception is HTTP/1.1 only — HTTP/2, gRPC, and WebSocket are out of
+    scope — and by default only the built-in LLM provider hosts are decrypted;
+    other hosts are tunnelled uninspected unless you list them.
+
+[^ebpf]: Detection, not prevention: the probes emit telemetry and return no
+    verdict, so an action they see is one that already happened. TLS visibility
+    covers OpenSSL-linked processes only, and the layer requires Linux x86_64
+    with a kernel that supports it — it degrades with a warning rather than
+    failing closed if it cannot attach.
+
 ---
 
-*Last reviewed: 2026-07-18 — AI Agent Assembly Team*
+*Last reviewed: 2026-08-06 — AI Agent Assembly Team*
