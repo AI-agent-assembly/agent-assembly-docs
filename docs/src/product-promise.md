@@ -32,12 +32,20 @@ that would need either of those to be verified are collected under
 
 > **Precedence.** Where this hub still carries the superseded three-layer or
 > "IronClaw five-layer" framing — [Security model](security-model.md) and
-> [Glossary](glossary.md) both do, at the time of writing — **ADR 0033 wins**. Those
-> pages are being migrated under AAASM-5586 and AAASM-5609, and ADR 0033 records the
-> gap as a tracked, accepted window. Do not resolve a conflict in the superseded
-> model's favour. Note the rule is one-directional as written — a reader who arrives
-> at those pages first never sees it — so the migration tickets, not this note, are
-> the actual fix.
+> [Glossary](glossary.md) both do, at the time of writing — **ADR 0033 wins**, and
+> ADR 0033 records the gap as a tracked, accepted window. Do not resolve a conflict in
+> the superseded model's favour.
+>
+> The two are not equally owned. `security-model.md` is named in ADR 0033's migration
+> checklist and is covered by AAASM-5586 / AAASM-5609. **`glossary.md` is named by
+> neither** — not by the checklist and not by the claim inventory, whose `docs` rows
+> reach only `README.md` and `comparison.md` — so its residuals are currently
+> unowned and need a ticket of their own. There are at least two: the eBPF entry
+> still says the sensor catches what the layers above miss, and the SDK entry still
+> says the SDK applies allow/deny decisions, which contradicts the advisory finding.
+>
+> Note also that this rule is one-directional — a reader who arrives at those pages
+> first never sees it — so the migration tickets, not this note, are the fix.
 
 Maturity labels (🧪 Release candidate, 🗺️ Planned) belong to
 [Source of truth & status](source-of-truth.md) and answer a *different* question —
@@ -309,7 +317,13 @@ inventory.
      AAASM-5582 / AAASM-5536: the block below necessarily quotes the phrases the
      banned-absolutes gate looks for — a rejected-wording list cannot name its
      rejections otherwise. Skip this region rather than adding per-phrase
-     exceptions, which would also silence the phrases in ordinary prose. -->
+     exceptions, which would also silence the phrases in ordinary prose.
+
+     NOTE: this marker has no consumer today. AAASM-5536 is not started, and this
+     repo's CI runs mdbook plus the three metadata generators only — no link check
+     and no markdownlint. So the convention is a proposal for 5536 to adopt, not a
+     protection in force; whoever builds the gate should either honour this marker
+     or tell this page to stop pretending it will. -->
 
 | Rejected | Why | Inventory rows |
 |---|---|---|
