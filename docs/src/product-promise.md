@@ -202,7 +202,7 @@ fall-through to another role, and each role's authority is its own.
 | SDK client | **Evaluated** (advisory) |
 | eBPF TLS / file / exec probes | **Observed** / **Detected** |
 | eBPF syscall guard | **Detected**, plus asynchronous process termination |
-| WASM sandbox | **Denied before execution**, for tools handed to it |
+| WASM sandbox | **Denied before execution**, for tools handed to it — but it is not on an agent's normal tool-call path, so do not cite it as a general guarantee |
 
 Send the reader to ADR 0033 §5.3 for the per-platform matrix and §6 for the vocabulary
 itself. Do not restate either here; both are snapshots of a specific release and are
@@ -220,7 +220,7 @@ copy; keep the §6 term available wherever a reader might need to verify the cla
 | **Governed path** (managed path) | — (a scope, not a verdict) | "the paths you route through Agent Assembly"; "an agent you launched under Agent Assembly"; "traffic you send through the proxy" | "your agents"; "your fleet"; "your environment" — all three quantify over things you did not route |
 | **Pre-execution** | Denied before execution | "before the action runs"; "before the request leaves the machine"; "before the tool body executes" | "in real time"; "instantly"; "at runtime" — these describe *speed*, not *ordering*, and the ordering is the whole claim |
 | **Evidence** | Observed | "a hash-chained audit record you can verify yourself"; "tamper-evident" | "immutable"; "tamper-proof"; "signed" — the chain is an unkeyed digest, and retention pruning deletes rows |
-| **Host controls** | Observed / Detected (Linux); Unsupported (Windows) | "operating-system-level controls, where the platform has them"; on Linux, "kernel probes that report activity"; the opt-in guard "terminates a confined process after the fact" | "kernel-level enforcement"; "OS-level protection"; anything implying the same mechanism exists on macOS or Windows |
+| **Host controls** | Observed / Detected (Linux); Unsupported (Windows); macOS is its own case — see below | "operating-system-level controls, where the platform has them"; on Linux, "kernel probes that report activity"; the opt-in guard "terminates a confined process after the fact" | "kernel-level enforcement"; "OS-level protection"; anything implying the Linux mechanism exists on macOS or Windows — **and equally**, any blanket "no host enforcement on macOS" |
 | **Managed action** | Evaluated | "an action presented for a decision before it takes effect"; "an action that reached a checkpoint" | "any action"; "each action an agent takes" — the second silently re-adds the quantifier the first removed |
 | **Planned** | Planned | "planned — decided, not built yet", with the ticket reference | "coming soon"; "available in Enterprise"; a roadmap item written in the present tense |
 | **Not inspected** | Unmeasured | "nothing inspected this action, so nothing is known about it" | "allowed"; "clean"; "no issues found" — absence of a finding is a fact about the observer, not the agent |
@@ -234,6 +234,13 @@ in this repository:
   payload was not inspected" — not "nothing was observed".
 - **An empty audit log is evidence about the observer.** It is not evidence that an
   agent did nothing. Never present a quiet log as a result.
+- **macOS needs its own sentence, in both directions.** It has no kernel-level
+  interception adapter, and saying so is required. But it is also the *only* platform
+  on which the host-enforcement rung is reachable today, through an opt-in, authorized
+  managed-settings write. Copy that flattens this into "no host enforcement on macOS"
+  is an understatement defect, and it has been fixed once already — do not
+  reintroduce it. State the route; leave the outcome under
+  [Provisional](#provisional).
 
 ## Rejected wording
 
