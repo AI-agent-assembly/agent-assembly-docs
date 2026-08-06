@@ -149,8 +149,15 @@ setting preventing deletion or update.
 with a non-blocking send; under backpressure that send can fail, and at least one
 call site discards the error. An action can proceed without a persisted entry, so
 absence of an entry is not proof that an action did not occur.
-- Log retention: configurable per tenant (default: 90 days).
-- Logs are exportable in JSON or CEF format for SIEM integration.
+**Retention is an operator-set policy, not a per-tenant setting.** The storage
+drivers apply a retention policy that prunes rows past a configured age. This hub
+does not publish a default retention period or a per-plan retention figure — there
+is no managed service to enforce one.
+
+**Export is JSON Lines, via the CLI.** `aasm audit export` writes JSONL. There is
+no CEF output and no direct SIEM integration; feeding a SIEM means ingesting the
+exported JSONL. See the [core CLI docs](https://docs.agent-assembly.com/core/) for
+the command surface.
 
 ---
 
