@@ -88,6 +88,112 @@ and it needs its own evidence.
 | "held for a person" | **Approval required** | The action is held pending a human decision; a pending approval record exists. |
 | "instead of discovered afterwards" | — | A contrast with after-the-fact observability, not a capability claim. Carries no evidence burden. |
 
+## Progressive disclosure — four levels
+
+A reader should be able to stop at any level and hold a correct picture. Each level
+adds precision; none of them retracts what the level above said.
+
+### Level 1 — one sentence
+
+The promise, verbatim. Nothing shorter is approved, because everything shorter drops
+the boundary clause.
+
+### Level 2 — three steps
+
+**1. Route it.** An agent is on a *governed path* when you have put it there:
+launched through `aasm run`, or started by a developer-tool integration that writes
+the proxy settings into the tool's own configuration, or calling a policy checkpoint
+from an SDK. Routing is a thing you do, per agent and per launch. An agent you did
+not route is not on the path.
+
+**2. Decide it.** Before the action takes effect, the control plane answers against
+your policy, your team budgets and your approval rules. The answer is one of: allow
+it, refuse it, hold it for a person, or forward it with recognised credentials
+removed. Budget exhaustion, a suspended agent and an anomaly detection each resolve
+to a refusal through the same path.
+
+**3. Show it.** The decision is written to a hash-chained audit log that you can
+verify yourself with `aasm audit verify-chain` — that command ships in the
+open-source build. Where nothing inspected an action, the record reports it as
+**Unmeasured** rather than as clean.
+
+> **Who actually refuses.** The control plane decides but holds no traffic; a refusal
+> takes effect through the component in front of the action. Today that is the proxy,
+> which refuses before dialling upstream, or an SDK shim that honours the answer. This
+> distinction is not pedantry — it is why "route it" is step one rather than a
+> footnote.
+
+### Level 3 — for an evaluator
+
+Agent Assembly is a decision point you place in front of an AI agent's actions,
+plus the evidence trail that shows what it decided.
+
+**What it decides.** Which tools an agent may call, which network destinations it may
+reach, how much it may spend, and which actions need a person's sign-off first.
+Policy is versioned YAML/JSON you review through normal Git workflows.
+
+**Where the decision is applied.** Three places, with different authority:
+
+- The **sidecar proxy** is the strongest one. It refuses at CONNECT time, re-checks
+  the host inside the tunnel, blocks or redacts recognised credentials, and
+  adjudicates MCP tool calls — each of those returns before it dials upstream. This
+  is genuine pre-execution refusal, out of the agent's process.
+- The **SDK** wraps your framework's tool seam and raises before the wrapped tool body
+  runs. It is deliberately **advisory**: it is a defence-in-depth posture, not the
+  authoritative gate, and an agent that does not call it is simply not asking.
+- **Operating-system-level controls** are platform-specific and, where they exist
+  today, they mostly *observe*. On Linux, eBPF probes report TLS plaintext, process
+  execution and file I/O; they do not participate in any allow/deny decision. There is
+  one opt-in syscall guard that terminates a confined process, and it does so
+  asynchronously — the offending syscall runs once before the process dies, so it is
+  **Detected**, not *Denied before execution*.
+
+**What is on by default, and what is not.** This is the question that most changes an
+evaluation:
+
+| | Default posture |
+|---|---|
+| Approval holds | **On.** The gateway blocks awaiting the decision, and a timeout resolves to a refusal — fail-closed. Reachable in the open-source install. |
+| Proxy inspection | **Narrow.** `llm_only` defaults to on, which TLS-intercepts three built-in LLM hosts. Any other host is tunnelled without payload inspection: the *connection* is Observed, the *payload* is Unmeasured. |
+| Egress allow/deny lists | **Empty.** You configure them. The one always-on egress control is an SSRF guard that refuses IP-literal targets in loopback, private, link-local and cloud-metadata ranges. |
+| Credential handling | **Redact and forward.** Blocking on a detected credential is opt-in. Model *responses* are not scanned. |
+| SDK enforcement | **Off in the default mode.** A policy refusal blocks a wrapped tool only in the check-capable mode; asking for enforcement without it is refused loudly at init rather than silently allowed. |
+| eBPF | **Off unless deployed.** Linux only, needs a privileged loader daemon, and its syscall guard needs an explicit opt-in on top of that. |
+| Audit | **On.** Hash-chained JSONL, verifiable. |
+
+**What it does not do.** It does not govern an agent you did not route. It does not
+inspect payloads to hosts it is not intercepting. It does not keep a credential out of
+the agent's own process — what it does is scan outbound requests on the inspected
+hosts and remove recognised credentials before forwarding. Its audit chain is
+tamper-*evident*, not signed: it is an unkeyed digest chain over the JSONL sink, so
+anyone able to rewrite that file can recompute it, the database mirror carries no
+chain, and a dropped entry fails verification the same way tampering does. On Windows
+there is no local mediation at all.
+
+### Level 4 — technical handoff
+
+At this depth, stop paraphrasing and hand the reader the canonical sources. ADR 0033
+describes the architecture as six *roles* — a control plane, managed execution
+checkpoints, protocol/transport mediation, platform-specific host-level adapters, a
+credential/capability boundary, and an evidence pipeline. A deployment instantiates
+some subset of them, an absent role is a reportable state rather than a silent
+fall-through to another role, and each role's authority is its own.
+
+| Mechanism | Highest ADR 0033 §6 term it reaches today |
+|---|---|
+| Proxy — CONNECT, in-tunnel host re-check, credential block, MCP adjudication | **Denied before execution**, for traffic routed through it and intercepted |
+| Gateway `check_action` | **Evaluated**; reaches *Denied before execution* only through a caller that blocks on the answer |
+| Runtime policy checkpoint | **Evaluated**; *Denied before execution* only if the SDK shim honours the answer |
+| Runtime scanner | **Redacted** — it runs after the action and returns counters, not a verdict |
+| SDK client | **Evaluated** (advisory) |
+| eBPF TLS / file / exec probes | **Observed** / **Detected** |
+| eBPF syscall guard | **Detected**, plus asynchronous process termination |
+| WASM sandbox | **Denied before execution**, for tools handed to it |
+
+Send the reader to ADR 0033 §5.3 for the per-platform matrix and §6 for the vocabulary
+itself. Do not restate either here; both are snapshots of a specific release and are
+maintained where they live.
+
 ---
 
 *Last reviewed: 2026-08-06 — AI Agent Assembly Team*
