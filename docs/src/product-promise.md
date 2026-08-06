@@ -229,8 +229,10 @@ the agent's own process — what it does is scan outbound requests on the inspec
 hosts and remove recognised credentials before forwarding. Its audit chain is
 tamper-*evident*, not signed: it is an unkeyed digest chain over the JSONL sink, so
 anyone able to rewrite that file can recompute it, the database mirror carries no
-chain, and a dropped entry fails verification the same way tampering does. On Windows
-there is no local mediation at all.
+chain, and a dropped entry fails verification the same way tampering does. Nor does a
+passing verification mean the log is whole — it checks the links between the entries
+that are there, so a deleted-and-recreated log verifies clean. On Windows there is no
+local mediation at all.
 
 ### Level 4 — technical handoff
 
@@ -270,7 +272,7 @@ copy; keep the §6 term available wherever a reader might need to verify the cla
 |---|---|---|---|
 | **Governed path** (managed path) | — (a scope, not a verdict) | "the paths you route through Agent Assembly"; "an agent you launched under Agent Assembly"; "traffic you send through the proxy" | "your agents"; "your fleet"; "your environment" — all three quantify over things you did not route |
 | **Pre-execution** | Denied before execution | "before the action runs"; "before the request leaves the machine"; "before the tool body executes" | "in real time"; "instantly"; "at runtime" — these describe *speed*, not *ordering*, and the ordering is the whole claim |
-| **Evidence** | Observed | "a hash-chained audit record you can verify yourself"; "tamper-evident" | "immutable"; "tamper-proof"; "signed" — the chain is an unkeyed digest, and retention pruning deletes rows |
+| **Evidence** | Observed | "a hash-chained audit record you can verify yourself"; "tamper-evident" | "immutable"; "tamper-proof"; "signed" — the chain is an unkeyed digest, and retention pruning deletes rows. Also avoid "verified" as a synonym for "complete": verification checks the links between the entries present, so an empty log — or one deleted and recreated — passes and exits 0 |
 | **Host controls** | Observed / Detected (Linux); Unsupported (Windows); macOS is its own case — see below | "operating-system-level controls, where the platform has them"; on Linux, "kernel probes that report activity"; the opt-in guard "terminates a confined process after the fact" | "kernel-level enforcement"; "OS-level protection"; anything implying the Linux mechanism exists on macOS or Windows — **and equally**, any blanket "no host enforcement on macOS" |
 | **Managed action** | Evaluated | "an action presented for a decision before it takes effect"; "an action that reached a checkpoint" | "any action"; "each action an agent takes" — the second silently re-adds the quantifier the first removed |
 | **Planned** | Planned | "planned — decided, not built yet", with the ticket reference | "coming soon"; "available in Enterprise"; a roadmap item written in the present tense |
