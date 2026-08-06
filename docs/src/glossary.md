@@ -127,7 +127,8 @@ resolution does succeed the plaintext is returned to the caller. See
 
 **Audit log**
 : The record of policy decisions and agent-reported events, written to
-per-session JSON Lines files, with database tables holding a queryable mirror.
+JSON Lines files, with database tables holding a queryable mirror. A shipped
+gateway writes **one fixed `gateway-default.jsonl`**, not per-session files.
 Four bounds matter and are easy to assume away: the JSONL files are chained with
 an **unkeyed** SHA-256 digest (verify with `aasm audit verify-chain`), so the
 chain detects casual edits but not an actor who can rewrite the file and re-chain

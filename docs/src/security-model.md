@@ -14,7 +14,7 @@ AI Agent Assembly groups its security controls into five named layers. Each laye
 | 2 | **Identity** | Agent and user authentication: the gRPC agent plane is authenticated **in the handlers, not uniformly at the interceptor** — registration is gated by a did:key binding, a single-use identity-bound nonce and an Ed25519 possession proof; subsequent calls carry a random per-agent credential token (UUID, constant-time compare, no expiry). See [Authentication flow](#authentication-flow) for the one gap this leaves. Operator SSO (SAML 2.0 / OIDC) is **not implemented** — see [Authentication flow](#authentication-flow). A separate HMAC-SHA256 JWT (24h TTL) protects the REST/admin surface only, and that surface's auth is **off by default** — see the callout in [Authentication flow](#authentication-flow) below |
 | 3 | **Policy** | Runtime governance: YAML/JSON policy rules evaluated by the gateway policy engine — **for the calls that reach it**, which is not every agent action. SDK-instrumented calls and the proxy's non-LLM MitM path consult the gateway. The proxy's LLM path does **not**: it applies a local in-tunnel egress allowlist and returns 403 itself, without a gateway round-trip — and **that allowlist is empty by default**, so unless an operator configures one it denies nothing on that basis and only the always-on SSRF guard applies. Under the `llm_only` default, hosts the proxy does not intercept are transparently tunnelled and evaluated by nothing |
 | 4 | **Vault** | 🗺️ **Largely aspirational.** An in-memory `SecretsStore` is mounted, but it is empty in every shipped build with no route or command able to populate it, there is no encryption at rest or key management, and successful resolution hands the plaintext back to the caller — see [Secrets management](#secrets-management). Ed25519 is used for the one-time agent registration proof, not for a vault |
-| 5 | **Telemetry** | Audit and observability: per-session JSONL event log with an unkeyed SHA-256 hash chain (verify with `aasm audit verify-chain`), append-only by convention and best-effort on emission — see [Audit log](#audit-log) for the exact bounds; Slack/webhook connectors for alerting on policy violations |
+| 5 | **Telemetry** | Audit and observability: a JSONL event log with an unkeyed SHA-256 hash chain (verify with `aasm audit verify-chain`), append-only by convention and best-effort on emission. **A shipped gateway writes one fixed file, not per-session files** — see [Audit log](#audit-log) for the exact bounds; Slack/webhook connectors for alerting on policy violations |
 
 > **How the five layers relate to the three interception points.** The five *defense-in-depth layers* above (Boundary, Identity, Policy, Vault, Telemetry) describe *what* is protected. The three *interception points* named on the landing page and marketing site — the SDK layer, the sidecar proxy (`aa-proxy`), and the eBPF sensor (`aa-ebpf`) — describe *where* enforcement is applied, and all three sit inside the **Boundary** layer. They are two views of one system, not two competing models.
 
@@ -153,9 +153,17 @@ describes only its current state.
 
 ## Audit log
 
-Policy decisions and agent-reported events are appended to a **per-session JSON
-Lines audit file**, one line per entry. Database tables (`audit_events`,
-`audit_logs`) hold a **mirror** of those records for querying. The properties below
+Policy decisions and agent-reported events are appended to a **JSON Lines audit
+file**, one line per entry. Database tables (`audit_events`, `audit_logs`) hold a
+**mirror** of those records for querying.
+
+> ⚠️ **One fixed file, not per-session files.** The audit path names files
+> `{agent_id}-{session_id}.jsonl`, but both shipped gateway serve paths pass the
+> constants `"gateway"` and `"default"`, so a real deployment produces a single
+> `gateway-default.jsonl` that grows without bound. The per-session capability
+> exists in the code and is never exercised in production. If you are planning
+> retention, rotation, or per-tenant separation around per-session files, you will
+> not get them. The properties below
 are stated precisely, because "immutable audit log" is a claim a security reviewer
 should be able to check rather than take on trust. All of it is verifiable against
 the Apache-2.0
