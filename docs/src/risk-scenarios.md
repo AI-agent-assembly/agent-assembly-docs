@@ -345,7 +345,7 @@ local configuration.
 | **Governed path** | Traffic routed to the proxy, CA trusted, a gateway endpoint configured, and the MCP host intercepted as a non-LLM host. Both **CLI** routes — `aasm proxy start --gateway <url>` (`aa-cli/src/commands/proxy/start.rs:129-133`) and an `aa-runtime`-spawned proxy (`aa-runtime/src/runtime.rs:257-258`) — force `AA_PROXY_LLM_ONLY=false`, widening interception to every host on the machine. The mechanism does **not** require that: see the boundary. |
 | **Policy decision** | **Denied before execution**, and the decider is the **gateway**: `evaluate_mcp_request` (`aa-proxy/src/proxy/mod.rs:614`, invoked at `:834`) calls `aa-gateway PolicyService.CheckAction`. This is the only gateway-bound pre-dial block in the system. |
 | **Prevented outcome** | The `tools/call` envelope is not forwarded. The MCP server never receives the call, so the table is not dropped. |
-| **Evidence** | **Observed** — a decision record. Standing tests: `aa-integration-tests/tests/e2e_mcp_interceptor.rs`, `e2e_mcp_redact.rs`. Malformed and batched envelopes carrying `tools/call` are adjudicated too (row M3). |
+| **Evidence** | **Observed** — a decision record. Standing tests: `aa-integration-tests/tests/e2e_mcp_interceptor.rs`, `e2e_mcp_redact.rs`. Malformed and batched envelopes carrying `tools/call` are adjudicated too (row M3) — but that row's evidence is **unit-only**, and it has a live bypass; see the boundary. |
 | **Known boundary** | See below — the transport bound is the one that matters most. |
 
 **Known boundary, in full:**
@@ -395,6 +395,14 @@ local configuration.
 - **Per-agent MCP policy and per-agent MCP audit do not exist** and must not be
   claimed (AAASM-5533). The decision is not attributed to an individual agent on this
   path.
+- **The batch/malformed-envelope defence (M3) is unit-evidenced and has an open
+  bypass.** Its `evidence_quality` is `unit_only` — the wire-level test
+  `e2e_mcp_interceptor.rs` has **no batch case** — and `mentions_tools_call` inspects
+  only one level (`aa-proxy/src/intercept/mcp.rs:128-130`), so a **nested** batch, or
+  one whose elements carry `params` without a literal top-level `method`, is not
+  detected. For a fix to a bypass ticket (AAASM-4070) that coverage is thin; a
+  wire-level negative control is owned by AAASM-5532. Cite M3 as a defence that
+  exists, not as one that is wire-proven.
 - **Channel and platform** are the proxy's, identical to the flagship's.
 
 **Determination: executable, default-off**, over **HTTP/1.1 `POST` with an explicit
