@@ -208,6 +208,9 @@ evaluation:
 | Credential handling | **Redact and forward.** Blocking on a detected credential is opt-in. Model *responses* are not scanned. |
 | SDK enforcement | **Off in the default mode.** A policy refusal blocks a wrapped tool only in the check-capable mode; asking for enforcement without it is refused loudly at init rather than silently allowed. |
 | eBPF | **Off unless deployed.** Linux only, needs a privileged loader daemon, and its syscall guard needs an explicit opt-in on top of that. |
+| Launching an ungoverned session | **Refused.** `aasm run` will not start a tool when no effective policy resolves, and it will not start one whose policy parses but declares no rule — *"an absent policy is not permission"*, *"an empty policy is unconfigured, not allow-all"*. Both refuse before anything launches. This is the strongest default-on behaviour in the product and the easiest to leave out of a comparison. |
+| The policy engine's fallthrough | **Allow.** Once a policy is in force, an action matching no network, tool, capability or approval rule is allowed. Default-open *within* a policy, default-refuse on *having* one — state both or the pair is misleading. |
+| Budget caps | **None unless declared.** Limit resolution returns nothing when neither a per-agent nor a global limit is configured, so an undeclared budget means uncapped spend. Most shipped policy examples *do* declare daily and monthly caps, so an evaluator who starts from one gets a cap — but a hand-written policy that omits the block has none. |
 | Audit | **On, best-effort.** Hash-chained JSONL, verifiable. Writing is not guaranteed: the chain head advances before the send and a full channel drops the entry, so the log is a record of what got through, not a ledger of what happened. |
 
 **What it does not do.** It does not govern an agent you did not route. It does not
