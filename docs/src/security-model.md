@@ -11,7 +11,7 @@ AI Agent Assembly groups its security controls into five named layers. Each laye
 | Layer | Name | What it does |
 |---|---|---|
 | 1 | **Boundary** | Network perimeter: sidecar proxy (`aa-proxy`) enforces egress policy; eBPF sensor (`aa-ebpf`) catches kernel-level bypass attempts |
-| 2 | **Identity** | Agent and user authentication: the gRPC agent plane is authenticated by a random per-agent credential token (UUID, constant-time compare, no expiry) minted after a one-time Ed25519 possession-proof at registration; operator authentication via SAML 2.0 / OIDC SSO. A separate HMAC-SHA256 JWT (24h TTL) protects the REST/admin surface only, and that surface's auth is **off by default** — see the callout in [Authentication flow](#authentication-flow) below |
+| 2 | **Identity** | Agent and user authentication: the gRPC agent plane is authenticated by a random per-agent credential token (UUID, constant-time compare, no expiry) minted after a one-time Ed25519 possession-proof at registration. Operator SSO (SAML 2.0 / OIDC) is **not implemented** — see [Authentication flow](#authentication-flow). A separate HMAC-SHA256 JWT (24h TTL) protects the REST/admin surface only, and that surface's auth is **off by default** — see the callout in [Authentication flow](#authentication-flow) below |
 | 3 | **Policy** | Runtime governance: YAML/JSON policy rules evaluated by the gateway policy engine before every agent action |
 | 4 | **Vault** | Secret and credential management: AES-256-GCM encryption at rest for stored secrets; Ed25519-signed tokens for inter-component trust |
 | 5 | **Telemetry** | Audit and observability: per-session JSONL event log with an unkeyed SHA-256 hash chain (verify with `aasm audit verify-chain`), append-only by convention and best-effort on emission — see [Audit log](#audit-log) for the exact bounds; Slack/webhook connectors for alerting on policy violations |
@@ -30,7 +30,7 @@ The table below maps each STRIDE category to the five primary components of AI A
 | **Gateway (aa-gateway)** | Credential-token interceptor validates every agent-plane gRPC call (fail-closed on approval/audit/topology/secrets); REST/admin surface can opt into JWT validation, off by default | Input validation on all RPCs; schema-enforced policy rules | JSONL audit log with an unkeyed SHA-256 hash chain (`aasm audit verify-chain`); the DB mirror carries no chain metadata, emission is best-effort, and budget debits are not separately audited — repudiation cover is partial, see [Audit log](#audit-log) | Internal-only gRPC endpoint; never exposed directly | Per-team budget caps block runaway agent spending | RBAC on all administrative API endpoints |
 | **Sidecar Proxy (aa-proxy)** | Per-host CA pinning prevents MitM spoofing by agents | TLS termination with certificate validation on every upstream | All intercepted requests logged by proxy before forwarding | Proxy does not log request/response bodies by default | Connection pool limits per agent; circuit breaker on upstream failure | Proxy runs as unprivileged user; no write access to host filesystem |
 | **eBPF Sensor (aa-ebpf)** | eBPF program loaded only by privileged system service | BPF verifier rejects unsafe programs at load time | Kernel event timestamps are monotonic; cannot be retroactively altered | eBPF only reads SSL buffers; no access to unrelated memory regions | eBPF programs have bounded execution; verifier enforces loop limits | Loaded via CAP_BPF only; capability is dropped after program load |
-| **REST API (aa-api)** | SAML/OIDC token validation on every request | OpenAPI schema validation rejects malformed inputs | All mutating API calls logged with actor identity | HTTPS-only; HSTS enforced; no sensitive data in query strings | Rate limiting per IP and per tenant; DDoS mitigation via upstream load balancer | Tenant isolation enforced at API layer; cross-tenant access rejected |
+| **REST API (aa-api)** | API-key or JWT validation on every request; `aa-api` defaults auth **on**, the local in-memory development mode bypasses it. No SSO | OpenAPI schema validation rejects malformed inputs | All mutating API calls logged with actor identity | HTTPS-only; HSTS enforced; no sensitive data in query strings | Rate limiting per IP and per tenant; DDoS mitigation via upstream load balancer | Tenant isolation enforced at API layer; cross-tenant access rejected |
 
 > **Traceability**: Each STRIDE row maps to a specific IronClaw layer control. For configuration paths and runbook references, consult the security runbook in the `agent-assembly` repository.
 
@@ -83,28 +83,18 @@ sequenceDiagram
   GW-->>SDK: PolicyDecision
 ```
 
-### Operator to console (SAML/OIDC)
+### Operator authentication
 
-Operators sign in through the SaaS console (control plane) — SSO is a hosted
-control-plane flow, not an `aasm` CLI command.
+Operators authenticate to the REST/admin surface with an **API key or a JWT** —
+the same two mechanisms listed in [Cryptographic primitives](#cryptographic-primitives)
+above. There is no third path.
 
-```mermaid
-sequenceDiagram
-  autonumber
-  participant Ops as Operator
-  participant Console as SaaS console (control plane)
-  participant API as aa-api
-  participant IdP as Enterprise IdP (SAML/OIDC)
-
-  Ops->>Console: Sign in with SSO
-  Console->>IdP: Redirect to IdP with SAML AuthnRequest
-  IdP-->>Ops: Login prompt (MFA enforced by IdP)
-  Ops->>IdP: Credentials + MFA
-  IdP-->>Console: SAML Assertion / OIDC id_token
-  Console->>API: Exchange assertion for session token
-  API-->>Console: Signed session token (TTL=8h)
-  Console-->>Ops: Login successful
-```
+> 🗺️ **Operator SSO is planned and not implemented.** This page previously carried
+> a SAML/OIDC sign-in sequence against a hosted console. Neither exists: there is no
+> SSO implementation anywhere in `aa-api`, `aa-gateway`, or `aa-auth`, and no console
+> to sign in to. Treat identity federation as a design intent — see
+> [Open core boundary](open-core-boundary.md) — not as an available control, and do
+> not plan an IdP integration against it.
 
 ---
 
