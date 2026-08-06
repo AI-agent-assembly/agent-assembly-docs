@@ -17,7 +17,7 @@ them:
 
 | Source | What it supplies | Where |
 |---|---|---|
-| **ADR 0033 — Canonical Governance & Enforcement Architecture** | The architecture, the platform matrix, and §6's **claim vocabulary**. Every clause of the promise below is expressed in one of §6's terms. | [`docs/src/adr/0033-…`](https://docs.agent-assembly.com/core/adr/0033-canonical-governance-and-enforcement-architecture.html) in the `agent-assembly` repository |
+| **ADR 0033 — Canonical Governance & Enforcement Architecture** | The architecture, the platform matrix, and §6's **claim vocabulary**. Every clause of the promise below is expressed in one of §6's terms. | [ADR 0033](https://docs.agent-assembly.com/core/latest/adr/0033-canonical-governance-and-enforcement-architecture.html) in the core docs |
 | **AAASM-5528 — public claim inventory** | 69 audited rows of what may and may not be said, each tied to a re-verified evidence block (`E1`–`E7`). | `verification-reports/AAASM-5528-public-claim-inventory.md` in the `agent-assembly` repository |
 
 Two further sources are chartered but not yet available, so nothing here depends on
