@@ -116,6 +116,12 @@ the proxy settings into the tool's own configuration, or calling a policy checkp
 from an SDK. Routing is a thing you do, per agent and per launch. An agent you did
 not route is not on the path.
 
+Not every tool has a managed launch to offer. One shipped adapter returns a launch
+failure rather than a governed command, and another is hard-capped at observation —
+for those, no proxy environment is injected and there is no data-path mediation to
+route into. "Supported tool" and "governable tool" are different lists; check the
+per-adapter boundaries before implying the second.
+
 **2. Decide it.** Before the action takes effect, something on the path decides
 whether it may proceed — and *which* thing depends on the path. The control plane
 answers policy, budget and approval questions: allow, refuse, or block pending an
