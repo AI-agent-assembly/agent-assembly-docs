@@ -103,8 +103,9 @@ The term is retained here only so a reader who met the old claim can find its
 correction.
 
 **HMAC-SHA256**
-: A keyed hash used to sign audit-log entries and webhook payloads so
-tampering is detectable.
+: A keyed hash. Used here for the REST/admin session JWT and for outbound
+webhook signatures. It is **not** used on audit-log entries — there is no
+log-signing key anywhere in the codebase; see **Audit log** below.
 
 **IronClaw five-layer defense**
 : The name for AI Agent Assembly's defense-in-depth model — five security
@@ -115,7 +116,14 @@ secret store, encryption-at-rest, or key-management component ships today. See
 the [Security model](security-model.md).
 
 **Audit log**
-: The append-only record of every agent action (policy checks, events, budget
-debits). The open-source build ships a *basic* audit log; the *tamper-evident
-signed* audit log (HMAC-SHA256) is an Enterprise capability — see
-[Open Core Boundary](open-core-boundary.md).
+: The record of policy decisions and agent-reported events, written to
+per-session JSON Lines files, with database tables holding a queryable mirror.
+Four bounds matter and are easy to assume away: the JSONL files are chained with
+an **unkeyed** SHA-256 digest (verify with `aasm audit verify-chain`), so the
+chain detects casual edits but not an actor who can rewrite the file and re-chain
+it; the database mirror carries **no** chain metadata and cannot be verified;
+the log is append-only **by convention**, not by an enforced constraint; and
+emission is **best-effort**, so an entry can be dropped under backpressure and
+budget debits produce none at all. Absence of an entry is not proof that an
+action did not occur. See [Audit log](security-model.md#audit-log) for the full
+statement.
