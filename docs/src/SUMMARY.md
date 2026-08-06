@@ -12,6 +12,7 @@
 # Platform & Security
 
 - [Security Model](security-model.md)
+- [Risk Scenarios](risk-scenarios.md)
 - [Why AI Agent Assembly?](comparison.md)
 - [Open Core Boundary](open-core-boundary.md)
 
