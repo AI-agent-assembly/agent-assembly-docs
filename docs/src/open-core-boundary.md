@@ -3,9 +3,15 @@
 AI Agent Assembly follows an **open-core** model. The line is simple:
 
 - **Enforcement is open source.** The interception layers, policy engine, SDK shims, and CLI are Apache-2.0. Anyone can read, audit, and contribute to them.
-- **Enterprise operations are commercial.** Features like SSO, SCIM, advanced audit, and multi-region data residency are covered by the AAA-Commercial license and available on paid SaaS tiers.
+- **Enterprise operations are intended to be commercial.** Capabilities such as SSO, SCIM, advanced audit, and multi-region data residency are planned for a commercial tier. That tier is not available, its licence terms are not published, and there is no paid plan to buy.
 
-> **A limited-function OSS stack is self-hostable; full functionality is SaaS.** You can self-host a limited-function stack from the Apache-2.0 crates — using the published Docker Compose example — for local evaluation and development. The complete feature set (enterprise operations, multi-tenant SLA, and the managed compliance posture) is delivered only through the AI Agent Assembly cloud. See [Cloud Deployment](cloud-deployment.md) and [Quick Start (SaaS)](quickstart-saas.md) for the managed onboarding paths.
+> 🗺️ **The commercial side of this boundary is planned, not available.** You can
+> self-host a limited-function stack from the Apache-2.0 crates today — using the
+> published Docker Compose example — for local evaluation and development. The
+> managed service that is intended to deliver the commercial capabilities is not
+> running; see [Cloud deployment](cloud-deployment.md) and
+> [Quick start (SaaS)](quickstart-saas.md) for what that means in practice, and
+> [Source of truth & status](source-of-truth.md) for the canonical maturity label.
 
 ---
 
@@ -22,9 +28,9 @@ An enterprise cannot take our word for how the policy engine evaluates rules, ho
 The split between open and commercial follows one principle: **enforcement is open; enterprise operations are commercial.**
 
 - If a feature controls *what agents can do*, it belongs in the Apache-2.0 core.
-- If a feature controls *how operators manage, scale, or audit the system at enterprise grade* — SSO federation, SCIM user lifecycle, long-retention tamper-evident audit logs, multi-region data residency — it belongs in the commercial tier.
+- If a feature controls *how operators manage, scale, or audit the system at enterprise grade* — identity federation, directory-driven user lifecycle, longer-retention and higher-assurance audit storage, regional deployment control — it belongs in the commercial tier.
 
-A motivated team can fork, read, or contribute to every security control in the stack, regardless of subscription status.
+A motivated team can fork, read, or contribute to the security controls listed as Apache-2.0 below, regardless of subscription status.
 
 ### Open source strengthens the core
 
@@ -32,11 +38,16 @@ Open-sourcing the enforcement logic creates a community feedback loop. Security 
 
 We chose Apache-2.0 specifically because it permits commercial integration without a copyleft obligation — SDK users can embed the shims in proprietary products without the license spreading to their own code.
 
-### Limited-function self-host, full-function SaaS
+### Limited-function self-host today; managed service planned
 
-Shipping the crates as open source lets teams read, audit, and contribute — and self-host a **limited-function** stack (via the published Docker Compose example) for local evaluation and development.
+Shipping the crates as open source lets teams read, audit, and contribute — and self-host a **limited-function** stack (via the published [Docker Compose example](docker-containers.md#compose)) for local evaluation and development.
 
-The **complete** feature set stays SaaS. Operating a multi-tenant platform with the security and reliability commitments in the [Security model](security-model.md) takes infrastructure, on-call, and operational expertise that a self-managed install cannot match — so enterprise operations, the uptime SLA, and the managed compliance posture are delivered only through the AI Agent Assembly cloud.
+The enterprise-operations capabilities are intended to be delivered as a managed
+service rather than as self-managed software, because operating a multi-tenant
+platform takes infrastructure and on-call capability that a self-managed install
+does not get for free. That is a design intent, not a shipped service: the
+managed platform is not running, and this hub publishes no availability, support,
+or compliance commitment for it.
 
 ---
 
