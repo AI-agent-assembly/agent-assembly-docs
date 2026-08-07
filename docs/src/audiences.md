@@ -509,7 +509,7 @@ Status values: **✅ satisfied** — a published page carries it on that audienc
 | `IR-SE1-d` | `SE1` | The platform matrix, stated in both directions | core ADR 0033 §5.3; restated on the hub by [`product-promise.md`](product-promise.md) — which carries the macOS row in both directions explicitly — and by [`README.md`](README.md)'s layer 2/3 notes | ◐ partial — restated in prose on two pages, but as neither a matrix nor anything on the `security-engineer` route (`GAP-1`) |
 | `IR-SE2-a` | `SE2` | That an uninspected action is reported as *Unmeasured*, never as clean | [`product-promise.md`](product-promise.md), [`risk-scenarios.md`](risk-scenarios.md) | ✅ satisfied |
 | `IR-SE2-b` | `SE2` | What a passing chain verification does and does not establish | [`product-promise.md`](product-promise.md) | ✅ satisfied |
-| `IR-SE3-a` | `SE3` | The vulnerability reporting address for the repository in question | each repo's `SECURITY.md`, falling back to the org default | ◐ partial (`GAP-1`) — no hub route names it; a sweep for `SECURITY.md`, `security@` and *report a vulnerability* returns zero on every hub page, against a control that hits 14 |
+| `IR-SE3-a` | `SE3` | The vulnerability reporting address for the repository in question | each repo's `SECURITY.md`, falling back to the org default | ◐ partial (`GAP-1`) — no hub route names it; a sweep for `SECURITY.md`, `security@` and *report a vulnerability* returns zero on every hub page, against a control (`security`) that hits on 14 of the 23 |
 
 ### Requirements for `auditor`
 
@@ -594,9 +594,11 @@ guarantee without the new format.
 `IR-DV1-a` asks for a language-specific first checkpoint *reachable from* this hub, and
 the temptation is to close it by writing one here. That would be the wrong fix twice
 over. `content-ownership.md` puts per-language API surfaces at L3 and forbids L2 a
-reference of its own for anything a component owns; this repository's own contributing
-guidance says the hub orients readers toward component docs and does not re-author their
-install steps or API surface, *"which would only drift"*. A checkpoint written here would
+reference of its own for anything a component owns; and this repository's own project
+instructions at
+[`.claude/CLAUDE.md`](https://github.com/ai-agent-assembly/docs/blob/HEAD/.claude/CLAUDE.md)
+say the hub orients readers toward component docs and does not re-author their install
+steps or API surface, *"which would only drift"*. A checkpoint written here would
 be a derivative reproducing its source at the same depth — the defect
 [`page-standards.md`](page-standards.md) names when it forbids a summary that replaces
 its source.
@@ -614,12 +616,13 @@ lost, but none is this page's to fix and none blocks a requirement.
   not contain.** [`docker-containers.md`](docker-containers.md) states that five
   multi-arch images are published to `ghcr.io/ai-agent-assembly`; the manifest's
   `released_channels` values across all eighty rows are `crates_io`, `github_release`,
-  `homebrew`, `install_script`, `pypi`, `npm` and `go_modules`, with no Docker or GHCR
-  value. `GAP-3`'s page-shape is *a matrix generated from the manifest*, so a matrix
+  `homebrew`, `install_script`, `pypi`, `npm` and `go_modules` — eight distinct values
+  counting the sentinel `not_applicable`, which is not a channel and must not become a
+  column — with no Docker or GHCR value. `GAP-3`'s page-shape is *a matrix generated from the manifest*, so a matrix
   built faithfully from that vocabulary would ship **without a GHCR column** while the
   hub separately documents the images. Whether GHCR belongs in the manifest is the
-  manifest's owner's call under AAASM-5531, not this page's — but 5594 needs to know
-  before it generates anything.
+  manifest's owner's call, not this page's, and is now tracked as **AAASM-5680** — but
+  5594 needs to know before it generates anything.
 - **`glossary.md` also carries the superseded model.**
   [`product-promise.md`](product-promise.md) names **two** pages still carrying the
   older framing — `security-model.md` *and* `glossary.md`. `GAP-5` is scoped to the
@@ -687,7 +690,7 @@ Answer four questions in order. The first two are the ones that catch a misplace
 | **AAASM-5585 · AAASM-5587** | The `evaluator` entry and its requirements, including the default-posture table gap `GAP-8` — whose constraint is *a level-3 surface on the route*, not a page of any particular `page_type` |
 | **AAASM-5596 · AAASM-5608 · AAASM-5611** | The per-audience *never hidden* lists, which bound what a rewritten page may drop. `GAP-5` covers `security-model.md`; `glossary.md` carries the same superseded framing under AAASM-5658 and is **not** in that gap |
 | **`page-standards.md`** | Two records: that the `evaluator` value cannot separate `EV1` from `EV3`, and that its AAASM-5531 pending note is now stale |
-| **AAASM-5531 / the manifest's owner** | That GHCR is a published channel absent from the `released_channels` vocabulary, which a generated channel matrix would inherit as a missing column |
+| **AAASM-5680** | That GHCR is a published channel absent from the `released_channels` vocabulary, which a generated channel matrix would inherit as a missing column. Also that `not_applicable` is a sentinel in that vocabulary, not a channel, so a generator keying columns on distinct values must exclude it |
 
 ---
 
