@@ -602,7 +602,7 @@ and the two an evaluator checks first.
 | RC6 | `G10` | `unmeasured` | `post` | `open` | `fail_open` | `shipped`; AAASM-5626 |
 | RC7 | `N5`, `N10`, `N12`, `S10`, `S11`, `S12`, `L6`, `H1`, `H6`, `H7` | `unmeasured` | `none` | `not_applicable` / `on` (`N5`) | `not_applicable` | `H1`, `H6`, `H7` are `absent_mechanism` |
 | RC8 | `H2`, `H3`, `H4`, `N13`, `I4`, `P1`, `P2` | `detected` (`H2`), `observed` (`H4`, `P2`), `experimental` (`P1`), `unmeasured` (`H3`, `N13`, `I4`) | `post` | `off` (`H2`, `P1`) / `on` (rest) | `fail_open` | `shipped_crates_io_only` — the loader daemon is unreleased |
-| RC9 | `L1`; `P3` | `denied_before_execution` (`L1`), `unsupported` (`P3`) | `pre` (`L1`) | `on` | `fail_closed` | `L1` `protection_state: host_enforced`, macOS only, unearned at `v0.0.1-rc.6`; `P3` demoted to `integrated`, `tool_governance_only` |
+| RC9 | `L1`; `P3` | `denied_before_execution` (`L1`), `unsupported` (`P3`) | `pre` (`L1`) / `in_line` (`P3`) | `on` (both) | `fail_closed` (both) | `L1` `protection_state: host_enforced`, macOS only, unearned at `v0.0.1-rc.6`; `P3` demoted to `integrated`, `tool_governance_only` |
 | RC10 | `G6`; `G11`; `G7` | `degraded` (`G6`), `unmeasured` (`G7`, `G11`) | `none` (`G6`, `G7`) / `post` (`G11`) | `open` (`G6`, `G7`) / `not_applicable` (`G11`) | `fail_open` (`G6`) / `fail_open_silent` (`G7`, `G11`) | `G6` is the only `degraded` row |
 | RC11 | `G1`, `G3`, `G8`; `G2` | `denied_before_execution` (`G1`, `G3`), `evaluated` (`G8`), `unmeasured` (`G2`) | `pre` | `closed` (`G1`, `G3`, `G8`) / `open` (`G2`) | `fail_closed`; `G2` is `fail_open` | `shipped` |
 | RC12 | *(none)* | — | — | — | — | No row reaches `approval_required` |
