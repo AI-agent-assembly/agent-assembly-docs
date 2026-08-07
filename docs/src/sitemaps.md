@@ -404,6 +404,14 @@ authoring its own product truth.
 all six. L1 gets five, and the sixth is a deliberate omission rather than a gap left
 open, so it is accounted for here rather than in the gap table alone.
 
+**One of the five is contingent, and the number is worthless to a planner who does not
+know which.** `evaluator`'s L1 entry is `/` — and `audiences.md` says of the site as it
+stands that it *"publishes four pages and a blog and routes by none of them"*. So `/`
+is not an evaluator entry today; it becomes one when **AAASM-5585** rewrites it around
+problem, governed decision, outcome and proof. Until that lands, L1 has **four**, not
+five. AAASM-5585 and AAASM-5587 both consume this count, and neither should read it as
+already true.
+
 | `audience` | L1 entry | L2 entry |
 | --- | --- | --- |
 | `evaluator` | `/`, and `/maturity` for the forward-looking half | Evaluate |
