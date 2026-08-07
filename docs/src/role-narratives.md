@@ -442,8 +442,8 @@ see Limitations.
 - The publication gate on prevented-outcome wording: the **Tier 1 / Tier 2** split in
   the same page. Tier 2 is settled in wording and **not publishable** until AAASM-5532
   and AAASM-5529 close.
-- Per-row evidence, and its quality: the `evidence`, `evidence_runs_on_main` and
-  `evidence_quality` fields in the
+- Per-row evidence: the `evidence` and `evidence_runs_on_main` fields, present on all
+  80 rows, in the
   [capability manifest](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/governance/capability-manifest.yaml).
 - What is deliberately not asserted yet: the **Provisional** table in
   [Product promise](product-promise.md).
@@ -583,20 +583,20 @@ and the two an evaluator checks first.
 |---|---|---|---|---|---|---|
 | RC1 | `N1` | `denied_before_execution` | `pre` | `open` (lists empty) | `fail_open` | `shipped_with_platform_exception`; macOS crates.io only |
 | RC2 | `N2` | `denied_before_execution` | `pre` | `on` | `fail_closed` | as `N1` |
-| RC3 | `N3`, `C1`, `C4`, `C6`, `G4` | `denied_before_execution`, `redacted`, `detected`, `unmeasured` (`C4`) | `in_line` | `on` (`N3`) / `open` (`C1`, `G4`) | `fail_closed` (`N3`) / `fail_open` (`C1`, `C6`, `G4`) | as `N1`; `C6` ships everywhere |
+| RC3 | `N3`, `C1`, `C4`, `C6`, `G4` | `denied_before_execution` (`N3`), `redacted` (`C1`, `G4`), `detected` (`C6`), `unmeasured` (`C4`) | `in_line` (all) | `on` (`N3`, `C6`) / `open` (`C1`, `G4`) / `not_applicable` (`C4`) | `fail_closed` (`N3`, `C4`) / `fail_open` (`C1`, `C6`, `G4`) | as `N1`; `C6` ships everywhere |
 | RC4 | `M1`, `M3` | `denied_before_execution` | `pre` | `off` (`M1`) / `on` (`M3`) | `fail_closed` | as `N1`; `M3` evidence is `unit_only` |
-| RC5 | `S1`, `S2`, `S5`, `S6`, `S7`, `S8`, `S9`, `S13`, `G5` | `denied_before_execution`, `evaluated`, `unmeasured` (`S7`) | `pre` | `on` (`S1`, `S2`, `S6`) / `off` (`S5`, `S8`) / `open` (`S7`) | `fail_closed`, except `fail_open_silent` on `S5` and `S7` | `shipped`; `S13` has no non-test caller in-repo |
+| RC5 | `S1`, `S2`, `S5`, `S6`, `S7`, `S8`, `S9`, `S13`, `G5` | `denied_before_execution` (`S1`, `S2`, `S5`, `S8`), `evaluated` (`S6`, `S9`, `S13`, `G5`), `unmeasured` (`S7`) | `pre` (all) | `on` (`S1`, `S2`, `S6`) / `off` (`S5`, `S8`) / `open` (`S7`) / `closed` (`S9`) / `mixed` (`G5`) / `not_applicable` (`S13`) | `fail_closed` (`S1`, `S2`, `S6`, `S8`, `S9`, `S13`, `G5`) / `fail_open_silent` (`S5`, `S7`) | `shipped`; `S13` has no non-test caller in-repo |
 | RC6 | `G10` | `unmeasured` | `post` | `open` | `fail_open` | `shipped`; AAASM-5626 |
 | RC7 | `N5`, `N10`, `N12`, `S10`, `S11`, `S12`, `L6`, `H1`, `H6`, `H7` | `unmeasured` | `none` | `not_applicable` / `on` (`N5`) | `not_applicable` | `H1`, `H6`, `H7` are `absent_mechanism` |
 | RC8 | `H2`, `H3`, `H4`, `N13`, `I4`, `P1`, `P2` | `detected` (`H2`), `observed` (`H4`, `P2`), `experimental` (`P1`), `unmeasured` (`H3`, `N13`, `I4`) | `post` | `off` (`H2`, `P1`) / `on` (rest) | `fail_open` | `shipped_crates_io_only` — the loader daemon is unreleased |
 | RC9 | `L1`; `P3` | `denied_before_execution` (`L1`), `unsupported` (`P3`) | `pre` (`L1`) | `on` | `fail_closed` | `L1` `protection_state: host_enforced`, macOS only, unearned at `v0.0.1-rc.6`; `P3` demoted to `integrated`, `tool_governance_only` |
-| RC10 | `G6`; `G11`; `G7` | `degraded` (`G6`), `unmeasured` (`G7`, `G11`) | `none` / `post` | `open` | `fail_open` (`G6`) / `fail_open_silent` (`G7`, `G11`) | `G6` is the only `degraded` row |
+| RC10 | `G6`; `G11`; `G7` | `degraded` (`G6`), `unmeasured` (`G7`, `G11`) | `none` (`G6`, `G7`) / `post` (`G11`) | `open` (`G6`, `G7`) / `not_applicable` (`G11`) | `fail_open` (`G6`) / `fail_open_silent` (`G7`, `G11`) | `G6` is the only `degraded` row |
 | RC11 | `G1`, `G3`, `G8`; `G2` | `denied_before_execution` (`G1`, `G3`), `evaluated` (`G8`), `unmeasured` (`G2`) | `pre` | `closed` (`G1`, `G3`, `G8`) / `open` (`G2`) | `fail_closed`; `G2` is `fail_open` | `shipped` |
 | RC12 | *(none)* | — | — | — | — | No row reaches `approval_required` |
 | RC13 | `G9` | `unmeasured` | `pre` | `open` | `fail_open_silent` | `shipped` |
 | RC14 | `P4`, `N8`, `N11`, `M8` | `unsupported` | `none` | `not_applicable` | `not_applicable` | `P4`, `M8` are `absent_mechanism` |
-| RC15 | `L1`, `L2`, `L3`, `L4`, `L5`, `L7`, `L8`, `H8`, `M10` | `denied_before_execution` (`L1`), `observed` (`L5`), `unsupported` (`L4`), `unmeasured` (rest) | `pre` / `post` / `none` | `on` (`L1`, `L2`, `L3`) / `off` (rest) | `fail_closed` (`L1`) / `fail_open_silent` (`L2`, `L3`, `L7`, `H8`, `M10`) | `shipped`; `L4` cannot launch by construction |
-| RC16 | `I1`, `I2`, `I3`, `I5`, `I6`, `I7` | `evaluated`, `unmeasured` (`I4`, `I6`) | `pre` | `on` (`I1`–`I3`) / `off` (`I5`) / `open` (`I7`) | `fail_closed` (`I1`–`I3`) / `fail_open` (`I5`, `I7`) | `shipped` |
+| RC15 | `L1`, `L2`, `L3`, `L4`, `L5`, `L7`, `L8`, `H8`, `M10` | `denied_before_execution` (`L1`), `observed` (`L5`), `unsupported` (`L4`), `unmeasured` (`L2`, `L3`, `L7`, `L8`, `H8`, `M10`) | `pre` (`L1`, `L2`, `L3`, `L7`, `H8`, `M10`) / `post` (`L5`) / `none` (`L4`, `L8`) | `on` (`L1`, `L2`, `L3`) / `off` (`L5`, `L7`, `L8`, `H8`, `M10`) / `not_applicable` (`L4`) | `fail_closed` (`L1`) / `fail_open_silent` (`L2`, `L3`, `L7`, `H8`, `M10`) / `not_applicable` (`L4`, `L5`, `L8`) | `shipped`; `L4` cannot launch by construction |
+| RC16 | `I1`, `I2`, `I3`, `I5`, `I6`, `I7` | `evaluated` (`I1`, `I2`, `I3`, `I5`, `I7`), `unmeasured` (`I6`) | `pre` (`I1`–`I3`, `I5`, `I7`) / `none` (`I6`) | `on` (`I1`–`I3`) / `off` (`I5`) / `open` (`I7`) / `not_applicable` (`I6`) | `fail_closed` (`I1`–`I3`) / `fail_open` (`I5`, `I7`) / `not_applicable` (`I6`) | `shipped` |
 
 **How to use this table when a brief changes.** Re-resolve the row, not the sentence.
 If a manifest row's `coverage`, `default_state` or `failure_posture` moves, the register
