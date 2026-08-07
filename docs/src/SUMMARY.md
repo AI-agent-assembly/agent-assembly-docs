@@ -41,6 +41,7 @@
 - [Role Narratives](role-narratives.md)
 - [Page Standards — Disclosure & Metadata](page-standards.md)
 - [Audiences, Jobs & Information Requirements](audiences.md)
+- [Product Website & Docs Hub Sitemaps](sitemaps.md)
 - [SaaS Claim Publication Checklist](saas-claim-publication-checklist.md)
 - [Accessibility](accessibility.md)
 - [Localization](localization.md)
