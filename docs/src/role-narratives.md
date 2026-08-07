@@ -625,6 +625,7 @@ four role pages describing one product.
 | The homepage, the Product page and the How It Works page | AAASM-5585, AAASM-5586 |
 | The audience enum and the role crosswalk this page aligns to | AAASM-5591 |
 | Adding capability rows for the evidence pipeline and for budget enforcement, so RC6 and RC13 can move off `Unmeasured` | AAASM-5531 |
+| Reconciling [Risk scenarios](risk-scenarios.md)'s T3, which publishes budget at *Evaluated* over a row set the same table records as having **no positive row**, against RC13's `Unmeasured`. The two pages disagree today; this one is the narrower and says so, but a disagreement between two Docs Hub pages is a defect to close, not a difference to keep | AAASM-5531 |
 | Lifting the Tier 2 gate on prevented-outcome wording | AAASM-5532, AAASM-5529 |
 | Making `Approval required` claimable — a shipped operator surface for a held action | AAASM-5657 |
 | Rendering a degradation event anywhere a user can see it | AAASM-5535 |
