@@ -542,6 +542,13 @@ settles and leaves the rest explicitly open.
 - **What they may say** — bounded by
   [`saas-claim-publication-checklist.md`](saas-claim-publication-checklist.md).
 
+**On the two ticket references, because 5608 will otherwise stop and check.**
+AAASM-5608's scope names *SaaS documentation from **AAASM-4224***; this page maps
+**AAASM-4237**. That is not a contradiction and neither reference is wrong: 4224 is the
+SaaS-documentation Epic and 4237 is the information-architecture Task beneath it. This
+page consumes the Task, whose output is the IA; 5608's scope names the Epic, whose
+output is the documentation set. Both stand at their own granularity.
+
 **Still 4237's:** the SaaS-specific audience sub-model, the screenshots and diagrams
 policy, documentation review ownership, and how SaaS docs reference the private `cloud`
 and E2E repositories without crossing the public content boundary.
