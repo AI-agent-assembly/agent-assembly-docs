@@ -199,9 +199,10 @@ manifest's and is named as such.
 
 **The letter is the domain, not the owning component**, and `G` is where that distinction
 bites. Every `G` row is `domain: degraded_mode` — the series is about *what happens when
-a control cannot run*, not about the gateway. Only four of the eleven are owned by
-`aa-gateway`; the rest belong to `aa-runtime`, `aa-proxy` and the SDK. This matters for
-reading the citations below rather than as a point of order: `G9` is this page's
+a control cannot run*, not about the gateway. Only **three** of the eleven are owned by
+`aa-gateway` — `G8`, `G9`, `G10`; the other eight belong to `aa-runtime` (five),
+`aa-proxy` (two) and the SDK (one). This matters for reading the citations below rather
+than as a point of order: `G9` is this page's
 recurring failure-posture exemplar precisely **because** it is a degraded-mode row, and a
 reader who took `G` for "gateway" would look for degradation somewhere else and not find
 it.
