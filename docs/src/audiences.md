@@ -412,10 +412,11 @@ narrowly: `S1`'s `known_bypasses` list the same items plus *not calling
 developer needs the boundary, but as a precondition on their own code rather than as a
 security chapter.
 
-**Entry · next · escalation.** Entry: **no language route from this hub today** — gap
-`GAP-7`. Next: the SDK documentation mounted at `/python-sdk/`, `/node-sdk/` and
-`/go-sdk/` by the aggregation pipeline. Escalation: the core API reference and the
-runnable examples at L4.
+**Entry · next · escalation.** Entry: [`README.md`](README.md)'s *SDKs & components*
+table, or [`documentation.md`](documentation.md) — both branch by language, and neither
+is in the sidebar (gap `GAP-7`). Next: the SDK documentation mounted at `/python-sdk/`,
+`/node-sdk/` and `/go-sdk/` by the aggregation pipeline, which is where the first
+checkpoint lives. Escalation: the core API reference and the runnable examples at L4.
 
 ---
 
@@ -444,8 +445,8 @@ to the source before the derivative.
 **Never hidden.** That depth is not a defect — no rule in this programme may be cited to
 thin a component's documentation. That understating is a defect too — graded below
 broadening by ADR 0034, but a defect, and a contributor trimming for brevity is the
-commonest way one gets introduced. That an ownership dispute is a decision, not an edit, and stops rather
-than resolves inside a content pull request.
+commonest way one gets introduced. That an ownership dispute is a decision, not an edit,
+and stops rather than resolves inside a content pull request.
 
 **Belongs elsewhere.** Positioning copy and conversion paths. A contributor reading
 those is reading the wrong layer for their job.
@@ -487,9 +488,9 @@ Status values: **✅ satisfied** — a published page carries it on that audienc
 
 | ID | Job | What a page must supply | Where it is satisfied today | Status |
 | --- | --- | --- | --- | --- |
-| `IR-EV1-a` | `EV1` | The one approved promise, with its boundary clause on the same screen | [`product-promise.md`](product-promise.md) | ◐ partial — filed under *About*, not on an evaluator route |
+| `IR-EV1-a` | `EV1` | The one approved promise, with its boundary clause on the same screen | [`product-promise.md`](product-promise.md) | ◐ partial (`GAP-1`, `GAP-8`) — filed under *About*, and no evaluator route reaches it |
 | `IR-EV1-b` | `EV1` | One concrete story of a decision the product made, with its determination | [`risk-scenarios.md`](risk-scenarios.md) | ✅ satisfied |
-| `IR-EV1-c` | `EV1` | What is on by default, as a table rather than as prose | [`product-promise.md`](product-promise.md) level 3 | ◐ partial — one satisfier, and it is not on the route (`GAP-8`) |
+| `IR-EV1-c` | `EV1` | What is on by default, as a table rather than as prose | [`product-promise.md`](product-promise.md) level 3 | ◐ partial (`GAP-1`, `GAP-8`) — one satisfier, and it is not on the route |
 | `IR-EV2-a` | `EV2` | Per capability: whether it ships, on which channel and which platform | manifest `released_channels` / `released_platforms` (L6) | ✗ gap `GAP-3`, `GAP-4` |
 | `IR-EV2-b` | `EV2` | Per capability: whether anything reaches it by default | manifest `default_state` (L6); [`product-promise.md`](product-promise.md) for the headline set | ◐ partial |
 | `IR-EV2-c` | `EV2` | The stated limit that changes what may be relied on | [`product-promise.md`](product-promise.md), [`risk-scenarios.md`](risk-scenarios.md) known-boundary blocks | ✅ satisfied |
@@ -502,12 +503,12 @@ Status values: **✅ satisfied** — a published page carries it on that audienc
 | ID | Job | What a page must supply | Where it is satisfied today | Status |
 | --- | --- | --- | --- | --- |
 | `IR-SE1-a` | `SE1` | The trust boundary, in the current architecture rather than a superseded one | core ADR 0033 and the core security section | ◐ partial — the hub entry page is superseded (`GAP-5`) |
-| `IR-SE1-b` | `SE1` | The enumerated bypasses, published rather than implied | [`risk-scenarios.md`](risk-scenarios.md); manifest `known_bypasses` | ◐ partial — complete only at L6 |
+| `IR-SE1-b` | `SE1` | The enumerated bypasses, published rather than implied | [`risk-scenarios.md`](risk-scenarios.md); manifest `known_bypasses` | ◐ partial (`GAP-4`) — complete only at L6 |
 | `IR-SE1-c` | `SE1` | The failure posture per control, including the fail-open ones | manifest `failure_posture`; `G9` in [`risk-scenarios.md`](risk-scenarios.md) | ◐ partial — one worked instance published, the rest at L6 (`GAP-4`) |
-| `IR-SE1-d` | `SE1` | The platform matrix, stated in both directions | core ADR 0033 §5.3 | ◐ partial — no hub-level restatement |
+| `IR-SE1-d` | `SE1` | The platform matrix, stated in both directions | core ADR 0033 §5.3; restated on the hub by [`product-promise.md`](product-promise.md) — which carries the macOS row in both directions explicitly — and by [`README.md`](README.md)'s layer 2/3 notes | ◐ partial — restated in prose on two pages, but as neither a matrix nor anything on the `security-engineer` route (`GAP-1`) |
 | `IR-SE2-a` | `SE2` | That an uninspected action is reported as *Unmeasured*, never as clean | [`product-promise.md`](product-promise.md), [`risk-scenarios.md`](risk-scenarios.md) | ✅ satisfied |
 | `IR-SE2-b` | `SE2` | What a passing chain verification does and does not establish | [`product-promise.md`](product-promise.md) | ✅ satisfied |
-| `IR-SE3-a` | `SE3` | The vulnerability reporting address for the repository in question | each repo's `SECURITY.md`, falling back to the org default | ◐ partial — no hub route names it |
+| `IR-SE3-a` | `SE3` | The vulnerability reporting address for the repository in question | each repo's `SECURITY.md`, falling back to the org default | ◐ partial (`GAP-1`) — no hub route names it; a sweep for `SECURITY.md`, `security@` and *report a vulnerability* returns zero on every hub page, against a control that hits 14 |
 
 ### Requirements for `auditor`
 
@@ -523,24 +524,24 @@ Status values: **✅ satisfied** — a published page carries it on that audienc
 
 | ID | Job | What a page must supply | Where it is satisfied today | Status |
 | --- | --- | --- | --- | --- |
-| `IR-OP1-a` | `OP1` | That routing is performed per agent and per launch | [`product-promise.md`](product-promise.md) level 2 step 1 | ◐ partial — not on the operator route |
+| `IR-OP1-a` | `OP1` | That routing is performed per agent and per launch | [`product-promise.md`](product-promise.md) level 2 step 1 | ◐ partial (`GAP-1`) — not on the operator route |
 | `IR-OP1-b` | `OP1` | The launch preconditions in full, none dropped | core quick-start; [`risk-scenarios.md`](risk-scenarios.md) governed-path fields | ◐ partial |
 | `IR-OP2-a` | `OP2` | Which artifact reaches which platform, from which channel | manifest (L6); [`compatibility.md`](compatibility.md) carries versions only | ✗ gap `GAP-3` |
 | `IR-OP2-b` | `OP2` | An install route that does not begin with an unavailable page | [`docker-containers.md`](docker-containers.md) | ✗ gap `GAP-2` on the entry route |
-| `IR-OP3-a` | `OP3` | Which controls are off until configured | [`product-promise.md`](product-promise.md) level 3 | ◐ partial |
+| `IR-OP3-a` | `OP3` | Which controls are off until configured | [`product-promise.md`](product-promise.md) level 3 | ◐ partial (`GAP-8`) |
 | `IR-OP3-b` | `OP3` | The failure postures, including the ones that produce no decision-path signal | [`risk-scenarios.md`](risk-scenarios.md) for `G9`; manifest for the rest | ◐ partial (`GAP-4`) |
 | `IR-OP4-a` | `OP4` | The scope of a limited-function self-host, and what it excludes | [`open-core-boundary.md`](open-core-boundary.md), [`docker-containers.md`](docker-containers.md) | ✅ satisfied |
-| `IR-OP4-b` | `OP4` | What the stack records, and how to read it | [`self-host-observability.md`](self-host-observability.md) | ◐ partial — filed off the entry route |
+| `IR-OP4-b` | `OP4` | What the stack records, and how to read it | [`self-host-observability.md`](self-host-observability.md) | ◐ partial (`GAP-2`) — filed off the entry route |
 
 ### Requirements for `developer`
 
 | ID | Job | What a page must supply | Where it is satisfied today | Status |
 | --- | --- | --- | --- | --- |
-| `IR-DV1-a` | `DV1` | A language-specific first checkpoint, reachable from this hub | SDK docs, mounted but unlisted | ✗ gap `GAP-7` |
+| `IR-DV1-a` | `DV1` | A language-specific first checkpoint, reachable from this hub | the SDK docs, mounted and **listed** — [`README.md`](README.md)'s *SDKs & components* table and [`documentation.md`](documentation.md) both branch by language | ◐ partial (`GAP-1`, `GAP-7`) — reachable in two hops from two index pages, absent from the sidebar, and no checkpoint on the hub itself. A sweep for `init_assembly`, `WrapTools` and the three install commands finds none on any hub page, against a control that hits |
 | `IR-DV1-b` | `DV1` | The initialisation preconditions the wrapper depends on | SDK docs; manifest `S1` `preconditions` (`AA_AGENT_ID` set) | ◐ partial |
-| `IR-DV2-a` | `DV2` | That the SDK is advisory, and what the check-capable mode changes | [`product-promise.md`](product-promise.md) level 3 | ◐ partial — not on a developer route |
+| `IR-DV2-a` | `DV2` | That the SDK is advisory, and what the check-capable mode changes | [`product-promise.md`](product-promise.md) level 3 | ◐ partial (`GAP-1`, `GAP-8`) — not on a developer route |
 | `IR-DV2-b` | `DV2` | What sits outside the wrapper, stated as preconditions on their code | manifest `S1` `known_bypasses`, and rows `S10`–`S12` (L6) | ✗ gap `GAP-4` |
-| `IR-DV3-a` | `DV3` | A runnable integration per framework, and a way to choose between them | the `examples` repository (L4) | ◐ partial — no hub route |
+| `IR-DV3-a` | `DV3` | A runnable integration per framework, and a way to choose between them | the `examples` repository (L4), routed from [`README.md`](README.md)'s *Runnable examples* section, its *Find what you need* table and its next-step call to action, and again from [`documentation.md`](documentation.md) | ◐ partial — well routed; the missing half is the **chooser**, since those routes name the framework dimensions but offer no way to pick between them |
 
 ### Requirements for `contributor`
 
@@ -555,25 +556,75 @@ Status values: **✅ satisfied** — a published page carries it on that audienc
 
 ## The gaps
 
-This is the list AAASM-5594 turns into pages. Each row names the requirement it closes
+This is the list AAASM-5594 turns into pages. Each row names the requirements it blocks
 and the page-shape it implies; none of them is a request to move an existing page
 without a job to justify it.
 
+**Two of these gaps are bounded by something that already exists**, and the bound is the
+point. A gap that overstates an absence sends 5594 to build a page the hub already has —
+which is worse than missing the gap, because the duplicate then competes with the
+original for the same reader. Where a route exists and is merely thin, the row says so
+and narrows the ask to the residue.
+
+**The relation below is invertible, and that is a property worth relying on.** Every
+requirement id in a *Requirements it blocks* cell names that gap back in its own
+*Status* cell, and no status cell names a gap that does not claim it — 24 pairs, checked
+mechanically in both directions. So "is every gap closed by this sitemap?" is a set
+comparison over the two tables, not a reading of them. It is deliberately **not** a
+separate machine-readable block: [`page-standards.md`](page-standards.md) and AAASM-5601
+own structured page data, a second block format invented here would be exactly the
+coin-a-vocabulary-someone-else-owns defect this page argues against, and 5601's validator
+would not know to check it. Two Markdown tables that parse cleanly give 5594 the same
+guarantee without the new format.
+
 | # | Gap | Requirements it blocks | Page-shape implied |
 | --- | --- | --- | --- |
-| `GAP-1` | **No surface addresses a reader by role.** This hub's contents are grouped by topic; the product website publishes four pages and a blog. Nothing on either routes by audience | every route below | An audience-addressed entry, on both L1 and L2 |
+| `GAP-1` | **No surface routes all six audiences, and four have no entry at all.** The hub's index does address readers by role — [`README.md`](README.md)'s *"Who this documentation is for"* names *teams, security engineers, and operators* (`content-ownership.md`'s L2 cell verbatim) and routes a developer off-site to the core docs — but that is one paragraph covering `operator` and `security-engineer` and sending `developer` away, with **no entry for `evaluator`, `auditor` or `contributor`** and no per-audience route beyond it. The product website publishes four pages and a blog and routes by none of them | `IR-EV1-a`, `IR-EV1-c`, `IR-SE1-d`, `IR-SE3-a`, `IR-OP1-a`, `IR-DV1-a`, `IR-DV2-a` | A per-audience entry for the six, on both L1 and L2 — extending the index's existing role paragraph, not replacing it |
 | `GAP-2` | **The hub's *Getting Started* section contains only `🗺️ Planned` pages.** Both entries are labelled *Coming soon*, and [`source-of-truth.md`](source-of-truth.md) marks the Operations area `🗺️ Planned` with a managed-service page as its *Where to read* cell — while two pages describing shipping behaviour sit under *Operations* and are not named by that row | `IR-OP2-b`, `IR-OP4-b` | An operator entry that starts from what ships |
-| `GAP-3` | **No per-channel, per-platform install position is published on this hub.** [`compatibility.md`](compatibility.md) pairs versions across the four repos and names the two SDK registries, npm and PyPI — but no Homebrew, crates.io, GitHub release or install-script position for the core binary, and **no platform at any point**: a sweep for `linux`, `macos`, `windows`, `x86_64` and `aarch64` returns zero hits in that file. The facts exist per row in the manifest, as `released_channels` and `released_platforms` | `IR-EV2-a`, `IR-OP2-a` | A channel-and-platform matrix at L2, generated from the manifest rather than hand-written |
+| `GAP-3` | **No per-platform install position is published on this hub, and the channel picture is partial.** [`compatibility.md`](compatibility.md) pairs versions across the four repos, names npm and PyPI, and does name GitHub Releases (*"core cuts GitHub Releases"*, plus a `/releases` link) — so the absence is not total. But it names no Homebrew, crates.io, install-script or GHCR position, and carries **no platform at any point**: a whitespace-normalised sweep for `linux`, `macos`, `windows`, `x86_64` and `aarch64` returns zero hits, against a positive control that hits on the same normalised text. The per-row facts live in the manifest's `released_channels` and `released_platforms` | `IR-EV2-a`, `IR-OP2-a` | A channel-and-platform matrix at L2, generated from the manifest and keyed on **its** channel vocabulary rather than a hand-written list — see the GHCR hand-off below |
 | `GAP-4` | **The evidence layer has no reader-facing surface.** `capability-manifest.yaml` exists with a schema, a validator and a CI gate, and `verification-reports/**` holds the records — but [`content-ownership.md`](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/docs/src/development/content-ownership.md) states nothing in L6 is a reader-facing page, and ADR 0034's T3 approved-claims registry does not exist yet | `IR-AU1-a`, `IR-DV2-b`, and the L6-only half of `IR-EV2-a`, `IR-SE1-b`, `IR-SE1-c`, `IR-OP3-b` | A generated claim-to-evidence surface at L2 |
 | `GAP-5` | **The hub's security entry page carries a superseded model.** [`product-promise.md`](product-promise.md) records that where this hub still carries the older framing, ADR 0033 wins, and names the migration tickets — but a reader arriving at that page first never sees the note | `IR-SE1-a` | A security entry rewritten against ADR 0033, not a note added to the old one |
 | `GAP-6` | **No roadmap surface exists.** No file named for one is present in this repository, the product website or the core repository, checked with a positive control in the same sweep; ADR 0034 hand-off 4 assigns the owner, so the owner currently owns an empty surface | `IR-EV3-b` | A bounded forward-looking page at L1, in the admissible forms only |
-| `GAP-7` | **No language route from this hub to the SDKs.** The SDK documentation is mounted under `/python-sdk/`, `/node-sdk/` and `/go-sdk/` by the aggregation pipeline, and this hub's contents list none of them | `IR-DV1-a`, `IR-DV3-a` | A developer entry that branches by language |
-| `GAP-8` | **The default-posture table has exactly one satisfier, and it is filed under *About*.** No page of type `product` exists on this hub yet, and that is the page type [`page-standards.md`](page-standards.md) requires to state defaults at level 3 | `IR-EV1-a`, `IR-EV1-c`, `IR-OP3-a`, `IR-DV2-a` | One or more `product` pages carrying levels 1 to 3 |
+| `GAP-7` | **The language route exists; what is missing is a first checkpoint and a sidebar entry.** Two hub pages branch by language — [`README.md`](README.md)'s *SDKs & components* table links `/python-sdk/`, `/node-sdk/` and `/go-sdk/`, and [`documentation.md`](documentation.md) is a router that does the same — so a developer entry that branches by language **already exists twice** and must not be built again. The residue is narrower: the mounts are reachable only from those two pages' bodies and appear nowhere in the sidebar, and **no hub page carries a language-specific first checkpoint** | `IR-DV1-a` | A sidebar route to the mounts; the checkpoint itself belongs in the SDK docs at L3, not here — see the note below |
+| `GAP-8` | **The default-posture table has exactly one satisfier, and it is filed under *About*.** Defaults are stated at **level 3**, whose bound [`page-standards.md`](page-standards.md) sets as *"Must state defaults and non-coverage"* — and level 3 is a *must* for four of the five page types (`product`, `guide`, `reference`, `architecture`), not for `product` alone. No hub page on an evaluator or operator route carries level 3 today | `IR-EV1-a`, `IR-EV1-c`, `IR-OP3-a`, `IR-DV2-a` | A level-3 surface on those routes. `product` carrying levels 1–3 is one admissible shape, not the required one |
 
-### Two hand-offs, not gaps
+### Why `GAP-7`'s missing checkpoint is not a page this hub should write
+
+`IR-DV1-a` asks for a language-specific first checkpoint *reachable from* this hub, and
+the temptation is to close it by writing one here. That would be the wrong fix twice
+over. `content-ownership.md` puts per-language API surfaces at L3 and forbids L2 a
+reference of its own for anything a component owns; this repository's own contributing
+guidance says the hub orients readers toward component docs and does not re-author their
+install steps or API surface, *"which would only drift"*. A checkpoint written here would
+be a derivative reproducing its source at the same depth — the defect
+[`page-standards.md`](page-standards.md) names when it forbids a summary that replaces
+its source.
+
+So the closable half of `GAP-7` is the **route**, not the content: the SDK mounts belong
+in the sidebar. The checkpoint itself is the SDK docs' to carry, and if it is thin there,
+that is an L3 ticket against the SDK in question rather than anything 5594 can draw.
+
+### Four hand-offs, not gaps
 
 Recorded here because they were found while deriving the gaps and would otherwise be
-lost, but neither is this page's to fix and neither blocks a requirement.
+lost, but none is this page's to fix and none blocks a requirement.
+
+- **GHCR is a published channel that the manifest's `released_channels` vocabulary does
+  not contain.** [`docker-containers.md`](docker-containers.md) states that five
+  multi-arch images are published to `ghcr.io/ai-agent-assembly`; the manifest's
+  `released_channels` values across all eighty rows are `crates_io`, `github_release`,
+  `homebrew`, `install_script`, `pypi`, `npm` and `go_modules`, with no Docker or GHCR
+  value. `GAP-3`'s page-shape is *a matrix generated from the manifest*, so a matrix
+  built faithfully from that vocabulary would ship **without a GHCR column** while the
+  hub separately documents the images. Whether GHCR belongs in the manifest is the
+  manifest's owner's call under AAASM-5531, not this page's — but 5594 needs to know
+  before it generates anything.
+- **`glossary.md` also carries the superseded model.**
+  [`product-promise.md`](product-promise.md) names **two** pages still carrying the
+  older framing — `security-model.md` *and* `glossary.md`. `GAP-5` is scoped to the
+  security entry page because that is the one on a `security-engineer` route, but a
+  sitemap treating `GAP-5` as the complete list of superseded surfaces will miss the
+  glossary, which is owned separately by AAASM-5658.
 
 - **`page-standards.md`'s note that the capability manifest has not started is now
   stale.** `capability-manifest.yaml` is present in the core repository under
@@ -622,19 +673,20 @@ Answer four questions in order. The first two are the ones that catch a misplace
 
 | Criterion | How it is met |
 | --- | --- |
-| Every audience has an explicit job-to-be-done and information contract | Six audience sections, each with a *Jobs* table whose every row ends in a decision or an action, and an [information requirements](#information-requirements) block keyed by job id. Twenty jobs, forty requirements, each with a named satisfier or a gap |
+| Every audience has an explicit job-to-be-done and information contract | Six audience sections, each with a *Jobs* table whose every row ends in a decision or an action, and an [information requirements](#information-requirements) block keyed by job id. Twenty jobs, forty requirements, each with a named satisfier or a gap, and the gap relation invertible in both directions |
 | The model distinguishes non-developer technical readers from application developers and maintainers | `security-engineer`, `operator` and `auditor` are the non-developer technical readers and each carries its own jobs, its own *never hidden* list and its own *belongs elsewhere* boundary; `developer` and `contributor` are separate values with separate routes. The [crosswalk](#crosswalk-seven-role-labels-six-audience-values) states which of the parent scope's seven roles lands on which value, including the two that share `evaluator` and the reason they are separated by `user_job` rather than by a coined enum value |
-| The model is usable to evaluate current pages and proposed navigation | [Using this model](#using-this-model) gives both checklists, and the *Where it is satisfied today* column is that evaluation already applied once to every published surface — which is what produced [the gaps](#the-gaps) |
+| The model is usable to evaluate current pages and proposed navigation | [Using this model](#using-this-model) gives both checklists, and the *Where it is satisfied today* column is that evaluation already applied once to every published surface — which is what produced [the gaps](#the-gaps). Every **absence** asserted there was re-derived with a whitespace-normalised, block-markup-stripped probe carrying a positive control, because a phrase that wraps a line or crosses a table cell is invisible to a per-line search and reads as a gap that is not there |
 | Website, Docs Hub, SaaS docs and project docs owners approve the boundaries | Not something a page can assert about itself. The boundaries are stated in the owning classes' own terms — L1/T6 for positioning and the roadmap, L2/T5 for routing and maturity, L3/T4 for architecture and semantics, and the SaaS claim publication checklist for managed-service claims — so approval is the pull request's, under ADR 0034 Decision 9, from `truth-owner-website`, `truth-owner-docs-hub` and `truth-owner-core` |
 
 ## What this page hands off
 
 | To | What |
 | --- | --- |
-| **AAASM-5594** | The eight gaps and the forty information requirements, as the input to the product-site and Docs Hub sitemaps. The two navigation checklists are intended to be sufficient to review a proposed tree without further decisions from this page |
-| **AAASM-5585 · AAASM-5587** | The `evaluator` entry and its requirements, including the default-posture table gap `GAP-8` |
-| **AAASM-5596 · AAASM-5608 · AAASM-5611** | The per-audience *never hidden* lists, which bound what a rewritten page may drop |
+| **AAASM-5594** | The eight gaps and the forty information requirements, as the input to the product-site and Docs Hub sitemaps, related by 24 pairs that invert. The two navigation checklists are intended to be sufficient to review a proposed tree without further decisions from this page. **Read `GAP-1` and `GAP-7` before drawing anything**: both are bounded by routes that already exist on [`README.md`](README.md), and the ask is the residue, not a new entry page |
+| **AAASM-5585 · AAASM-5587** | The `evaluator` entry and its requirements, including the default-posture table gap `GAP-8` — whose constraint is *a level-3 surface on the route*, not a page of any particular `page_type` |
+| **AAASM-5596 · AAASM-5608 · AAASM-5611** | The per-audience *never hidden* lists, which bound what a rewritten page may drop. `GAP-5` covers `security-model.md`; `glossary.md` carries the same superseded framing under AAASM-5658 and is **not** in that gap |
 | **`page-standards.md`** | Two records: that the `evaluator` value cannot separate `EV1` from `EV3`, and that its AAASM-5531 pending note is now stale |
+| **AAASM-5531 / the manifest's owner** | That GHCR is a published channel absent from the `released_channels` vocabulary, which a generated channel matrix would inherit as a missing column |
 
 ---
 
