@@ -85,13 +85,22 @@ same axis, and this page reconciles to it rather than beside it — its *securit
 researchers* are `security-engineer`, and its *buyers* and *technical leaders* are
 `evaluator`.
 
-Two of its entries name an **arrival** rather than a reader class, and neither maps to
-an `audience` value on its own. L0's *anyone assessing the company* is
-[outside what this product writes for](#roles-this-product-does-not-write-for)
-entirely — it is the company site's reader. L5's *a visitor who landed on the repo* is
-not out of scope but not yet resolved either: they become a `contributor`, a
-`developer` or an `evaluator` as soon as they have a job, which is what a README's
-"where its documentation is" line exists to decide. Neither is a seventh audience.
+Three of its entries are not reader classes, and none of the three maps to an `audience`
+value on its own:
+
+- **L0's *anyone assessing the company*** is an arrival, and it is
+  [outside what this product writes for](#roles-this-product-does-not-write-for)
+  entirely — the company site's reader, not this product's.
+- **L5's *a visitor who landed on the repo*** is also an arrival, but not out of scope:
+  they become a `contributor`, a `developer` or an `evaluator` as soon as they have a
+  job, which is what a README's *"where its documentation is"* line exists to decide.
+- **L2's *teams*** is a **collective, not a role** — a team is some mixture of
+  `operator`, `security-engineer` and `developer`, which is why the L2 cell names the
+  first two alongside *teams* rather than instead of it. It routes to whichever member
+  holds the job in hand, and no page targets it directly: `audience` is a list precisely
+  so a page can name the two or three values a team comprises.
+
+None of the three is a seventh audience.
 
 ### The axis this sits on, and the one rule that binds it
 
@@ -101,7 +110,10 @@ hand-off 7 fixes three vocabularies, each ranging over a different subject — a
 label, a **product in the portfolio** takes a lifecycle value — and rules that **no
 axis may be applied to another's subject**.
 
-The reader axis is a fourth, and it is none of those three. Its subject is *a person
+The reader axis sits outside all three. Hand-off 7 counts *"three vocabularies in
+total"*, and that count is ADR 0034's to keep — this page is not adding a fourth row to
+someone else's table, it is observing that the `audience` enum is a vocabulary hand-off
+7 does not range over, and asking what follows. Its subject is *a person
 arriving at a page*, which is not an action, not a documentation area and not a
 portfolio product. Its vocabulary is the `audience` enum, its owner is
 [`page-standards.md`](page-standards.md), and hand-off 7's rule applies to it in both
@@ -140,7 +152,9 @@ executive deciding whether to trial at all and an engineering leader deciding wh
 sequence want different pages, and `audience: [evaluator]` routes both to the same
 place. The distinction is real and it is carried by **`user_job`**, not by a seventh
 enum value — a page states which of the two it serves in the one field
-[`page-standards.md`](page-standards.md) reserves for exactly that. Coining a seventh
+[`page-standards.md`](page-standards.md) gives it — the one field that can express it,
+though that page reserves `user_job` for stating a page's job generally, not for
+separating two audiences that share a value. Coining a seventh
 value would be an edit to someone else's enum, made from a page that does not own it,
 to express something the existing schema already expresses.
 
@@ -264,8 +278,11 @@ address.
 including the silent fail-open on the budget store that
 [`risk-scenarios.md`](risk-scenarios.md) records as row `G9`. That the audit chain is
 tamper-evident rather than signed, and that emission is best-effort. The platform
-matrix, in both directions — the understatement is a defect as much as the
-overstatement.
+matrix, in both directions. Understating it is a defect too — ADR 0034 grades it below
+broadening *"because it is less dangerous, not because it is acceptable"*, and records
+that understatements in this programme were introduced **while correcting
+overstatements**, with at least one reaching `main`. A security reader is the audience
+an understated boundary misleads most.
 
 **Belongs elsewhere.** Install ergonomics, SDK API surface, positioning. A security
 reader does not need a getting-started path on their entry page and will read one as
@@ -383,10 +400,13 @@ actually using.
 **Never hidden.** That the SDK is advisory, and that a policy refusal blocks a wrapped
 tool only in the check-capable mode — [`product-promise.md`](product-promise.md)'s
 default-posture table carries both. That an unadapted framework, or a call that does
-not go through the framework's dispatch, is outside the wrapper: the manifest's `S1`
-row lists both under `known_bypasses`, alongside *not calling `init_assembly()`* and
-raw HTTP or subprocess use, and a quick-start that omits them has widened the claim by
-dropping a precondition.
+not go through the framework's dispatch, is outside the wrapper: the manifest's `S11`
+and `S10` carry exactly those two, and `S12` the raw HTTP, subprocess and filesystem
+class — all three `language: [python, node, go]`, which is what makes them the right
+citation for an audience that spans three languages. A quick-start that omits them has
+widened the claim by dropping a precondition. Per-language rows say more but say it
+narrowly: `S1`'s `known_bypasses` list the same items plus *not calling
+`init_assembly()`*, and `S1` is Python — Go's `S8` has a different list.
 
 **Belongs elsewhere.** The threat model, the deployment matrix, positioning. A
 developer needs the boundary, but as a precondition on their own code rather than as a
@@ -422,8 +442,9 @@ to the source before the derivative.
 | `CO4` | Decide whether a change is a material truth change | The right reviewer class requested |
 
 **Never hidden.** That depth is not a defect — no rule in this programme may be cited to
-thin a component's documentation. That understating is a defect too, in the same way
-overstating is. That an ownership dispute is a decision, not an edit, and stops rather
+thin a component's documentation. That understating is a defect too — graded below
+broadening by ADR 0034, but a defect, and a contributor trimming for brevity is the
+commonest way one gets introduced. That an ownership dispute is a decision, not an edit, and stops rather
 than resolves inside a content pull request.
 
 **Belongs elsewhere.** Positioning copy and conversion paths. A contributor reading
