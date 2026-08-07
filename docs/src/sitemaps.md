@@ -379,16 +379,45 @@ Every existing route is preserved, which is AAASM-5585's own acceptance criterio
 **requirement that they share one route prefix** — 5596 has to write one canonical-URL
 rule, and it cannot if the four routes are scattered. The slugs are AAASM-5587's.
 
-| Brief | `audience` | Job it ends |
+| Brief | `audience` | Job it ends — *this page's derivation, not a cited mapping* |
 | --- | --- | --- |
 | Security / Risk | `security-engineer` | `SE1` |
 | Platform / SRE | `operator` | `OP1`–`OP3` framing |
 | Engineering | `developer` | `DV2` |
 | Product / QA / Assurance | `auditor` | `AU3` |
 
-Each carries the brief's seven fields in the brief's order. A fifth role route is a
-change to `role-narratives.md` first, because a role surface with no brief is a page
+**The third column is derived here and is labelled so.** The first two columns are
+cited: `role-narratives.md` supplies the briefs and records each one's `audience` value.
+Neither source assigns these job ids to these routes — `role-narratives.md` assigns no
+job ids at all, and `audiences.md`'s crosswalk assigns them to two rows, neither of them
+these four. The mapping is this page reading each brief's stated *Job* line against
+`audiences.md`'s jobs table, which is a judgement a reviewer should be able to
+disagree with rather than one they should take as sourced.
+
+Each route carries the brief's seven fields in the brief's order. A fifth role route is
+a change to `role-narratives.md` first, because a role surface with no brief is a page
 authoring its own product truth.
+
+### Which audiences get an L1 entry, and which do not
+
+`audiences.md`'s `GAP-1` asks for a per-audience entry **on both L1 and L2**. L2 gets
+all six. L1 gets five, and the sixth is a deliberate omission rather than a gap left
+open, so it is accounted for here rather than in the gap table alone.
+
+| `audience` | L1 entry | L2 entry |
+| --- | --- | --- |
+| `evaluator` | `/`, and `/maturity` for the forward-looking half | Evaluate |
+| `security-engineer` | Security / Risk role route | Evaluate — `security-model.md` |
+| `operator` | Platform / SRE role route | Operate |
+| `developer` | Engineering role route | Integrate |
+| `auditor` | Product / QA role route | Verify |
+| `contributor` | **None, by design** | Contribute |
+
+`contributor` has no L1 entry because `audiences.md`'s own `contributor` section puts
+positioning copy and conversion paths under *belongs elsewhere* for that reader. An L1
+contributor entry would route them to the layer that page says is wrong for their job.
+This is the one place the design does not deliver `GAP-1`'s page-shape as literally
+worded, and it is stated rather than absorbed.
 
 ### `/maturity` is where the roadmap goes, and it is not a hub page
 
