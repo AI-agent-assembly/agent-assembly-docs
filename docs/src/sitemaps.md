@@ -601,25 +601,30 @@ Two stronger constraints, because linking is not enough on its own:
 | Nesting depth under a part | 2 levels | A third level is a drawer nobody scrolls to |
 | Section headings | Not links | `part-title` renders as `<li class="part-title">Evaluate</li>` — plain text, no anchor. **A section that needs a landing page must have one as its first chapter**, which is why Evaluate, Integrate, Operate and Verify have one and Reference and Contribute do not |
 | Sidebar entry decoration | Link text only | No badge mechanism exists, hence the label rule for `🗺️ Planned` |
+| Breadcrumbs | **No mechanism** | mdBook renders no breadcrumb trail. AAASM-5608's scope asks for *contextual breadcrumbs*; in mdBook that is a theme change or it does not happen. Recorded so 5608 does not plan against it |
+| Per-entry layer / component / maturity labels | **No channel beyond link text** | AAASM-5608's scope asks navigation labels to identify content layer, component and maturity. The sidebar has one string per entry and no data attributes, so three facts cannot ride on it. Either they go in the link text — which is how `🗺️ Planned` reaches the sidebar — or they belong on the page, not in the nav |
 | External links in `SUMMARY.md` | Not supported | Build aborts at exit 101; see [the language route](#the-language-route-and-what-mdbook-cannot-do) |
 
 ### Product website — Docusaurus
 
 | Constraint | Value | Why |
 | --- | --- | --- |
-| Navbar items | Unchanged at 4 left, 3 right | AAASM-5587 requires cross-links *without* an oversized mega menu, and the drawer at narrow widths is a vertical list of the same items |
+| Navbar items | Unchanged at **3 left, 3 right** (six total) | AAASM-5587 requires cross-links *without* an oversized mega menu, and the drawer at narrow widths is a vertical list of the same items |
 | New routes reach readers via | The `Product` navbar item becoming a three-entry dropdown, a role chooser block on `/`, and the footer | A dropdown of three is not a mega menu; the two existing mega menus stay as they are |
 | Footer columns | 3, unchanged; `/trust` and `/maturity` join *Resources* | A fourth column wraps below 768px |
 | Locale | Every new route exists in `en` and `zh-Hant` | The site declares both; a route that exists in one serves English content on a translated URL, which D6 already records as happening for the blog |
 
 The role routes deliberately do **not** become navbar items. Four more top-level items
-would put the drawer at eleven, and a role page is something a reader is routed to from
+would put the drawer at ten, and a role page is something a reader is routed to from
 a chooser, not something they navigate to by name.
 
 ## Partitioning this into non-overlapping tickets
 
-Each row names the files it owns. No file appears in two rows, with one recorded
-exception.
+Each row names the files it owns. **No file *region* appears in two rows** — the
+distinction is load-bearing, and the earlier wording ("no file appears in two rows") was
+simply false. Two overlaps exist: one is a genuinely shared file that predates this page,
+the other is disjoint by region within a file. Both are named below rather than counted
+as clean.
 
 | Ticket | Repository and paths | Routes or sections | Must not touch |
 | --- | --- | --- | --- |
