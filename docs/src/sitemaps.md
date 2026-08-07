@@ -40,7 +40,7 @@ decided somewhere else.
 | [`role-narratives.md`](role-narratives.md) (AAASM-5584) | The four role briefs the website's role surfaces are built from, and the shared claim register they cite |
 | [`page-standards.md`](page-standards.md) (AAASM-5595) | The four disclosure levels, the `page_type` → required-levels table, the `owner` surface pairs, the `area` ids and the `availability` values |
 | **Content-layer ownership** (AAASM-5592) | The L0–L6 roster, one canonical owner per content type, the narrowing rule and the four reuse patterns. [`content-ownership.md`](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/docs/src/development/content-ownership.md) |
-| **Documentation inventory** (AAASM-5593) | The census, the disposition vocabulary, and the finding that every current hub page is `Keep`. [`documentation-inventory.md`](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/docs/src/development/documentation-inventory.md) |
+| **Documentation inventory** (AAASM-5593) | The census, the disposition vocabulary, and the finding that every current hub page except `policy-reference.md` is `Keep`, that one being `Review`. [`documentation-inventory.md`](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/docs/src/development/documentation-inventory.md) |
 | **ADR 0033 §6** | The eleven claim terms, and forbidden designs 1 and 2. [ADR 0033](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/docs/src/adr/0033-canonical-governance-and-enforcement-architecture.md) |
 | **ADR 0034 §1** | The T1–T7 truth hierarchy, and hand-off 4 assigning the roadmap to L1. [ADR 0034](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/docs/src/adr/0034-one-product-truth-and-cross-repository-documentation-governance.md) |
 | [`source-of-truth.md`](source-of-truth.md) | The status map, whose `Maturity` cell is the only place an area's maturity is set |
@@ -398,12 +398,17 @@ statement and positioning is already L1's. So the gap closes on the product webs
 on this hub, and a hub page named for a roadmap would be the wrong layer.
 
 `content-ownership.md` bounds what may go on it: no dated commitment unless the date is
-an already-released fix-version, and a forward-looking statement is admissible only as
-ADR 0033 §6's `Planned` term — a ticket reference carrying **no capability claim** — or
-as an area's `🗺️ Planned` maturity label. `/maturity` therefore carries two things and
-no third: the current release position, narrowed from
+an already-released fix-version, and a forward-looking statement is admissible only in
+one of **three** forms: ADR 0033 §6's `Planned` term — a ticket reference carrying **no
+capability claim**; ADR 0033's `Research` label, which `content-ownership.md` marks
+`→ move` because ADR 0033 uses the word once without defining it; or an area's
+`🗺️ Planned` maturity label.
+
+`/maturity` uses the **first and third** of those three, and therefore carries two
+things and no others: the current release position, narrowed from
 [`source-of-truth.md`](source-of-truth.md), and a `Planned` list whose rows are ticket
-references.
+references. It does not use `Research`, because that label is marked `→ move` at its
+source and a page built on a label in transit inherits the move.
 
 ### What the website may not carry
 
@@ -675,9 +680,20 @@ as clean.
 | Unassigned — maturity | `official-website`: new `/maturity` route | `/maturity` | — |
 | Unassigned — walkthrough | `docs`: end-to-end governance walkthrough | Operate | — |
 
-**The one recorded exception:** `policy-reference.md` is named by both AAASM-5586 and
-AAASM-5609, because `documentation-inventory.md` assigns it to both. That pairing
-predates this page and this page does not split it.
+**The two overlaps, both named rather than left to be discovered.**
+
+1. **`policy-reference.md` is named by both AAASM-5586 and AAASM-5609**, because
+   `documentation-inventory.md` assigns it to both. That pairing predates this page and
+   this page does not split it. This one is a genuine shared file, not a shared region.
+2. **AAASM-5610 touches every page that any other row touches.** Its slice is *metadata
+   blocks on existing pages* — all 24 — which intersects AAASM-5611 (`README.md`,
+   `security-model.md`, `comparison.md`), AAASM-5658 (`glossary.md`) and AAASM-5609
+   (`policy-reference.md`). The rows stay disjoint because 5610 owns the
+   `AA-PAGE-META` block and the others own the prose below it, and the block is the
+   first construct in the file with a fixed delimiter pair, so the two regions cannot
+   be confused. **That is a disjointness by region, and the acceptance criterion is
+   worded per page** — so it is recorded here rather than counted as clean. If 5610
+   lands concurrently with any of the three, expect a same-file merge, not a conflict.
 
 **Ordering.** AAASM-5608 can land before 5609, 5611 and the unassigned rows, because
 `SUMMARY.md` and the three new routers do not depend on any of them. It should land
