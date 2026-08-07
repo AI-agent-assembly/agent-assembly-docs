@@ -525,8 +525,12 @@ The mutation moves the token under test and the URL set does not move with it, s
 result is a property of mdBook rather than of a probe that saw nothing.
 
 **Consequence for AAASM-5608:** the re-filing above creates **zero** redirect
-obligations. Every external link into the hub — including the four
-`docs.agent-assembly.com/*.html` links in the website's mega menu — keeps resolving.
+obligations. Every external link into the hub keeps resolving — including the **five**
+`docs.agent-assembly.com/*.html` deep links in the website's mega menu and a **sixth**
+in `src/components/home/NextSteps.tsx`. Re-derived with
+`git grep -nE '\$\{DOCS(_URL)?\}/[A-Za-z0-9_-]+\.html' origin/main -- src`, because counting
+by eye had missed `quickstart-saas.html` twice over — the one page this design actually
+relocates, and so the single most relevant row.
 This is also why the three new pages are flat files at `docs/src/*.md` rather than a
 directory per section: a directory would change nothing today but would set the
 precedent that a section rename is a URL change.
@@ -552,9 +556,38 @@ Nothing else moves. Every other route on both sites is either unchanged or new.
 Recorded so a reader does not conclude from the section above that redirects are
 handled. They are not, and three separate gaps are open:
 
-- Five legacy `ai-agent-assembly.github.io/<repo>/*` URLs have canonical targets on
-  `docs.agent-assembly.com` and **none of the five is implemented**; one of them serves
-  live content today. Owned by AAASM-3665.
+- **Five legacy `ai-agent-assembly.github.io/<repo>/` URLs** have canonical targets on
+  `docs.agent-assembly.com`, and **none of the five is implemented**. Owned by
+  AAASM-3665. The five are enumerated below with their measured status, because an
+  earlier draft gave the total without its parts and got the live-content count wrong —
+  it said *one of them serves live content*, and four do.
+
+  | Legacy URL | Measured 2026-08-08 | Serves content? |
+  | --- | --- | --- |
+  | `…github.io/agent-assembly/` | **200**, 2,896 bytes | Yes — landing page with a meta-refresh |
+  | `…github.io/python-sdk/` | **200**, 1,423 bytes | Yes — meta-refresh |
+  | `…github.io/node-sdk/` | **200**, 27,147 bytes | Yes — a full live page |
+  | `…github.io/go-sdk/` | **200**, 3,329 bytes | Yes — meta-refresh |
+  | The fifth row — the pre-rename docs host, spelled out in [`MIGRATION.md`](https://github.com/ai-agent-assembly/docs/blob/HEAD/MIGRATION.md) | **404** | No — that repository was renamed under AAASM-4341 |
+
+  The fifth row's literal host is not written here on purpose: `check_repo_names.py`
+  audits every tracked page for retired repo names and `MIGRATION.md` is its one
+  content exemption, as the deliberate history record. Naming the URL here would either
+  fail that gate or require widening its allowlist to cover a whole page, which is
+  suppressing a scanner rather than satisfying it.
+
+  So *"none is implemented"* holds — no row 301s to its canonical target — but **four of
+  the five serve 200**, not one. The fifth carries a redirect obligation for a URL that
+  no longer resolves at all, which makes that row of the plan moot rather than pending
+  and AAASM-3665's remaining work four rows rather than five.
+  `documentation-inventory.md` names only `agent-assembly/` as an *example* of live
+  content; reading that as *the count* was this page's narrowing, not the inventory's
+  claim. The stale fifth row is filed as **AAASM-5690** against the inventory and
+  `MIGRATION.md`.
+
+  Not in the five, and worth knowing before someone re-derives this list:
+  `…github.io/docs/` **301s** to `docs.agent-assembly.com` already. It is not one of
+  AAASM-3665's five rows, so it neither contradicts nor satisfies them.
 - The host-level `www` redirect is proposed, not applied.
 - Core's own book has no `[output.html.redirect]` either, which its migration slice
   needs before its three published `Move`/`Merge` pages land.
