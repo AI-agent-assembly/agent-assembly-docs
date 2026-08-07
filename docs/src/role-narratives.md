@@ -100,11 +100,24 @@ manifest rows.*
 > own cited rows carry in their `coverage` field.**
 >
 > Not "compatible with", not "justified by" — carried. The term is copied off the
-> evidence, never chosen for the sentence and then matched to rows afterwards. Three
-> entries are exempt for stated reasons rather than by judgement: RC9 carries an ADR
-> 0030 protection state rather than a §6 term, RC12 is declared *no claim* with zero
-> rows, and RC8/RC15 cite rows carrying several terms, so the entry names the subset it
-> asserts.
+> evidence, never chosen for the sentence and then matched to rows afterwards.
+>
+> **Fourteen entries are subject to the rule and all fourteen hold:** RC1, RC2, RC3,
+> RC4, RC5, RC6, RC7, RC8, RC10, RC11, RC13, RC14, RC15, RC16. **Two are exempt, for
+> stated reasons rather than by judgement:** RC9 carries an ADR 0030 protection state
+> rather than a §6 term, and RC12 is declared *no claim* with zero rows. Fourteen plus
+> two is the whole register.
+>
+> **Citing rows that carry several coverage terms is not an exemption — it is the rule
+> holding.** The test is a subset relation, so an entry names the subset it asserts and
+> leaves the rest unasserted. Six entries do this: RC3, RC5, RC8, RC11, RC15, RC16.
+>
+> An earlier draft got both halves of that wrong, and in the worst possible place. It
+> said *three* entries were exempt, then enumerated four, and two of the four — RC8 and
+> RC15 — are not exempt at all: they hold. An author trusting it would have excused
+> from the check the very entries the check covers, inside the statement of the rule
+> written to stop exactly this. **Where a total appears beside an enumeration on this
+> page, the enumeration is the answer; if they disagree, the total is the defect.**
 >
 > This is stated as a rule because it is the one that failed in review. RC6 and RC13
 > originally read `Observed` and `Evaluated` over rows carrying `unmeasured`, and the
