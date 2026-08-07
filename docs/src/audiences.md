@@ -245,8 +245,9 @@ moved L3 content onto an L1 route; per
 [`content-ownership.md`](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/docs/src/development/content-ownership.md),
 that is content at the wrong layer, not a more thorough page.
 
-**Entry · next · escalation.** Entry: the product website (T6/L1) or this hub's index.
-Next: [`product-promise.md`](product-promise.md) level 3 and
+**Entry · next · escalation.** Entry: the product website (T6/L1), or this hub's index —
+which carries two `evaluator` jobs in its *Find what you need* table but never names the
+role, gap `GAP-1`. Next: [`product-promise.md`](product-promise.md) level 3 and
 [`source-of-truth.md`](source-of-truth.md). Escalation: ADR 0033 §5.3 for the platform
 matrix and §6 for the vocabulary, in the core docs.
 
@@ -324,7 +325,9 @@ about the observer.
 **Belongs elsewhere.** Positioning and conversion copy. An auditor arriving at a
 marketing page has been misrouted, and no amount of accuracy in that page fixes it.
 
-**Entry · next · escalation.** Entry: **none on this hub today** — gap `GAP-4`. Next: the
+**Entry · next · escalation.** Entry: **none on this hub today** — the index does not
+mention this reader (gap `GAP-1`), and an entry alone would not be enough, because the
+evidence it would route to is not published either (gap `GAP-4`). Next: the
 determinations in [`risk-scenarios.md`](risk-scenarios.md), which is the closest thing
 to a claim-to-evidence route currently published. Escalation:
 [`capability-manifest.yaml`](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/governance/capability-manifest.yaml)
