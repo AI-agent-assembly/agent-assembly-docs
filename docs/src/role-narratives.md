@@ -96,6 +96,22 @@ claim, and dropping it is the broadening ADR 0034 §2.3 forbids.
 Read a row as: *this §6 term, about this subject, under this bound, evidenced by these
 manifest rows.*
 
+> **The invariant that makes a row checkable: an entry's §6 term must be a term its
+> own cited rows carry in their `coverage` field.**
+>
+> Not "compatible with", not "justified by" — carried. The term is copied off the
+> evidence, never chosen for the sentence and then matched to rows afterwards. Three
+> entries are exempt for stated reasons rather than by judgement: RC9 carries an ADR
+> 0030 protection state rather than a §6 term, RC12 is declared *no claim* with zero
+> rows, and RC8/RC15 cite rows carrying several terms, so the entry names the subset it
+> asserts.
+>
+> This is stated as a rule because it is the one that failed in review. RC6 and RC13
+> originally read `Observed` and `Evaluated` over rows carrying `unmeasured`, and the
+> tell was that the [level-4 mapping](#level-4--claim-to-manifest-mapping) recorded
+> `unmeasured` for the same two rows — one page, two tables, two answers. Comparing the
+> term column against `coverage` catches that without reading a word of prose.
+
 | # | §6 term | Claim, in the wording a role page uses | Bound that travels with it | Manifest rows |
 |---|---|---|---|---|
 | **RC1** | Denied before execution | A connection made on a path you routed through Agent Assembly is checked against the destination list you configured and refused before the proxy dials it | The refusal is the proxy's own local egress configuration, not a control-plane decision. The destination lists are **empty by default** — this refusal exists because an operator configured it. Linux release artifact; on macOS `cargo install aa-proxy` is the only route; on Windows there is no local mediation. If the proxy is not in front of the connection, the connection is simply made | `N1` |
@@ -103,17 +119,44 @@ manifest rows.*
 | **RC3** | Redacted | On the model-provider hosts Agent Assembly inspects, a recognised credential is removed from the request before it is forwarded | Three built-in hosts, because `llm_only` defaults on. The default action is **redact and forward**, not refuse. Recall is bounded by the pattern set — there is no Stripe detector. Model *responses* on that path are not scanned | `N3`, `C1`, `C4`, `C6`, `G4` |
 | **RC4** | Denied before execution | An MCP tool call can be checked against your policy by the control plane and refused before the proxy forwards it | The only gateway-bound pre-dial refusal in the product, and it is **off by default**. It reaches MCP sent as an ordinary HTTP/1.1 POST on an intercepted non-LLM host with a gateway endpoint configured. Tool servers over stdio — the most common setup — SSE and WebSocket have no interception mechanism; Streamable HTTP is recorded as functionally broken rather than merely uncovered | `M1`, `M3`; exclusions `M2`, `M4`–`M9` |
 | **RC5** | Denied before execution (Python, Go) · Evaluated (Node) · Unmeasured (Node default mode) | A tool call through a wrapped framework seam is checked before the tool body runs | The SDK is **advisory by design** — a defence-in-depth posture, not the authoritative gate, and an agent that does not call it is not asking. Python raises before the body and fails closed. Go fails closed but requires an explicit `WrapTools`. **Node's default mode routes the check through an allow-all no-op client**, so no refusal is produced there at all; asking for enforcement without a check-capable mode is refused loudly at init rather than silently allowed | `S1`, `S2`, `S5`, `S6`, `S7`, `S8`, `S9`, `S13`, `G5` |
-| **RC6** | Observed | What was decided is written to a hash-chained record you can verify yourself | Tamper-**evident**, not immutable and not signed: an unkeyed digest chain, so anyone able to rewrite the sink can recompute it. Emission is best-effort — the chain head advances before the send and a full channel drops the entry while the call still returns. Verification checks the links between the entries that are present, so an emptied log verifies clean. The proxy writes no local record at all unless its audit path is configured | `G10` |
+| **RC6** | Unmeasured | Whether a given decision's record durably reaches the audit chain is not established. The verification tool is real — `aasm audit verify-chain` ships in the open-source build — but what it proves is the integrity of the entries that are present, not that any particular decision produced one | The manifest's only row for this subject is the row for what happens when the write **fails**, and it carries `coverage: unmeasured`, `failure_posture: fail_open` and `evidence: gap`. So the honest term is the row's own. Everything else about the chain is a bound, not a capability: it is tamper-**evident**, not immutable and not signed — an unkeyed digest, so anyone able to rewrite the sink can recompute it. The chain head advances before the send and a full channel drops the entry while the call still returns, which makes a dropped entry indistinguishable from a deleted one. An emptied log verifies clean. The proxy writes no local record at all unless its audit path is configured. See [the two gaps](#two-gaps-this-page-found-in-the-manifest) | `G10` |
 | **RC7** | Unmeasured | Where nothing inspected an action, the record says nothing was inspected — not that it was allowed | Scoped to the **action or payload**, never to the connection: a host the proxy does not intercept is still adjudicated at CONNECT, so its connection is Observed while its payload is Unmeasured. One live defect runs against this rule today — the CONNECT-level event still records an allow for traffic about to be tunnelled uninspected (AAASM-5637) — so state it as the rule and the open defect together, not as finished behaviour | `N5`, `N10`, `N12`, `S10`, `S11`, `S12`, `L6`, `H1`, `H6`, `H7` |
 | **RC8** | Observed · Detected | On Linux, kernel probes report TLS plaintext, process execution and file activity | No eBPF signal participates in any allow or deny decision. The one enforcing program is an opt-in syscall guard that terminates a confined process **after** the offending syscall has already run, which is Detected, not Denied before execution. File-I/O probes are x86_64 only. The privileged loader daemon that owns every kernel operation reaches crates.io only — it is absent from the GitHub Release assets, the Homebrew tap and the install script | `H2`, `H3`, `H4`, `N13`, `I4`, `P1`, `P2` |
 | **RC9** | — (ADR 0030 protection state) | The managed launch for Claude Code on macOS is the one path that reaches ADR 0030's `HostEnforced` rung | ADR 0030 §4.1 makes `HostEnforced` **the only state that claims bypass resistance**, and exactly one manifest row carries it. Two things bound it hard. The rung rests on reading back a root-owned managed-settings file, and whether the tool honours those keys at runtime is unmeasured. And the manifest records the rung as **unearned at the published `v0.0.1-rc.6` tag** — the evidence it rests on postdates the tag. macOS host-level interception itself is `integrated`, scoped to tool governance only: claim the file, never the enforcement | `L1`; `P3` for the demotion |
 | **RC10** | Degraded | Where a control was planned and is unavailable, the product reports the planned level and the level actually achieved | `Degraded` carries **both** levels or it is not this term. One row reaches it, for eBPF load or attach failure. The reporting half does not close: a degradation is emitted, typed, and rendered nowhere, and an unreadable eBPF policy file fails open **silently**, raising no degradation event at all | `G6`; reporting gap `G11`; silent case `G7` |
 | **RC11** | Denied before execution · Evaluated | Where the control plane is configured and becomes unreachable, the decision path refuses rather than allowing | Fail-closed on the paths that have a gateway: the runtime denies on an unreachable gateway, the proxy refuses to start, and the gateway aborts on a policy that fails to load. **The inverse is not symmetric** — a runtime with no gateway configured falls through to a local evaluation whose terminal default is allow. Configured-then-broken fails closed; never-configured fails open | `G1`, `G3`, `G8`; the inverse `G2` |
 | **RC12** | Approval required | *No claim.* | **No manifest row reaches this term.** The hold itself is real in the gateway path and fails closed on timeout, but no shipped operator surface can answer it, and inside the MCP tunnel a pending decision is downgraded to a refusal, so a human cannot be reached there either. Do not write "held for human review", "approval workflow", or any wording implying a reviewer acts. AAASM-5657 | *(none)* |
-| **RC13** | Evaluated | A spend cap declared in policy is checked in the same decision path, and reaching it resolves to a refusal | A cap exists **only where a policy declares one**; an undeclared budget is uncapped. Reaching *Denied before execution* still needs a caller that waits for the answer. An unreadable or corrupt budget store fails open **silently**, resetting the cap to zero spend | `G9` |
+| **RC13** | Unmeasured | Whether a declared spend cap is checked in the decision path is not established by any manifest row | Same shape as RC6, and the same remedy. The manifest's only budget row is the one for a store that is **unreadable or corrupt**, carrying `coverage: unmeasured`, `failure_posture: fail_open_silent` and `evidence: gap` — its gap reason records a positive control showing the budget path never queries the control-plane store. [Risk scenarios](risk-scenarios.md)'s T3 reaches *Evaluated* and states in the same table that it has **no positive row**; this register does not restate T3's term over a row that does not carry it. What is bounded regardless: a cap exists **only where a policy declares one**, an undeclared budget is uncapped, reaching *Denied before execution* needs a caller that waits for the answer, and a corrupt store resets the cap to zero spend **silently**. See [the two gaps](#two-gaps-this-page-found-in-the-manifest) | `G9` |
 | **RC14** | Unsupported | Named transports and platforms are not available, and the matrix says which | Windows has no local mediation of any kind. UDP, QUIC and HTTP/3 are outside the transport set; so are HTTP/2, gRPC and WebSocket over an intercepted host, and MCP over WebSocket. `Unsupported` for one element is not `Unsupported` for the product | `P4`, `N8`, `N11`, `M8` |
 | **RC15** | Denied before execution (via RC1) | Launching a tool through `aasm run` writes the proxy settings into the tool's environment, which is what puts its outbound connections on the path | Writing a tool's own settings file is **tool governance, not a data-path claim**; any prevention these adapters deliver is the proxy's, borrowed through the launch environment. Of the shipped adapters, Claude Code is the only one above `Integrated` and the only one with a launch evidence test. Copilot's launch always fails by construction. Codex and Windsurf inject the proxy variable with no CA trust, which is the configuration measured as failing the handshake silently. `aasm run --no-proxy` is an announced bypass. An unmanaged launch is a bypass and is not detectable | `L1`, `L2`, `L3`, `L4`, `L5`, `L7`, `L8`, `H8`, `M10` |
 | **RC16** | Evaluated | An agent registers with an Ed25519 `did:key` identity and a possession proof, and delegation lineage is derived server-side | The agent plane is reachable **without authentication** by design, as a bootstrap path: an unauthenticated caller that can reach it can register and can submit policy queries. Those queries are evaluated with tenancy neutralised rather than with the caller's own, so the exposure is that the plane accepts the call. Org scoping is applied per call site rather than at the storage layer. Do not describe the agent plane as authenticated | `I1`, `I2`, `I3`, `I5`, `I6`, `I7` |
+
+### Two gaps this page found in the manifest
+
+Writing the register surfaced two capability claims that **no row among the 80
+supports**, and the finding is recorded here rather than absorbed into a hedge.
+
+| Subject | What exists in the manifest | What is missing |
+|---|---|---|
+| **The evidence pipeline** — a decision durably reaching the audit chain | `G10`, *"Audit emission failure"*, `domain: degraded_mode`, `coverage: unmeasured`, `evidence: gap` | A capability row for the pipeline working. The manifest has no `audit` domain, and `G10` measures only the failure case |
+| **Budget enforcement** — a declared cap being checked in the decision path | `G9`, *"Budget state unreadable or corrupt"*, `domain: degraded_mode`, `coverage: unmeasured`, `evidence: gap` | A capability row for the cap being applied. There is no `budget` domain either, and [Risk scenarios](risk-scenarios.md)'s T3 independently records *"no positive row"* |
+
+Measured across all nine domains — `sdk`, `network`, `degraded_mode`, `mcp`,
+`host_action`, `devtool_launch`, `identity`, `credentials`, `platform`. Every `G*` row
+is `degraded_mode`; none of the five rows carrying `coverage: observed` has the
+evidence pipeline as its subject.
+
+**Why this is a finding and not a rewording.** The claim vocabulary's §4 says an
+omitted evidence row is *"a finding, and the remedy is to add the manifest row, not to
+reword the sentence"*. Adding rows is AAASM-5531's, not this page's, so what this page
+can do is take the term its evidence actually carries and route the gap. Both entries
+therefore read `Unmeasured` today and will move when the rows land.
+
+**What this does not license.** `Unmeasured` here is a statement about the evidence, not
+a claim that nothing is recorded — the emission code, the hash chain and
+`aasm audit verify-chain` all exist and ship. Reading RC6 as *"there is no audit log"*
+would be the understatement failure, which ADR 0034 treats as a defect in its own
+right. The register says what is established; it does not say the opposite.
 
 **On the missing terms.** Two of ADR 0033 §6's eleven do not appear above.
 `Experimental` is carried by one row, `P1`, and is folded into RC8's bound rather than
@@ -165,13 +208,14 @@ actions, on the paths you route through it, plus the record of what it decided.
 Concretely, for a security review: **RC1** (routed egress refused before the dial),
 **RC2** (address-space guard, on by default and not relaxable), **RC4** (MCP tool calls
 checked by the control plane), **RC3** (credentials removed from inspected requests),
-**RC11** (configured-then-unreachable fails closed), and **RC6** (the decision is
-recorded).
+**RC11** (configured-then-unreachable fails closed), and **RC6** (what the decision
+record does and does not establish).
 
 **Outcome.** For an agent you routed, a request to a destination outside the list you
-configured is refused before a connection is opened, and the refusal is recorded as a
-decision rather than discovered in an egress log. The security position that changes is
-*ordering* — the decision precedes the effect — not *coverage*.
+configured is refused before a connection is opened. The security position that changes
+is *ordering* — the decision precedes the effect — not *coverage*, and not the
+completeness of the record: whether a given refusal's entry durably reaches the audit
+chain is **RC6**, which is `Unmeasured`. Buy the ordering; do not buy a ledger.
 
 **Proof.**
 
@@ -204,7 +248,10 @@ decision rather than discovered in an egress log. The security position that cha
 - **Uninspected is not clean** (**RC7**), and one path still records an allow where it
   should record nothing (AAASM-5637).
 - **The evidence is tamper-evident, not immutable, and it can be lost** (**RC6**). A
-  dropped entry is indistinguishable from a deleted one.
+  dropped entry is indistinguishable from a deleted one, and no manifest row establishes
+  that a decision's record durably arrives at all — the term is `Unmeasured`. Do not
+  present the audit chain as the control that satisfies a retention or non-repudiation
+  requirement.
 - **The agent plane accepts unauthenticated callers** (**RC16**). This is a deliberate
   bootstrap path with a bounded exposure, and it is still not an authenticated plane.
 - **`Approval required` is not a capability you can buy today** (**RC12**).
@@ -233,8 +280,9 @@ days of log correlation across three systems and is still a guess.
 answers policy questions and holds the record, a sidecar proxy on the wire, and a
 managed launch that puts a tool's traffic in front of the proxy. What matters
 operationally is **RC11** (configured-then-unreachable fails closed), **RC10**
-(degradation is reported as a planned-versus-achieved pair), **RC6** (a verifiable
-decision record), and **RC15** (routing is a launch-time act you perform).
+(degradation is reported as a planned-versus-achieved pair), **RC6** (what the decision
+record establishes, and what it does not), and **RC15** (routing is a launch-time act
+you perform).
 
 **Outcome.** Agent egress becomes a thing with a configuration, a failure posture and
 an owner, rather than ambient process behaviour. When the control plane is configured
@@ -369,16 +417,21 @@ assertions confirm that an error was raised, which is not the same fact.
 **Trigger.** An agent-backed feature enters your release, and the acceptance criteria
 say "must not be able to" for the first time.
 
-**Intervention.** The product turns "must not be able to" into a decision with a
-recorded outcome, on the paths you route. Four scenarios carry approved wording for
-reuse — the flagship egress refusal, secret exfiltration, a destructive production
-action and runaway cost — each with its decider, its default state and its boundary
-named. Behind them: **RC1**, **RC3**, **RC4**, **RC13**, and **RC6** as the artifact
-you assert against.
+**Intervention.** The product turns "must not be able to" into a decision, on the paths
+you route. Four scenarios carry approved wording for reuse — the flagship egress
+refusal, secret exfiltration, a destructive production action and runaway cost — each
+with its decider, its default state and its boundary named. Behind them: **RC1**,
+**RC3**, **RC4**, and **RC13**. **RC6** is here too, but as a bound rather than as a
+tool: it is what stops the audit log from being the thing you assert against.
 
-**Outcome.** A refusal becomes an observable decision with a record, so a test can
-assert on the decision. Assertions about the *averted consequence* need a negative
-control, and that is a separate and stricter thing — see Limitations.
+**Outcome.** A refusal becomes an observable decision, so a test can assert on the
+decision. **Assert against the decision and against an independent observer, not
+against the audit log** — RC6 is `Unmeasured`, so a missing entry does not distinguish
+"the decision was not made" from "the record was dropped", and a test that reads the
+log inherits that ambiguity as a flaky pass. [Risk scenarios](risk-scenarios.md)'s
+negative control is built on an independent listener for exactly this reason.
+Assertions about the *averted consequence* are a separate and stricter thing again —
+see Limitations.
 
 **Proof.**
 
@@ -415,6 +468,12 @@ control, and that is a separate and stricter thing — see Limitations.
   gaps. Two rows are explicitly marked `unit_only`. Read the row before quoting it.
 - **An empty audit log is evidence about the observer, not about the agent** (**RC6**),
   and a passing chain verification does not mean the log is whole.
+- **Two of the sixteen register entries rest on no capability row at all.** RC6 and
+  RC13 are `Unmeasured` because the manifest's only rows for the evidence pipeline and
+  for budget are the rows for those subsystems *failing* — see
+  [the two gaps](#two-gaps-this-page-found-in-the-manifest). An acceptance criterion
+  written against "the decision is in the audit log" or "the cap was applied" is
+  currently asserting something the evidence base does not carry. AAASM-5531.
 - **A budget cap exists only where a policy declares one** (**RC13**), and a corrupt
   budget store resets it silently.
 - **Coverage figures are not available.** No percentage, count of governed actions or
@@ -448,15 +507,15 @@ absent.
 | RC2 | Denied before execution | ● | · | · | · |
 | RC3 | Redacted | ● | ● | ● | ● |
 | RC4 | Denied before execution | ● | · | ● | ● |
-| RC5 | Denied before execution · Evaluated · Unmeasured | · | · | ● | · |
-| RC6 | Observed | ● | ● | · | ● |
+| RC5 | Denied before execution (Python, Go) · Evaluated (Node) · Unmeasured (Node default mode) | · | · | ● | · |
+| RC6 | Unmeasured | ● | ● | · | ● |
 | RC7 | Unmeasured | ● | · | · | · |
 | RC8 | Observed · Detected | · | ● | · | ● |
-| RC9 | ADR 0030 `HostEnforced` | ● | ● | · | ● |
+| RC9 | — (ADR 0030 protection state) | ● | ● | · | ● |
 | RC10 | Degraded | · | ● | · | · |
 | RC11 | Denied before execution · Evaluated | ● | ● | · | · |
 | RC12 | Approval required | ✗ | · | ✗ | ✗ |
-| RC13 | Evaluated | · | · | · | ● |
+| RC13 | Unmeasured | · | · | · | ● |
 | RC14 | Unsupported | ● | ● | · | ● |
 | RC15 | Denied before execution (via RC1) | ● | ● | ● | · |
 | RC16 | Evaluated | ● | · | · | · |
@@ -552,6 +611,7 @@ four role pages describing one product.
 | The sitemap the role surfaces sit in | AAASM-5594 |
 | The homepage, the Product page and the How It Works page | AAASM-5585, AAASM-5586 |
 | The audience enum and the role crosswalk this page aligns to | AAASM-5591 |
+| Adding capability rows for the evidence pipeline and for budget enforcement, so RC6 and RC13 can move off `Unmeasured` | AAASM-5531 |
 | Lifting the Tier 2 gate on prevented-outcome wording | AAASM-5532, AAASM-5529 |
 | Making `Approval required` claimable — a shipped operator surface for a held action | AAASM-5657 |
 | Rendering a degradation event anywhere a user can see it | AAASM-5535 |
