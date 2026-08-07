@@ -175,12 +175,22 @@ than repeated six times.
 
 Job ids are two letters and a digit (`EV1`, `SE1`, `AU1`, `OP1`, `DV1`, `CO1`); gaps are
 `GAP-n`. Neither shape is arbitrary. The capability manifest's rows are a single letter
-and a digit — its `S` rows are the SDK, its `C` rows credentials, its `G` rows the
-gateway — and this page cites some of them by id, so a job called `S1` and a manifest
-row called `S1` would collide on exactly the identifier a checking reader follows.
-[`risk-scenarios.md`](risk-scenarios.md) lettered its scenarios `F` and `T1`–`T3` for
-the same reason. Where a single-letter id appears below, it is the manifest's and is
-named as such.
+and a digit, and the letter is its **`domain`** — `S` sdk, `H` host_action, `N` network,
+`M` mcp, `L` devtool_launch, `C` credentials, `I` identity, `G` degraded_mode, `P`
+platform, eighty rows in nine series. This page cites some of them by id, so a job
+called `S1` and a manifest row called `S1` would collide on exactly the identifier a
+checking reader follows. [`risk-scenarios.md`](risk-scenarios.md) lettered its scenarios
+`F` and `T1`–`T3` for the same reason. Where a single-letter id appears below, it is the
+manifest's and is named as such.
+
+**The letter is the domain, not the owning component**, and `G` is where that distinction
+bites. Every `G` row is `domain: degraded_mode` — the series is about *what happens when
+a control cannot run*, not about the gateway. Only four of the eleven are owned by
+`aa-gateway`; the rest belong to `aa-runtime`, `aa-proxy` and the SDK. This matters for
+reading the citations below rather than as a point of order: `G9` is this page's
+recurring failure-posture exemplar precisely **because** it is a degraded-mode row, and a
+reader who took `G` for "gateway" would look for degradation somewhere else and not find
+it.
 
 ---
 
