@@ -121,10 +121,17 @@ whose job it is, which is the failure this whole exercise is about.
 
 ### Where every existing page goes
 
-All 24 pages currently under `docs/src/` are `Keep` in `documentation-inventory.md`'s
-census, so this is a re-filing, not a migration. Each page appears in exactly one
-section; the counts below sum to 24, which is the check that no page was filed twice or
-dropped.
+There are **24** pages under `docs/src/` today, and this is a re-filing rather than a
+migration: `documentation-inventory.md`'s census dispositions them all as `Keep` **with
+one exception** — `policy-reference.md` is `Review`, owned elsewhere. Two of the 24 are
+not in that census at all, because `audiences.md` and `role-narratives.md` merged after
+it was taken; the census counts 22 and both of those are `Keep` by the same reasoning as
+their neighbours.
+
+Each page appears in exactly one section. The counts below sum to 24, which is the check
+that no page was filed twice or dropped — and it is a real count, not a reading of the
+tables: no page is assigned twice, none in the tree is unassigned, and none is assigned
+that is not in the tree.
 
 #### Prefix chapters
 
@@ -550,7 +557,7 @@ Two stronger constraints, because linking is not enough on its own:
 
 | Constraint | Value | Why |
 | --- | --- | --- |
-| Sidebar entries, total | 34 after this design (24 existing + 3 new + 2 from 5609 + this page + 4 section headings) | Below a viewport height at 1080px, the sidebar scrolls; on mobile the whole tree renders in one drawer |
+| Sidebar entries, total | **36** after this design — 24 existing + this page + 3 new routers + 2 from AAASM-5609 = 30 page entries, plus 6 part titles | Below a viewport height at 1080px, the sidebar scrolls; on mobile the whole tree renders in one drawer |
 | Nesting depth under a part | 2 levels | A third level is a drawer nobody scrolls to |
 | Section headings | Not links | `part-title` renders as `<li class="part-title">Evaluate</li>` — plain text, no anchor. **A section that needs a landing page must have one as its first chapter**, which is why Evaluate, Integrate, Operate and Verify have one and Reference and Contribute do not |
 | Sidebar entry decoration | Link text only | No badge mechanism exists, hence the label rule for `🗺️ Planned` |
