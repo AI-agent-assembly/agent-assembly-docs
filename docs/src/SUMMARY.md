@@ -38,6 +38,7 @@
 # About
 
 - [Product Promise & Message Hierarchy](product-promise.md)
+- [Role Narratives](role-narratives.md)
 - [Page Standards — Disclosure & Metadata](page-standards.md)
 - [Audiences, Jobs & Information Requirements](audiences.md)
 - [SaaS Claim Publication Checklist](saas-claim-publication-checklist.md)
