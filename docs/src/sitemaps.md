@@ -250,33 +250,73 @@ The same book with that one line removed builds at exit 0, so the failure is the
 external entry's and not the fixture's. The draft-chapter form `- [Python SDK]()`
 builds, but renders `<span>Python SDK</span>` with no anchor — a label, not a route.
 
-So the closable half of `GAP-7` is narrower again than `audiences.md` scoped it. Two
-options, and 5608 chooses with this evidence in hand:
+**A second `SUMMARY.md` entry for a page that already has one is also rejected.** This
+is recorded because it was this page's recommendation until review, and it fails the
+same way the external link does:
 
-1. **`documentation.md` promoted into Integrate** (in addition to its prefix slot). The
-   sidebar then carries a one-hop route to the mounts under the section a developer is
-   in. Costs nothing, needs no theme change. **This is the recommendation.**
+```text
+$ mdbook build   # SUMMARY has documentation.md as a prefix chapter AND under "# Integrate"
+ERROR Summary parsing failed for file=".../src/SUMMARY.md"
+    Caused by: Duplicate file in SUMMARY.md: "documentation.md"
+exit 101
+```
+
+Control: the identical insertion with a **new unique** file builds at exit 0, so the
+failure is the duplicate's rather than the insertion's. It would also have contradicted
+this page's own [one page, one section](#one-page-one-section) rule, the 24-page
+partition and the sidebar budget — a recommendation cannot be exempt from the rules the
+page hands the same ticket.
+
+So `SUMMARY.md` offers exactly **three** shapes for a mount route, and each was built:
+
+| Shape | Build | Result |
+| --- | --- | --- |
+| External URL entry | **exit 101** | `failed to write src/https://…` |
+| Duplicate entry for a page already listed | **exit 101** | `Duplicate file in SUMMARY.md` |
+| Draft entry `- [Python SDK]()` | exit 0 | Renders a `<span>` with no anchor — a label, not a route |
+
+That leaves two real options, and neither is free:
+
+1. **Move `documentation.md` out of the prefix into Integrate.** Builds at exit 0,
+   verified, and the page still renders. But it **costs the prefix slot**, and the
+   [reachability guarantee](#component-documentation-stays-reachable) is stated over
+   routes that do *not* pass through a task section — of which there are exactly two,
+   both prefix chapters. Moving one leaves one, and the guarantee fails. Taking this
+   option means restating that guarantee, not quietly weakening it.
 2. **A theme-level navigation block**, outside `SUMMARY.md`. The hub already injects
-   `theme/head.hbs` and four `additional-js` files, so the mechanism exists. Only this
-   option puts the literal mount names in the sidebar, and it is the only way to close
-   `GAP-7`'s sidebar half as worded.
+   `theme/head.hbs` and four `additional-js` files, so the mechanism exists. This is
+   the **only** way to put the literal mount names in the sidebar, and therefore the
+   only way to close `GAP-7`'s sidebar half as `audiences.md` words it. **This is the
+   recommendation**, on the grounds that it is the one option that closes the gap and
+   the one that costs no existing route.
 
-The checkpoint half of `GAP-7` stays open and stays L3, per that gap's own ruling and
-this repository's project instructions: the hub orients toward component docs and does
-not re-author their install steps or API surface.
+If neither is taken, the honest position is that the sidebar half stays open and the
+mounts keep their one-hop prefix route. That is a smaller loss than it sounds — the
+route exists today and is unaffected by anything in this design.
+
+The checkpoint half of `GAP-7` stays open and stays L3 regardless, per that gap's own
+ruling and this repository's project instructions: the hub orients toward component
+docs and does not re-author their install steps or API surface.
 
 ### Component documentation stays reachable
 
 The parent scope requires it, and repository-shaped routes are the thing this redesign
 is removing, so the guarantee is stated as a count rather than a promise: **each of the
-five mounts is reachable by at least two routes that do not pass through a task
-section.**
+five mounts is reachable by exactly two routes that sit outside every task section, and
+by a third inside one.**
 
-| Route | Present at | Reaches |
-| --- | --- | --- |
-| `documentation.md`, a prefix chapter | Every page, every viewport | All five mounts |
-| [`README.md`](index.html)'s *SDKs & components* table | The index | All five mounts, plus standalone per-version sites |
-| [`source-of-truth.md`](source-of-truth.md)'s status map | Reference | All five, with owner, visibility and maturity |
+| Route | Where it sits | Outside a task section? | Reaches |
+| --- | --- | --- | --- |
+| `documentation.md`, a prefix chapter | Above the six sections, every page, every viewport | **Yes** | All five mounts |
+| [`README.md`](index.html)'s *SDKs & components* table | The index, also a prefix chapter | **Yes** | All five mounts, plus standalone per-version sites |
+| [`source-of-truth.md`](source-of-truth.md)'s status map | Reference | No | All five, with owner, visibility and maturity |
+
+The count is two, not three, and the third row is listed rather than counted — a reader
+who has to enter *Reference* to find a component mount has been routed by task, which is
+the thing this guarantee exists to rule out. **Two is also the floor**: taking option 1
+in [the language route](#the-language-route-and-what-mdbook-cannot-do) moves
+`documentation.md` inside *Integrate* and drops the count to one, which is why that
+option is not the recommendation.
 
 All three regions are generated from `hub-components.toml`, so a component added there
 appears on all three without a navigation edit. That is the property that makes this a
