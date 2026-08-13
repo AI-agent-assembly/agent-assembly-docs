@@ -26,9 +26,10 @@ Division of labour, and why it is split this way:
   standard-library ``tomllib`` and **is** run in CI with ``--check``, matching the
   existing ``generate_hub_components.py`` / ``generate_compatibility.py`` gates.
 
-The consequence is stated rather than hidden: CI proves the pages match the
-*extract*, and cannot prove the extract matches the *upstream manifest*. Closing
-that second gap needs a cross-repository check, which is AAASM-5600's.
+The consequence is stated rather than hidden: CI proves the *generated tables* on
+those pages match the *extract*. It does not check prose outside the markers, and it
+cannot prove the extract matches the *upstream manifest*. Closing that second gap
+needs a cross-repository check, which is AAASM-5600's.
 
 See AAASM-5609 (Epic AAASM-3659) and ADR 0033 §6 for the claim vocabulary.
 """

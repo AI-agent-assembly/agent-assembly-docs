@@ -24,8 +24,9 @@ name: Hub metadata drift check
 # capability-surface.toml, a pinned extract of the AAASM-5531 capability manifest in
 # the agent-assembly repository. This fails the build if either page has drifted from
 # that extract (`generate_capability_surface.py --check`). Note the bound: this proves
-# the pages match the extract, NOT that the extract matches the upstream manifest —
-# that needs a cross-repository check, which is AAASM-5600's.
+# the GENERATED TABLES on those pages match the extract. It does not check prose
+# outside the markers, and it does NOT prove the extract matches the upstream
+# manifest — that needs a cross-repository check, which is AAASM-5600's.
 #
 # See docs/scripts/generate_hub_components.py for the hub-component generator,
 # docs/scripts/check_repo_names.py for the stale-name audit,

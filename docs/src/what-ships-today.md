@@ -95,7 +95,7 @@ as reachable, which makes the reference look verified when it is not.
 >
 > **Manifest version** `1.0.0` · **80 capability rows** · **taken at commit** [`dc8ab13d6`](https://github.com/ai-agent-assembly/agent-assembly/commit/dc8ab13d656ac3398e064583150c7551be8e46a4) · **the manifest's own evidence tree** `299de3883`, dated 2026-08-06 · **declared fix version** agent-assembly v0.0.1-rc.7.
 >
-> The extract is refreshed by hand, so it can lag the manifest. What this repository's CI proves is that these pages match the extract; proving the extract matches the manifest needs a cross-repository check, which is AAASM-5600.
+> The extract is refreshed by hand, so it can lag the manifest. What this repository's CI proves is that **the generated tables** on these pages match the extract — prose outside the generated blocks is not checked, and proving the extract itself matches the manifest needs a cross-repository check, which is AAASM-5600.
 
 <!-- END GENERATED:capability-surface:pin -->
 
