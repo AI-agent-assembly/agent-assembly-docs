@@ -35,7 +35,7 @@ framework examples (LangChain, LlamaIndex, bare OpenAI, and more) in the
 
 ## Is it free? What is open source vs. paid?
 
-The enforcement core — the interception layers, policy engine, SDKs, and CLI —
+The enforcement core — the interception mechanisms, policy engine, SDKs, and CLI —
 is **open source under Apache-2.0**. Enterprise operations (SSO, SCIM,
 tamper-evident audit, dedicated regions, SLAs) are commercial and delivered on
 paid SaaS tiers. See the [Open core boundary](open-core-boundary.md).
