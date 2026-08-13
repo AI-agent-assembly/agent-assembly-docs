@@ -12,17 +12,19 @@ outside world and enforces policy, tracks cost, and intercepts unsafe actions
 
 ## Do I have to change my agent's code?
 
-Not necessarily. There are three interception layers and you can pick how
+Not necessarily. Three interception mechanisms exist, they are deployed
+independently rather than as an ordered pipeline, and you can pick how
 invasive to be:
 
 - The **SDK layer** needs a small amount of instrumentation in your code and is
   the fastest path.
 - The **sidecar proxy** (`aa-proxy`) governs an agent's network traffic with
   **no code change**.
-- The **eBPF sensor** (`aa-ebpf`, Linux only) catches actions at the kernel
-  level, including bypass attempts.
+- The **eBPF sensor** (`aa-ebpf`, Linux only) *observes* activity at the kernel
+  level and reports it. It is observe-only: it returns no verdict and blocks
+  nothing.
 
-See the three-layer interception model in the [Introduction](README.md).
+See [the interception mechanisms](README.md) in the Introduction.
 
 ## Does it work with my LLM / framework?
 
@@ -33,7 +35,7 @@ framework examples (LangChain, LlamaIndex, bare OpenAI, and more) in the
 
 ## Is it free? What is open source vs. paid?
 
-The enforcement core — the interception layers, policy engine, SDKs, and CLI —
+The enforcement core — the interception mechanisms, policy engine, SDKs, and CLI —
 is **open source under Apache-2.0**. Enterprise operations (SSO, SCIM,
 tamper-evident audit, dedicated regions, SLAs) are commercial and delivered on
 paid SaaS tiers. See the [Open core boundary](open-core-boundary.md).

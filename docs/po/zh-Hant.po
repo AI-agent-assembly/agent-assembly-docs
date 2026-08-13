@@ -146,10 +146,13 @@ msgstr "**追蹤成本** — 依團隊計量權杖與金額開銷，並封鎖超
 
 #: src/index.md:24
 msgid ""
-"**Intercepts unsafe actions** — catches risky calls (and bypass attempts) at "
-"the SDK, network, and kernel levels."
+"**Intercepts unsafe actions** — the sidecar proxy denies a routed call "
+"before it leaves the machine, the SDK advises in-process, and the Linux "
+"eBPF sensor _detects_ activity without returning a verdict. Each is "
+"deployed on its own and covers only what it is on the path of."
 msgstr ""
-"**攔截不安全的動作** — 在 SDK、網路與核心層攔截有風險的呼叫（以及繞道嘗試）。"
+"**攔截不安全的動作** — 邊車代理會在有風險的呼叫離開機器之前拒絕已路由的呼叫，SDK 在行程內提供建議，而 Linux eBPF "
+"感測器則*偵測*活動但不回傳裁決。每一項都是獨立部署，且僅涵蓋它所在路徑上的事物。"
 
 #: src/index.md:26
 msgid ""
@@ -375,16 +378,19 @@ msgstr ""
 "前，實際看見治理的運作。"
 
 #: src/index.md:79
-msgid "The three-layer interception model"
-msgstr "三層攔截模型"
+msgid "The interception mechanisms"
+msgstr "攔截機制"
 
 #: src/index.md:81
 msgid ""
-"AI Agent Assembly enforces governance through three layers. You can deploy "
-"them independently, and each one catches what the layer above it might miss:"
+"Governance is assembled from independently-deployable interception "
+"mechanisms, and a deployment runs whichever subset it installs. They are "
+"**not** a fallback chain and **not** a ranking: each reaches a different "
+"claim level, and a mechanism you do not deploy is reported as absent "
+"rather than picked up by another. The numbering below is presentational "
+"and implies no order of precedence:"
 msgstr ""
-"AI Agent Assembly 透過三層來強制執行治理。你可以獨立部署各層，且每一層都能捕"
-"捉上一層可能遺漏的部分："
+"治理是由可獨立部署的攔截機制組合而成，每個部署只會執行它所安裝的子集。它們**不是**後備鏈，也**不是**排序：每一項所能達到的宣告層級各不相同，你未部署的機制會被回報為缺席，而不會由另一項機制接手。下方的編號僅為呈現用途，不代表任何優先順序："
 
 #: src/index.md:83
 msgid ""
@@ -406,28 +412,38 @@ msgstr ""
 
 #: src/index.md:85
 msgid ""
-"**eBPF sensor (`aa-ebpf`)** — kernel-level hooks that watch SSL libraries "
-"and process syscalls to catch bypass attempts at the OS level. Linux only."
+"**eBPF sensor (`aa-ebpf`)** — kernel hooks that watch OpenSSL and "
+"process syscalls. **Observe-only**: it reports what it sees and is "
+"consulted in no allow/deny decision, so its claim level is _Observed_ "
+"and _Detected_ — never prevention. It does not block, and it is not a "
+"mechanism the others fall back to. Linux only (the file-I/O kprobes are "
+"x86_64-only), and it degrades rather than failing closed if it cannot "
+"attach."
 msgstr ""
-"**eBPF 感測器（`aa-ebpf`）** — 核心層級的掛鉤，監看 SSL 函式庫與行程系統呼"
-"叫，在作業系統層級捕捉繞道嘗試。僅限 Linux。"
+"**eBPF 感測器（`aa-ebpf`）** — 監看 OpenSSL "
+"與行程系統呼叫的核心掛鉤。**僅供觀測**：它只回報所見，且不參與任何允許／拒絕決策，因此其宣告層級為*已觀測*與*已偵測* — "
+"絕非預防。它不會封鎖，也不是其他機制的後備。僅限 Linux（檔案 I/O kprobe 僅限 x86_64），且在無法掛載時會降級而非關閉。"
 
 #: src/index.md:87
 msgid ""
-"All three layers report to the **gateway**, which evaluates policy and "
-"tracks per-team budgets."
-msgstr "這三層全都回報給**閘道（gateway）**，由閘道評估政策並依團隊追蹤預算。"
+"Each mechanism reports to the **gateway**, which evaluates policy and "
+"tracks per-team budgets. Coverage is the union of the layers you deploy, "
+"bounded by each layer's own precondition — see [Known "
+"limitations](https://docs.agent-assembly.com/core/latest/devtools/limitations.html)."
+msgstr ""
+"每一項機制都會回報給**閘道（gateway）**，由閘道評估政策並依團隊追蹤預算。涵蓋範圍是你所部署各層的聯集，並受限於每一層自身的前提條件 "
+"— "
+"請參閱[已知限制](https://docs.agent-assembly.com/core/latest/devtools/limitations.html)。"
 
 #: src/index.md:89
 msgid ""
-"These three interception points describe _where_ enforcement happens; they "
-"sit inside the **Boundary** layer of the broader [five-layer defense model]"
-"(security-model.md), which describes _what_ is protected. Same system, two "
-"views."
+"These interception points describe _where_ a decision is applied; they "
+"sit inside the **Boundary** layer of the broader [five-layer defense "
+"model](security-model.md), which describes _what_ is protected. Same "
+"system, two views."
 msgstr ""
-"這三個攔截點描述的是強制執行發生的_位置_；它們位於更廣泛的[五層防禦模型]"
-"(security-model.md)中的 **Boundary** 層內，而該模型描述的是_受保護的對象_。同"
-"一套系統，兩種視角。"
+"這些攔截點描述的是決策套用的_位置_；它們位於更廣泛的[五層防禦模型](security-model.md)中的 **Boundary** "
+"層內，而該模型描述的是_受保護的對象_。同一套系統，兩種視角。"
 
 #: src/index.md:101
 msgid "_Last reviewed: 2026-06-27 — AI Agent Assembly Team_"
@@ -1525,9 +1541,10 @@ msgstr "我必須修改代理的程式碼嗎？"
 
 #: src/faq.md:15
 msgid ""
-"Not necessarily. There are three interception layers and you can pick how "
+"Not necessarily. Three interception mechanisms exist, they are deployed "
+"independently rather than as an ordered pipeline, and you can pick how "
 "invasive to be:"
-msgstr "不一定。共有三層攔截，你可以自行選擇侵入程度："
+msgstr "不一定。共有三種攔截機制，它們是各自獨立部署，而非依序串接的管線，你可以自行選擇侵入程度："
 
 #: src/faq.md:18
 msgid ""
@@ -1541,17 +1558,18 @@ msgid ""
 "**no code change**."
 msgstr "**邊車代理**（`aa-proxy`）治理代理的網路流量，**無需變更程式碼**。"
 
-#: src/faq.md:22
+#: src/faq.md:23
 msgid ""
-"The **eBPF sensor** (`aa-ebpf`, Linux only) catches actions at the kernel "
-"level, including bypass attempts."
+"The **eBPF sensor** (`aa-ebpf`, Linux only) _observes_ activity at the "
+"kernel level and reports it. It is observe-only: it returns no verdict "
+"and blocks nothing."
 msgstr ""
-"**eBPF 感測器**（`aa-ebpf`，僅限 Linux）在核心層級捕捉動作，包含繞道嘗試。"
+"**eBPF 感測器**（`aa-ebpf`，僅限 Linux）在核心層級*觀測*活動並加以回報。它僅供觀測：不會回傳裁決，也不會封鎖任何行為。"
 
-#: src/faq.md:25
+#: src/faq.md:27
 msgid ""
-"See the three-layer interception model in the [Introduction](README.md)."
-msgstr "請參閱[簡介](README.md)中的三層攔截模型。"
+"See [the interception mechanisms](README.md) in the Introduction."
+msgstr "請參閱[簡介](README.md)中的攔截機制。"
 
 #: src/faq.md:27
 msgid "Does it work with my LLM / framework?"
@@ -1573,16 +1591,17 @@ msgstr ""
 msgid "Is it free? What is open source vs. paid?"
 msgstr "它免費嗎？哪些是開源、哪些是付費？"
 
-#: src/faq.md:36
+#: src/faq.md:38
 msgid ""
-"The enforcement core — the interception layers, policy engine, SDKs, and CLI "
-"— is **open source under Apache-2.0**. Enterprise operations (SSO, SCIM, "
-"tamper-evident audit, dedicated regions, SLAs) are commercial and delivered "
-"on paid SaaS tiers. See the [Open core boundary](open-core-boundary.md)."
+"The enforcement core — the interception mechanisms, policy engine, SDKs, "
+"and CLI — is **open source under Apache-2.0**. Enterprise operations "
+"(SSO, SCIM, tamper-evident audit, dedicated regions, SLAs) are "
+"commercial and delivered on paid SaaS tiers. See the [Open core "
+"boundary](open-core-boundary.md)."
 msgstr ""
-"強制執行的核心 — 攔截層、政策引擎、各 SDK 與 CLI — 是**採 Apache-2.0 授權的開"
-"源**。企業級維運（SSO、SCIM、防竄改稽核、專屬地區、SLA）屬商業功能，透過付費 "
-"SaaS 方案提供。請參閱[開放核心邊界](open-core-boundary.md)。"
+"強制執行的核心 — 攔截機制、政策引擎、各 SDK 與 CLI — 是**採 Apache-2.0 "
+"授權的開源**。企業級維運（SSO、SCIM、防竄改稽核、專屬地區、SLA）屬商業功能，透過付費 SaaS "
+"方案提供。請參閱[開放核心邊界](open-core-boundary.md)。"
 
 #: src/faq.md:41
 msgid "Can I self-host it?"
@@ -1770,13 +1789,17 @@ msgstr ""
 
 #: src/security-model.md:19
 msgid ""
-"**How the five layers relate to the three interception points.** The five "
+"**How the five layers relate to the interception mechanisms.** The five "
 "_defense-in-depth layers_ above (Boundary, Identity, Policy, Vault, "
-"Telemetry) describe _what_ is protected. The three _interception points_ "
-"named on the landing page and marketing site — the SDK layer, the sidecar "
-"proxy (`aa-proxy`), and the eBPF sensor (`aa-ebpf`) — describe _where_ "
-"enforcement is applied, and all three sit inside the **Boundary** layer. "
-"They are two views of one system, not two competing models."
+"Telemetry) describe _what_ is protected. The _interception mechanisms_ "
+"named on the landing page and marketing site — the SDK layer, the "
+"sidecar proxy (`aa-proxy`), and the eBPF sensor (`aa-ebpf`) — describe "
+"_where_ a decision is applied, and each sits inside the **Boundary** "
+"layer. They are two views of one system, not two competing models. They "
+"are **not** an ordered pipeline and **not** a ranking: each is deployed "
+"on its own and reaches its own claim level, and an absent one is "
+"reported as absent rather than covered by another. Where this page and "
+"ADR 0033's six-element model differ, ADR 0033 wins."
 msgstr ""
 
 #: src/security-model.md:23
@@ -5497,7 +5520,7 @@ msgstr ""
 
 #: src/docker-containers.md:386
 msgid ""
-"[Security model](security-model.md) — the three-layer interception model and "
+"[Security model](security-model.md) — the interception mechanisms and "
 "defense-in-depth posture."
 msgstr ""
 
@@ -7291,11 +7314,10 @@ msgstr ""
 #: src/glossary.md:19
 msgid ""
 "**Gateway (`aa-gateway`)** : The central service that holds the agent "
-"registry, evaluates policy, and tracks per-team budgets. Every interception "
-"layer reports to it."
+"registry, evaluates policy, and tracks per-team budgets. Every "
+"interception mechanism reports to it."
 msgstr ""
-"**閘道（`aa-gateway`）** : 掌管代理註冊表、評估政策並依團隊追蹤預算的中央服"
-"務。每一層攔截都會回報給它。"
+"**閘道（`aa-gateway`）** : 掌管代理註冊表、評估政策並依團隊追蹤預算的中央服務。每一項攔截機制都會回報給它。"
 
 #: src/glossary.md:23
 msgid ""
@@ -7332,8 +7354,8 @@ msgstr ""
 "拒絕後續的代理呼叫。"
 
 #: src/glossary.md:39
-msgid "Interception layers"
-msgstr "攔截層"
+msgid "Interception mechanisms"
+msgstr "攔截機制"
 
 #: src/glossary.md:41
 msgid ""
@@ -7355,11 +7377,14 @@ msgstr ""
 #: src/glossary.md:49
 msgid ""
 "**eBPF sensor (`aa-ebpf`)** : A kernel-level sensor (Linux only) that "
-"watches TLS libraries and process syscalls to catch actions — and bypass "
-"attempts — that the layers above miss."
+"watches TLS libraries and process syscalls and _reports_ what it sees. "
+"Observe-only: it returns no verdict, blocks nothing, and is consulted in "
+"no allow/deny decision, so it observes and detects rather than "
+"preventing. It is deployed on its own, not as a tier the other "
+"mechanisms fall back to."
 msgstr ""
 "**eBPF 感測器（`aa-ebpf`）** : 一個核心層級的感測器（僅限 Linux），監看 TLS "
-"函式庫與行程系統呼叫，以捕捉上層所遺漏的動作 — 以及繞道嘗試。"
+"函式庫與行程系統呼叫，並*回報*所見。它僅供觀測：不會回傳裁決、不會封鎖任何行為，也不參與任何允許／拒絕決策，因此它是觀測與偵測，而非預防。它是獨立部署的，並非其他機制的後備層級。"
 
 #: src/glossary.md:53
 msgid "Security & identity terms"
@@ -7462,18 +7487,23 @@ msgstr ""
 "**HMAC-SHA256** : 一種帶金鑰的雜湊，用於簽署稽核紀錄項目與 webhook 負載，使竄"
 "改可被偵測。"
 
-#: src/glossary.md:101
+#: src/glossary.md:121
 msgid ""
-"**IronClaw five-layer defense** : The name for AI Agent Assembly's defense-"
-"in-depth model — five security _layers_ (Boundary, Identity, Policy, Vault, "
-"Telemetry). These are distinct from the three _interception points_ (SDK, "
-"proxy, eBPF), which all live inside the Boundary layer. See the [Security "
-"model](security-model.md)."
+"**IronClaw five-layer defense** : The name for AI Agent Assembly's "
+"defense-in-depth model — five security _layers_ (Boundary, Identity, "
+"Policy, Vault, Telemetry). These are distinct from the _interception "
+"mechanisms_ (SDK, proxy, eBPF), which each live inside the Boundary "
+"layer and are deployed independently of one another. **The Vault layer "
+"is largely aspirational:** an in-memory secrets store is mounted but is "
+"empty in every shipped build with nothing able to populate it, there is "
+"no encryption at rest or key management, and where resolution does "
+"succeed the plaintext is returned to the caller. See [Secrets "
+"management](security-model.md#secrets-management)."
 msgstr ""
-"**IronClaw 五層防禦** : AI Agent Assembly 縱深防禦模型的名稱 — 五個安全_層_"
-"（Boundary、Identity、Policy、Vault、Telemetry）。這些不同於三個_攔截點_"
-"（SDK、proxy、eBPF），後者全都位於 Boundary 層之內。請參閱[安全模型]"
-"(security-model.md)。"
+"**IronClaw 五層防禦** : AI Agent Assembly 縱深防禦模型的名稱 — "
+"五個安全_層_（Boundary、Identity、Policy、Vault、Telemetry）。這些不同於_攔截機制_（SDK、proxy、eBPF），後者各自位於 "
+"Boundary 層之內，且彼此獨立部署。**Vault 層在很大程度上仍是理想而非現實：** "
+"系統雖掛載了一個記憶體內的機密儲存區，但在每一個已發行的建置中它都是空的，且沒有任何途徑可以填入內容；既沒有靜態加密也沒有金鑰管理，而在解析確實成功的情況下，明文會被回傳給呼叫端。請參閱[機密管理](security-model.md#secrets-management)。"
 
 #: src/glossary.md:107
 msgid ""

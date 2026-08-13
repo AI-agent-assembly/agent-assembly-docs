@@ -6,7 +6,7 @@ AI Agent Assembly is a **governance layer for AI agents** — it enforces policy
 
 ## IronClaw five-layer defense
 
-AI Agent Assembly groups its security controls into five named layers. Each layer is independently deployable and adds defense-in-depth — if one layer is bypassed, the next still applies.
+AI Agent Assembly groups its security controls into five named layers. Each layer is independently deployable and adds defense-in-depth. They are **not** a fallback chain: a layer you do not deploy is absent, not covered by another, and each row below states its own bound.
 
 | Layer | Name | What it does |
 |---|---|---|
@@ -16,7 +16,7 @@ AI Agent Assembly groups its security controls into five named layers. Each laye
 | 4 | **Vault** | 🗺️ **Largely aspirational.** An in-memory `SecretsStore` is mounted, but it is empty in every shipped build with no route or command able to populate it, there is no encryption at rest or key management, and successful resolution hands the plaintext back to the caller — see [Secrets management](#secrets-management). Ed25519 is used for the one-time agent registration proof, not for a vault |
 | 5 | **Telemetry** | Audit and observability: a JSONL event log with an unkeyed SHA-256 hash chain (verify with `aasm audit verify-chain`), append-only by convention and best-effort on emission. **A shipped gateway writes one fixed file, not per-session files** — see [Audit log](#audit-log) for the exact bounds; Slack/webhook connectors for alerting on policy violations |
 
-> **How the five layers relate to the three interception points.** The five *defense-in-depth layers* above (Boundary, Identity, Policy, Vault, Telemetry) describe *what* is protected. The three *interception points* named on the landing page and marketing site — the SDK layer, the sidecar proxy (`aa-proxy`), and the eBPF sensor (`aa-ebpf`) — describe *where* enforcement is applied, and all three sit inside the **Boundary** layer. They are two views of one system, not two competing models.
+> **How the five layers relate to the interception mechanisms.** The five *defense-in-depth layers* above (Boundary, Identity, Policy, Vault, Telemetry) describe *what* is protected. The *interception mechanisms* named on the landing page and marketing site — the SDK layer, the sidecar proxy (`aa-proxy`), and the eBPF sensor (`aa-ebpf`) — describe *where* a decision is applied, and each sits inside the **Boundary** layer. They are two views of one system, not two competing models. They are **not** an ordered pipeline and **not** a ranking: each is deployed on its own and reaches its own claim level, and an absent one is reported as absent rather than covered by another. Where this page and ADR 0033's six-element model differ, ADR 0033 wins.
 
 ---
 

@@ -2,7 +2,7 @@
 
 AI Agent Assembly follows an **open-core** model. The line is simple:
 
-- **Enforcement is open source.** The interception layers, policy engine, SDK shims, and CLI are Apache-2.0. Anyone can read, audit, and contribute to them.
+- **Enforcement is open source.** The interception mechanisms, policy engine, SDK shims, and CLI are Apache-2.0. Anyone can read, audit, and contribute to them.
 - **Enterprise operations are intended to be commercial.** Capabilities such as SSO, SCIM, advanced audit, and multi-region data residency are planned for a commercial tier. That tier is not available, its licence terms are not published, and there is no paid plan to buy.
 
 > 🗺️ **The commercial side of this boundary is planned, not available.** You can

@@ -62,7 +62,7 @@ Every area below is tagged with one visibility label and one maturity label.
 
 AI Agent Assembly is **open core — limited-function self-host (Docker Compose),
 full-function SaaS**. The enforcement path — every
-interception layer, the policy engine, the SDK shims, and the CLI — is open
+interception mechanism, the policy engine, the SDK shims, and the CLI — is open
 source and public. The commercial control plane (Cloud) and the enterprise
 operations features (Enterprise) are delivered as a managed SaaS and live in
 private repositories; their documentation here describes intended behaviour, not
