@@ -44,8 +44,8 @@ separate vocabulary, defined once in ADR 0033 §6, and this page makes no claim 
 
 Choosing a language is not the same decision as choosing *where* a decision about an
 action is made, and the second one is made before this page rather than on it. It is an
-evaluation decision, and it lives in
-[Evaluate](product-promise.md) alongside the default posture.
+evaluation decision: [Choose your enforcement path](choose-your-enforcement-path.md)
+is where it is made, and [Evaluate](product-promise.md) carries the default posture.
 
 ## What this page does not do
 
