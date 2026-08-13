@@ -387,9 +387,10 @@ msgid ""
 "mechanisms, and a deployment runs whichever subset it installs. They are "
 "**not** a fallback chain and **not** a ranking: each reaches a different "
 "claim level, and a mechanism you do not deploy is reported as absent "
-"rather than picked up by another. Listed lowest-latency first:"
+"rather than picked up by another. The numbering below is presentational "
+"and implies no order of precedence:"
 msgstr ""
-"治理是由可獨立部署的攔截機制組合而成，每個部署只會執行它所安裝的子集。它們**不是**後備鏈，也**不是**排序：每一項所能達到的宣告層級各不相同，你未部署的機制會被回報為缺席，而不會由另一項機制接手。以下依延遲由低到高排列："
+"治理是由可獨立部署的攔截機制組合而成，每個部署只會執行它所安裝的子集。它們**不是**後備鏈，也**不是**排序：每一項所能達到的宣告層級各不相同，你未部署的機制會被回報為缺席，而不會由另一項機制接手。下方的編號僅為呈現用途，不代表任何優先順序："
 
 #: src/index.md:83
 msgid ""
@@ -425,9 +426,14 @@ msgstr ""
 
 #: src/index.md:87
 msgid ""
-"All three layers report to the **gateway**, which evaluates policy and "
-"tracks per-team budgets."
-msgstr "這三層全都回報給**閘道（gateway）**，由閘道評估政策並依團隊追蹤預算。"
+"Each mechanism reports to the **gateway**, which evaluates policy and "
+"tracks per-team budgets. Coverage is the union of the layers you deploy, "
+"bounded by each layer's own precondition — see [Known "
+"limitations](https://docs.agent-assembly.com/core/latest/devtools/limitations.html)."
+msgstr ""
+"每一項機制都會回報給**閘道（gateway）**，由閘道評估政策並依團隊追蹤預算。涵蓋範圍是你所部署各層的聯集，並受限於每一層自身的前提條件 "
+"— "
+"請參閱[已知限制](https://docs.agent-assembly.com/core/latest/devtools/limitations.html)。"
 
 #: src/index.md:89
 msgid ""
@@ -1552,12 +1558,13 @@ msgid ""
 "**no code change**."
 msgstr "**邊車代理**（`aa-proxy`）治理代理的網路流量，**無需變更程式碼**。"
 
-#: src/faq.md:22
+#: src/faq.md:23
 msgid ""
-"The **eBPF sensor** (`aa-ebpf`, Linux only) catches actions at the kernel "
-"level, including bypass attempts."
+"The **eBPF sensor** (`aa-ebpf`, Linux only) _observes_ activity at the "
+"kernel level and reports it. It is observe-only: it returns no verdict "
+"and blocks nothing."
 msgstr ""
-"**eBPF 感測器**（`aa-ebpf`，僅限 Linux）在核心層級捕捉動作，包含繞道嘗試。"
+"**eBPF 感測器**（`aa-ebpf`，僅限 Linux）在核心層級*觀測*活動並加以回報。它僅供觀測：不會回傳裁決，也不會封鎖任何行為。"
 
 #: src/faq.md:27
 msgid ""
@@ -7307,11 +7314,10 @@ msgstr ""
 #: src/glossary.md:19
 msgid ""
 "**Gateway (`aa-gateway`)** : The central service that holds the agent "
-"registry, evaluates policy, and tracks per-team budgets. Every interception "
-"layer reports to it."
+"registry, evaluates policy, and tracks per-team budgets. Every "
+"interception mechanism reports to it."
 msgstr ""
-"**閘道（`aa-gateway`）** : 掌管代理註冊表、評估政策並依團隊追蹤預算的中央服"
-"務。每一層攔截都會回報給它。"
+"**閘道（`aa-gateway`）** : 掌管代理註冊表、評估政策並依團隊追蹤預算的中央服務。每一項攔截機制都會回報給它。"
 
 #: src/glossary.md:23
 msgid ""
@@ -7371,11 +7377,14 @@ msgstr ""
 #: src/glossary.md:49
 msgid ""
 "**eBPF sensor (`aa-ebpf`)** : A kernel-level sensor (Linux only) that "
-"watches TLS libraries and process syscalls to catch actions — and bypass "
-"attempts — that the layers above miss."
+"watches TLS libraries and process syscalls and _reports_ what it sees. "
+"Observe-only: it returns no verdict, blocks nothing, and is consulted in "
+"no allow/deny decision, so it observes and detects rather than "
+"preventing. It is deployed on its own, not as a tier the other "
+"mechanisms fall back to."
 msgstr ""
 "**eBPF 感測器（`aa-ebpf`）** : 一個核心層級的感測器（僅限 Linux），監看 TLS "
-"函式庫與行程系統呼叫，以捕捉上層所遺漏的動作 — 以及繞道嘗試。"
+"函式庫與行程系統呼叫，並*回報*所見。它僅供觀測：不會回傳裁決、不會封鎖任何行為，也不參與任何允許／拒絕決策，因此它是觀測與偵測，而非預防。它是獨立部署的，並非其他機制的後備層級。"
 
 #: src/glossary.md:53
 msgid "Security & identity terms"
@@ -7493,7 +7502,8 @@ msgid ""
 msgstr ""
 "**IronClaw 五層防禦** : AI Agent Assembly 縱深防禦模型的名稱 — "
 "五個安全_層_（Boundary、Identity、Policy、Vault、Telemetry）。這些不同於_攔截機制_（SDK、proxy、eBPF），後者各自位於 "
-"Boundary 層之內，且彼此獨立部署。"
+"Boundary 層之內，且彼此獨立部署。**Vault 層在很大程度上仍是理想而非現實：** "
+"系統雖掛載了一個記憶體內的機密儲存區，但在每一個已發行的建置中它都是空的，且沒有任何途徑可以填入內容；既沒有靜態加密也沒有金鑰管理，而在解析確實成功的情況下，明文會被回傳給呼叫端。請參閱[機密管理](security-model.md#secrets-management)。"
 
 #: src/glossary.md:107
 msgid ""

@@ -357,7 +357,8 @@ msgid ""
 "mechanisms, and a deployment runs whichever subset it installs. They are "
 "**not** a fallback chain and **not** a ranking: each reaches a different "
 "claim level, and a mechanism you do not deploy is reported as absent "
-"rather than picked up by another. Listed lowest-latency first:"
+"rather than picked up by another. The numbering below is presentational "
+"and implies no order of precedence:"
 msgstr ""
 
 #: src/index.md:83
@@ -387,8 +388,10 @@ msgstr ""
 
 #: src/index.md:87
 msgid ""
-"All three layers report to the **gateway**, which evaluates policy and "
-"tracks per-team budgets."
+"Each mechanism reports to the **gateway**, which evaluates policy and "
+"tracks per-team budgets. Coverage is the union of the layers you deploy, "
+"bounded by each layer's own precondition — see [Known "
+"limitations](https://docs.agent-assembly.com/core/latest/devtools/limitations.html)."
 msgstr ""
 
 #: src/index.md:89
@@ -1503,10 +1506,11 @@ msgid ""
 "**no code change**."
 msgstr ""
 
-#: src/faq.md:22
+#: src/faq.md:23
 msgid ""
-"The **eBPF sensor** (`aa-ebpf`, Linux only) catches actions at the kernel "
-"level, including bypass attempts."
+"The **eBPF sensor** (`aa-ebpf`, Linux only) _observes_ activity at the "
+"kernel level and reports it. It is observe-only: it returns no verdict "
+"and blocks nothing."
 msgstr ""
 
 #: src/faq.md:27
@@ -7141,8 +7145,8 @@ msgstr ""
 #: src/glossary.md:19
 msgid ""
 "**Gateway (`aa-gateway`)** : The central service that holds the agent "
-"registry, evaluates policy, and tracks per-team budgets. Every interception "
-"layer reports to it."
+"registry, evaluates policy, and tracks per-team budgets. Every "
+"interception mechanism reports to it."
 msgstr ""
 
 #: src/glossary.md:23
@@ -7191,8 +7195,11 @@ msgstr ""
 #: src/glossary.md:49
 msgid ""
 "**eBPF sensor (`aa-ebpf`)** : A kernel-level sensor (Linux only) that "
-"watches TLS libraries and process syscalls to catch actions — and bypass "
-"attempts — that the layers above miss."
+"watches TLS libraries and process syscalls and _reports_ what it sees. "
+"Observe-only: it returns no verdict, blocks nothing, and is consulted in "
+"no allow/deny decision, so it observes and detects rather than "
+"preventing. It is deployed on its own, not as a tier the other "
+"mechanisms fall back to."
 msgstr ""
 
 #: src/glossary.md:53
