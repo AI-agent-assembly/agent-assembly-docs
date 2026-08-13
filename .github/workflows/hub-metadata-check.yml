@@ -19,6 +19,15 @@ name: Hub metadata drift check
 # from the manifest (`generate_compatibility.py --check`). This is the version-drift
 # `--check` gate ADR 0013 Appendix B item 2 flagged as documented-but-unwired.
 #
+# And it runs the evaluator-guide drift gate (AAASM-5609): docs/src/what-ships-today.md
+# and docs/src/choose-your-enforcement-path.md are generated from
+# capability-surface.toml, a pinned extract of the AAASM-5531 capability manifest in
+# the agent-assembly repository. This fails the build if either page has drifted from
+# that extract (`generate_capability_surface.py --check`). Note the bound: this proves
+# the GENERATED TABLES on those pages match the extract. It does not check prose
+# outside the markers, and it does NOT prove the extract matches the upstream
+# manifest — that needs a cross-repository check, which is AAASM-5600's.
+#
 # See docs/scripts/generate_hub_components.py for the hub-component generator,
 # docs/scripts/check_repo_names.py for the stale-name audit,
 # docs/scripts/generate_compatibility.py for the compatibility-matrix generator,
@@ -60,3 +69,6 @@ jobs:
 
       - name: Verify compatibility.toml drives docs/src/compatibility.md
         run: python3 docs/scripts/generate_compatibility.py --check
+
+      - name: Verify capability-surface.toml drives the evaluator guides
+        run: python3 docs/scripts/generate_capability_surface.py --check

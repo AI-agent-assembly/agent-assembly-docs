@@ -458,6 +458,18 @@ def splice(page: str, begin: str, end: str, body: str) -> str:
     The markers themselves are preserved; the body is surrounded by blank lines
     so a Markdown table renders correctly regardless of the surrounding prose.
     """
+    # A duplicate marker pair is a forgery vector, not a typo. ``find`` returns the
+    # FIRST pair, so a second hand-written block carrying the same key is never
+    # rewritten and never compared — it survives --check at exit 0 while wearing the
+    # "generated, do not hand-edit" provenance of the block above it. Counting the
+    # markers is what makes "the generated tables match the extract" true of ALL of
+    # them rather than of the first one.
+    if page.count(begin) != 1 or page.count(end) != 1:
+        raise ValueError(
+            f"expected exactly one {begin!r} / {end!r} pair, found "
+            f"{page.count(begin)} / {page.count(end)}; a duplicate block would be "
+            "left unchecked by the splice below"
+        )
     start = page.find(begin)
     stop = page.find(end)
     if start == -1 or stop == -1 or stop < start:

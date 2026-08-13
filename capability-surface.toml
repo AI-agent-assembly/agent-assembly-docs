@@ -1,0 +1,1734 @@
+# capability-surface.toml — a pinned projection of the upstream capability
+# manifest, and the source of every generated row in the two Docs Hub
+# evaluator guides (AAASM-5609).
+#
+# DO NOT HAND-EDIT. Regenerate with:
+#   python3 docs/scripts/extract_capability_surface.py \
+#       --manifest ../agent-assembly/governance/capability-manifest.yaml \
+#       --source-commit <sha>
+#
+# Then re-render the pages with:
+#   python3 docs/scripts/generate_capability_surface.py
+
+[pin]
+source_repository = "ai-agent-assembly/agent-assembly"
+source_path = "governance/capability-manifest.yaml"
+source_commit = "dc8ab13d656ac3398e064583150c7551be8e46a4"
+manifest_version = "1.0.0"
+manifest_ticket = "AAASM-5531"
+fix_version = "agent-assembly v0.0.1-rc.7"
+evidence_tree = "299de38830b5f1b3a239661c35e7bc98c1a78ee4"
+evidence_date = "2026-08-06"
+row_count = 80
+channels_surveyed = ["github_release", "homebrew", "install_script", "crates_io", "pypi", "npm", "go_modules", "ghcr", "not_applicable"]
+channels_not_surveyed = []
+
+[[channel_absence]]
+channel = "ghcr"
+status = "not_published"
+ticket = "AAASM-5680"
+ids = ["C2", "C4", "G3", "G4", "I6", "M1", "M2", "M3", "M4", "M7", "M9", "N1", "N2", "N3", "N4", "N5", "N6", "N7", "N8", "N9", "N10", "N11", "N12", "P1", "P2", "P3"]
+
+[[channel_absence]]
+channel = "ghcr"
+status = "not_published"
+ticket = "AAASM-5680"
+ids = ["H2", "H3", "H4", "I4", "N13"]
+
+[[channel_absence]]
+channel = "ghcr"
+status = "not_surveyed"
+ticket = "AAASM-5680"
+ids = ["G6", "G7"]
+
+[[channel_absence]]
+channel = "ghcr"
+status = "not_published"
+ticket = "AAASM-5680"
+ids = ["C3"]
+
+[[channel_absence]]
+channel = "ghcr"
+status = "not_surveyed"
+ticket = "AAASM-5680"
+ids = ["C1", "C6", "H5", "H8", "I1", "I2", "L1", "L2", "L3", "L4", "L5", "L6", "L7", "M10", "S13"]
+
+[[capability]]
+id = "S1"
+component = "python-sdk"
+repository = "python-sdk"
+domain = "sdk"
+capability = "Wrapped framework tool call, deny raised before the tool body"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "on"
+launch_path = "in_process_after_init_assembly"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["test"]
+preconditions = ["env:AA_AGENT_ID"]
+
+[[capability]]
+id = "S2"
+component = "python-sdk"
+repository = "python-sdk"
+domain = "sdk"
+capability = "Wrapped framework tool call, deny returned as a sentinel string"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "on"
+launch_path = "in_process_after_init_assembly"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["test"]
+preconditions = ["env:AA_AGENT_ID"]
+
+[[capability]]
+id = "S3"
+component = "python-sdk"
+repository = "python-sdk"
+domain = "sdk"
+capability = "Graph / workflow node execution"
+coverage = "observed"
+decision_timing = "post"
+observe_or_enforce = "observe"
+sync_or_best_effort = "best_effort"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "on"
+launch_path = "in_process_after_init"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["test_unlocated"]
+preconditions = ["env:AA_AGENT_ID"]
+
+[[capability]]
+id = "S4"
+component = "node-sdk"
+repository = "node-sdk"
+domain = "sdk"
+capability = "LangChain tool call via the callback handler"
+coverage = "observed"
+decision_timing = "post"
+observe_or_enforce = "observe"
+sync_or_best_effort = "best_effort"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "on"
+launch_path = "auto_detected_at_initAssembly"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["test_unlocated"]
+preconditions = ["env:AA_AGENT_ID"]
+
+[[capability]]
+id = "S5"
+component = "node-sdk"
+repository = "node-sdk"
+domain = "sdk"
+capability = "LangChain tool call via the explicit wrapper"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open_silent"
+reachability = "shipped"
+default_state = "off"
+launch_path = "tools_passed_as_config_langchain_tools"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["test", "test_unlocated"]
+preconditions = ["env:AA_AGENT_ID"]
+
+[[capability]]
+id = "S6"
+component = "node-sdk"
+repository = "node-sdk"
+domain = "sdk"
+capability = "Vercel AI SDK / OpenAI Agents tool call"
+coverage = "evaluated"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "on"
+launch_path = "auto_detected_at_initAssembly"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["test_unlocated"]
+preconditions = ["env:AA_AGENT_ID"]
+
+[[capability]]
+id = "S7"
+component = "node-sdk"
+repository = "node-sdk"
+domain = "sdk"
+capability = "Node default mode routes every policy check through an allow-all no-op client"
+coverage = "unmeasured"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open_silent"
+reachability = "shipped"
+default_state = "open"
+launch_path = "initAssembly_with_defaults"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "S8"
+component = "go-sdk"
+repository = "go-sdk"
+domain = "sdk"
+capability = "Wrapped tool call, Go"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "off"
+launch_path = "assembly_Init_plus_explicit_WrapTools"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["test"]
+preconditions = ["env:AA_AGENT_ID"]
+
+[[capability]]
+id = "S9"
+component = "go-sdk"
+repository = "go-sdk"
+domain = "sdk"
+capability = "Go default build without -tags aa_ffi_go and CGO"
+coverage = "evaluated"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "closed"
+launch_path = "default_go_build"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["test_unlocated"]
+preconditions = []
+
+[[capability]]
+id = "S10"
+component = "none"
+repository = "agent-assembly"
+domain = "sdk"
+capability = "Direct function call that does not pass a patched seam"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "S11"
+component = "none"
+repository = "agent-assembly"
+domain = "sdk"
+capability = "Framework with no adapter"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "S12"
+component = "none"
+repository = "agent-assembly"
+domain = "sdk"
+capability = "Raw HTTP, subprocess, filesystem, DB driver, browser automation from inside an SDK-adopting process"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "S13"
+component = "aa-sdk-client"
+repository = "agent-assembly"
+domain = "sdk"
+capability = "The SDK honouring a Deny it received"
+coverage = "evaluated"
+decision_timing = "pre"
+observe_or_enforce = "observe"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "H1"
+component = "none"
+repository = "agent-assembly"
+domain = "host_action"
+capability = "Shell command / subprocess spawn by a native agent process"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "absent_mechanism"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["not_applicable"]
+released_channels = ["not_applicable"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "H2"
+component = "aa-ebpf-probes"
+repository = "agent-assembly"
+domain = "host_action"
+capability = "Shell command intercepted by the eBPF syscall guard"
+coverage = "detected"
+decision_timing = "post"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "best_effort"
+failure_posture = "fail_open"
+reachability = "shipped_crates_io_only"
+default_state = "off"
+launch_path = "AA_EBPF_CONFINE_PID set AND policy lowers a non-empty allowlist"
+evidence_runs_on_main = "path_gated_with_schedule"
+platform = ["linux_x86_64", "linux_aarch64"]
+released_platforms = ["linux_x86_64", "linux_aarch64"]
+released_channels = ["crates_io"]
+evidence_kinds = ["test"]
+preconditions = ["env:AA_EBPF_CONFINE_PID"]
+
+[[capability]]
+id = "H3"
+component = "aa-ebpf-probes"
+repository = "agent-assembly"
+domain = "host_action"
+capability = "Process exec observation"
+coverage = "unmeasured"
+decision_timing = "post"
+observe_or_enforce = "observe"
+sync_or_best_effort = "best_effort"
+failure_posture = "fail_open"
+reachability = "shipped_crates_io_only"
+default_state = "on"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux_x86_64", "linux_aarch64"]
+released_platforms = ["linux_x86_64", "linux_aarch64"]
+released_channels = ["crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "H4"
+component = "aa-ebpf"
+repository = "agent-assembly"
+domain = "host_action"
+capability = "File read / write / unlink observation"
+coverage = "observed"
+decision_timing = "post"
+observe_or_enforce = "observe"
+sync_or_best_effort = "best_effort"
+failure_posture = "fail_open"
+reachability = "shipped_crates_io_only"
+default_state = "on"
+launch_path = "any"
+evidence_runs_on_main = "path_gated_with_schedule"
+platform = ["linux_x86_64"]
+released_platforms = ["linux_x86_64"]
+released_channels = ["crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "H5"
+component = "aa-sandbox"
+repository = "agent-assembly"
+domain = "host_action"
+capability = "File access by a WASM-marked tool"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "closed"
+launch_path = "aasm sandbox run, or POST /dispatch_tool with ToolKind::Wasm"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "H6"
+component = "none"
+repository = "agent-assembly"
+domain = "host_action"
+capability = "Browser action (Playwright / Selenium / Puppeteer)"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "absent_mechanism"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["not_applicable"]
+released_channels = ["not_applicable"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "H7"
+component = "none"
+repository = "agent-assembly"
+domain = "host_action"
+capability = "Database query"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "absent_mechanism"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["not_applicable"]
+released_channels = ["not_applicable"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "H8"
+component = "aa-devtool-claude-code"
+repository = "agent-assembly"
+domain = "host_action"
+capability = "Shell / file rule declared in a tool's own settings file"
+coverage = "unmeasured"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open_silent"
+reachability = "shipped"
+default_state = "off"
+launch_path = "settings_write"
+evidence_runs_on_main = "standing"
+platform = ["macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "N1"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "network"
+capability = "CONNECT-time egress allow/deny"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open"
+reachability = "shipped_with_platform_exception"
+default_state = "open"
+launch_path = "traffic_routed_to_the_proxy"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = ["env:AA_PROXY_DENIED_HOSTS", "env:AA_PROXY_NETWORK_ALLOWLIST", "env:HTTPS_PROXY"]
+
+[[capability]]
+id = "N2"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "network"
+capability = "SSRF guard"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped_with_platform_exception"
+default_state = "on"
+launch_path = "traffic_routed_to_the_proxy"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "N3"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "network"
+capability = "HTTPS payload inspection and credential DLP on the built-in LLM hosts"
+coverage = "denied_before_execution"
+decision_timing = "in_line"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped_with_platform_exception"
+default_state = "on"
+launch_path = "routed_and_ca_trusted"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "N4"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "network"
+capability = "HTTPS payload inspection on any other host"
+coverage = "evaluated"
+decision_timing = "in_line"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped_with_platform_exception"
+default_state = "off"
+launch_path = "routed, CA trusted, AND llm_only=false or an operator mitm_hosts entry"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test_unlocated"]
+preconditions = []
+
+[[capability]]
+id = "N5"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "network"
+capability = "HTTPS to a host not under MitM"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "observe"
+sync_or_best_effort = "best_effort"
+failure_posture = "not_applicable"
+reachability = "shipped_with_platform_exception"
+default_state = "on"
+launch_path = "routed"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "N6"
+component = "none"
+repository = "agent-assembly"
+domain = "network"
+capability = "Model response body scanning on LLM hosts"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped_with_platform_exception"
+default_state = "not_applicable"
+launch_path = "routed_and_ca_trusted"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "N7"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "network"
+capability = "Plain http:// request"
+coverage = "redacted"
+decision_timing = "in_line"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped_with_platform_exception"
+default_state = "on"
+launch_path = "routed"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test_unlocated"]
+preconditions = []
+
+[[capability]]
+id = "N8"
+component = "none"
+repository = "agent-assembly"
+domain = "network"
+capability = "HTTP/2, gRPC or WebSocket over a MitM'd host"
+coverage = "unsupported"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped_with_platform_exception"
+default_state = "not_applicable"
+launch_path = "routed_and_ca_trusted"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "N9"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "network"
+capability = "Chunked transfer encoding"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "fail_closed"
+reachability = "shipped_with_platform_exception"
+default_state = "not_applicable"
+launch_path = "routed_and_ca_trusted"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "N10"
+component = "none"
+repository = "agent-assembly"
+domain = "network"
+capability = "Raw TCP that does not speak the proxy protocol"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "N11"
+component = "none"
+repository = "agent-assembly"
+domain = "network"
+capability = "UDP, QUIC, HTTP/3"
+coverage = "unsupported"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "N12"
+component = "none"
+repository = "agent-assembly"
+domain = "network"
+capability = "Local IPC (Unix domain sockets) between third-party processes"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "N13"
+component = "aa-ebpf-probes"
+repository = "agent-assembly"
+domain = "network"
+capability = "TLS plaintext observation without the proxy"
+coverage = "unmeasured"
+decision_timing = "post"
+observe_or_enforce = "observe"
+sync_or_best_effort = "best_effort"
+failure_posture = "fail_open"
+reachability = "shipped_crates_io_only"
+default_state = "on"
+launch_path = "any"
+evidence_runs_on_main = "path_gated_with_schedule"
+platform = ["linux_x86_64", "linux_aarch64"]
+released_platforms = ["linux_x86_64", "linux_aarch64"]
+released_channels = ["crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "M1"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "mcp"
+capability = "MCP tools/call adjudication by the control plane"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped_with_platform_exception"
+default_state = "off"
+launch_path = "routed through aa-proxy, CA trusted, gateway endpoint configured, request reaching a MitM'd non-LLM host"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = ["env:AA_PROXY_GATEWAY_ENDPOINT", "env:AA_PROXY_MITM_HOSTS", "env:AA_PROXY_LLM_ONLY"]
+
+[[capability]]
+id = "M2"
+component = "none"
+repository = "agent-assembly"
+domain = "mcp"
+capability = "MCP enforcement with no gateway configured"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "fail_open"
+reachability = "shipped_with_platform_exception"
+default_state = "off"
+launch_path = "default_aa_proxy_run"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "M3"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "mcp"
+capability = "JSON-RPC batch array or malformed envelope carrying tools/call"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped_with_platform_exception"
+default_state = "on"
+launch_path = "same_as_M1"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "M4"
+component = "none"
+repository = "agent-assembly"
+domain = "mcp"
+capability = "Every MCP method other than tools/call"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "fail_open"
+reachability = "shipped_with_platform_exception"
+default_state = "not_applicable"
+launch_path = "same_as_M1"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "M5"
+component = "none"
+repository = "agent-assembly"
+domain = "mcp"
+capability = "MCP over stdio (subprocess pipes)"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "absent_mechanism"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["not_applicable"]
+released_channels = ["not_applicable"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "M6"
+component = "none"
+repository = "agent-assembly"
+domain = "mcp"
+capability = "MCP over SSE (text/event-stream)"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "absent_mechanism"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["not_applicable"]
+released_channels = ["not_applicable"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "M7"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "mcp"
+capability = "MCP over Streamable HTTP"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "silent_truncation"
+reachability = "shipped_with_platform_exception"
+default_state = "not_applicable"
+launch_path = "same_as_M1"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "M8"
+component = "none"
+repository = "agent-assembly"
+domain = "mcp"
+capability = "MCP over WebSocket"
+coverage = "unsupported"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "absent_mechanism"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["not_applicable"]
+released_channels = ["not_applicable"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "M9"
+component = "none"
+repository = "agent-assembly"
+domain = "mcp"
+capability = "MCP on a built-in LLM host"
+coverage = "redacted"
+decision_timing = "in_line"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped_with_platform_exception"
+default_state = "on"
+launch_path = "routed_and_ca_trusted"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "M10"
+component = "aa-devtool-claude-code"
+repository = "agent-assembly"
+domain = "mcp"
+capability = "MCP-server governance by configuration"
+coverage = "unmeasured"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open_silent"
+reachability = "shipped"
+default_state = "off"
+launch_path = "config_write"
+evidence_runs_on_main = "standing"
+platform = ["macos", "linux", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "L1"
+component = "aa-devtool-claude-code"
+repository = "agent-assembly"
+domain = "devtool_launch"
+capability = "Claude Code managed launch"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "on"
+launch_path = "aasm_run"
+evidence_runs_on_main = "standing"
+platform = ["macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = ["env:AA_AGENT_ID", "env:AA_TEAM_ID", "env:NODE_EXTRA_CA_CERTS", "env:HTTPS_PROXY", "env:HTTP_PROXY"]
+
+[[capability]]
+id = "L2"
+component = "aa-devtool-codex"
+repository = "agent-assembly"
+domain = "devtool_launch"
+capability = "Codex managed launch"
+coverage = "unmeasured"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open_silent"
+reachability = "shipped"
+default_state = "on"
+launch_path = "aasm_run"
+evidence_runs_on_main = "none"
+platform = ["macos", "linux"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = ["env:AA_AGENT_ID", "env:AA_TEAM_ID", "env:HTTPS_PROXY", "env:NODE_EXTRA_CA_CERTS"]
+
+[[capability]]
+id = "L3"
+component = "aa-devtool-windsurf"
+repository = "agent-assembly"
+domain = "devtool_launch"
+capability = "Windsurf managed launch"
+coverage = "unmeasured"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open_silent"
+reachability = "shipped"
+default_state = "on"
+launch_path = "aasm_run"
+evidence_runs_on_main = "none"
+platform = ["macos", "linux"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = ["env:AA_AGENT_ID", "env:AA_TEAM_ID", "env:HTTPS_PROXY", "env:NODE_EXTRA_CA_CERTS"]
+
+[[capability]]
+id = "L4"
+component = "aa-devtool-copilot"
+repository = "agent-assembly"
+domain = "devtool_launch"
+capability = "Copilot managed launch"
+coverage = "unsupported"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "not_applicable"
+launch_path = "none"
+evidence_runs_on_main = "standing"
+platform = ["macos", "linux", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "L5"
+component = "aa-devtool-saas"
+repository = "agent-assembly"
+domain = "devtool_launch"
+capability = "SaaS / opaque agent"
+coverage = "observed"
+decision_timing = "post"
+observe_or_enforce = "observe"
+sync_or_best_effort = "best_effort"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "off"
+launch_path = "none"
+evidence_runs_on_main = "standing"
+platform = ["not_applicable"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "L6"
+component = "none"
+repository = "agent-assembly"
+domain = "devtool_launch"
+capability = "Unmanaged launch — the user starts the tool directly"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "not_applicable"
+launch_path = "direct"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "L7"
+component = "aa-devtool-claude-code"
+repository = "agent-assembly"
+domain = "devtool_launch"
+capability = "Settings-layer governance surviving an unmanaged launch"
+coverage = "unmeasured"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open_silent"
+reachability = "shipped"
+default_state = "off"
+launch_path = "root-owned /Library/Application Support/ClaudeCode/managed-settings.json"
+evidence_runs_on_main = "standing"
+platform = ["macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "L8"
+component = "aa-cli"
+repository = "agent-assembly"
+domain = "devtool_launch"
+capability = "aasm run --no-proxy"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped"
+default_state = "off"
+launch_path = "explicit_flag"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = ["env:AA_AGENT_ID", "env:HTTPS_PROXY", "env:HTTP_PROXY"]
+
+[[capability]]
+id = "C1"
+component = "aa-security"
+repository = "agent-assembly"
+domain = "credentials"
+capability = "Outbound credential scan and redact on an inspected request"
+coverage = "redacted"
+decision_timing = "in_line"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open"
+reachability = "shipped_with_platform_exception"
+default_state = "open"
+launch_path = "routed_and_ca_trusted"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "C2"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "credentials"
+capability = "Credential substitution at egress — the real provider key never enters the agent"
+coverage = "redacted"
+decision_timing = "in_line"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open"
+reachability = "shipped_with_platform_exception"
+default_state = "off"
+launch_path = "provider keys configured in the proxy's environment"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap", "test_unlocated"]
+preconditions = ["env:AA_PROXY_PROVIDER_KEYS"]
+
+[[capability]]
+id = "C3"
+component = "aa-api"
+repository = "agent-assembly"
+domain = "credentials"
+capability = "Credential injection via SecretsService.DispatchTool"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "dead_code"
+default_state = "not_applicable"
+launch_path = "none"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "C4"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "credentials"
+capability = "Model response credential scanning"
+coverage = "unmeasured"
+decision_timing = "in_line"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped_with_platform_exception"
+default_state = "not_applicable"
+launch_path = "routed_and_ca_trusted"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "C5"
+component = "aa-cli"
+repository = "agent-assembly"
+domain = "credentials"
+capability = "Environment inheritance by aasm run"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "fail_open"
+reachability = "shipped"
+default_state = "open"
+launch_path = "aasm_run"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "C6"
+component = "aa-security"
+repository = "agent-assembly"
+domain = "credentials"
+capability = "Credential scanner recall"
+coverage = "detected"
+decision_timing = "in_line"
+observe_or_enforce = "observe"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open"
+reachability = "shipped"
+default_state = "on"
+launch_path = "any"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "I1"
+component = "aa-sdk-client"
+repository = "agent-assembly"
+domain = "identity"
+capability = "Agent identity — Ed25519 did:key with a possession proof"
+coverage = "evaluated"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "on"
+launch_path = "registration"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "I2"
+component = "aa-sdk-client"
+repository = "agent-assembly"
+domain = "identity"
+capability = "Transport key for the runtime UDS handshake"
+coverage = "evaluated"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "on"
+launch_path = "uds_handshake"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test_unlocated"]
+preconditions = []
+
+[[capability]]
+id = "I3"
+component = "aa-core"
+repository = "agent-assembly"
+domain = "identity"
+capability = "Sub-agent / delegation lineage"
+coverage = "evaluated"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "on"
+launch_path = "registration"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "I4"
+component = "aa-ebpf-probes"
+repository = "agent-assembly"
+domain = "identity"
+capability = "Process-tree identity across fork/exec"
+coverage = "unmeasured"
+decision_timing = "post"
+observe_or_enforce = "observe"
+sync_or_best_effort = "best_effort"
+failure_posture = "fail_open"
+reachability = "shipped_crates_io_only"
+default_state = "on"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux"]
+released_platforms = ["linux_x86_64", "linux_aarch64"]
+released_channels = ["crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "I5"
+component = "aa-gateway"
+repository = "agent-assembly"
+domain = "identity"
+capability = "Tenant / org isolation"
+coverage = "evaluated"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open"
+reachability = "shipped"
+default_state = "off"
+launch_path = "any"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "I6"
+component = "none"
+repository = "agent-assembly"
+domain = "identity"
+capability = "Agent attribution of proxy traffic"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "shipped_with_platform_exception"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "I7"
+component = "aa-gateway"
+repository = "agent-assembly"
+domain = "identity"
+capability = "Gateway agent-plane authentication"
+coverage = "evaluated"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open"
+reachability = "shipped"
+default_state = "open"
+launch_path = "any"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "G1"
+component = "aa-runtime"
+repository = "agent-assembly"
+domain = "degraded_mode"
+capability = "aa-runtime to gateway unreachable on a policy query"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "closed"
+launch_path = "any"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "G2"
+component = "aa-runtime"
+repository = "agent-assembly"
+domain = "degraded_mode"
+capability = "aa-runtime with no gateway configured, or fail_closed=false"
+coverage = "unmeasured"
+decision_timing = "pre"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "fail_open"
+reachability = "shipped"
+default_state = "open"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "G3"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "degraded_mode"
+capability = "aa-proxy to gateway unreachable for MCP adjudication"
+coverage = "denied_before_execution"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped_with_platform_exception"
+default_state = "closed"
+launch_path = "any"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = ["env:AA_PROXY_MCP_FAIL_OPEN"]
+
+[[capability]]
+id = "G4"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "degraded_mode"
+capability = "Credential and DLP default action"
+coverage = "redacted"
+decision_timing = "in_line"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_open"
+reachability = "shipped_with_platform_exception"
+default_state = "open"
+launch_path = "any"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "G5"
+component = "SDK fail-closed posture on an unreachable runtime"
+repository = "python-sdk"
+domain = "degraded_mode"
+capability = "SDK cannot reach the aa-runtime UDS socket"
+coverage = "evaluated"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "mixed"
+launch_path = "any"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos", "windows"]
+released_channels = ["pypi", "npm", "go_modules", "crates_io", "ghcr"]
+evidence_kinds = ["test_unlocated"]
+preconditions = []
+
+[[capability]]
+id = "G6"
+component = "aa-runtime"
+repository = "agent-assembly"
+domain = "degraded_mode"
+capability = "eBPF load or attach failure"
+coverage = "degraded"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "best_effort"
+failure_posture = "fail_open"
+reachability = "shipped_crates_io_only"
+default_state = "open"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux"]
+released_platforms = ["linux_x86_64", "linux_aarch64"]
+released_channels = ["crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "G7"
+component = "aa-runtime"
+repository = "agent-assembly"
+domain = "degraded_mode"
+capability = "eBPF policy file unreadable or unparseable"
+coverage = "unmeasured"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "fail_open_silent"
+reachability = "shipped_crates_io_only"
+default_state = "open"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux"]
+released_platforms = ["linux_x86_64", "linux_aarch64"]
+released_channels = ["crates_io"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "G8"
+component = "aa-gateway"
+repository = "agent-assembly"
+domain = "degraded_mode"
+capability = "Gateway policy load or schema failure"
+coverage = "evaluated"
+decision_timing = "pre"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped"
+default_state = "closed"
+launch_path = "boot"
+evidence_runs_on_main = "standing"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["test_unlocated"]
+preconditions = []
+
+[[capability]]
+id = "G9"
+component = "aa-gateway"
+repository = "agent-assembly"
+domain = "degraded_mode"
+capability = "Budget state unreadable or corrupt"
+coverage = "unmeasured"
+decision_timing = "pre"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "fail_open_silent"
+reachability = "shipped"
+default_state = "open"
+launch_path = "boot"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "G10"
+component = "aa-gateway"
+repository = "agent-assembly"
+domain = "degraded_mode"
+capability = "Audit emission failure"
+coverage = "unmeasured"
+decision_timing = "post"
+observe_or_enforce = "none"
+sync_or_best_effort = "best_effort"
+failure_posture = "fail_open"
+reachability = "shipped"
+default_state = "open"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "G11"
+component = "aa-runtime"
+repository = "agent-assembly"
+domain = "degraded_mode"
+capability = "Degradation visibility to a user"
+coverage = "unmeasured"
+decision_timing = "post"
+observe_or_enforce = "none"
+sync_or_best_effort = "best_effort"
+failure_posture = "fail_open_silent"
+reachability = "shipped"
+default_state = "not_applicable"
+launch_path = "any"
+evidence_runs_on_main = "none"
+platform = ["linux", "macos", "windows"]
+released_platforms = ["linux_x86_64", "linux_aarch64", "macos"]
+released_channels = ["github_release", "homebrew", "install_script", "crates_io", "ghcr"]
+evidence_kinds = ["gap"]
+preconditions = []
+
+[[capability]]
+id = "P1"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "platform"
+capability = "Linux x86_64 host-level interception"
+coverage = "experimental"
+decision_timing = "post"
+observe_or_enforce = "observe"
+sync_or_best_effort = "best_effort"
+failure_posture = "fail_open"
+reachability = "shipped_crates_io_only"
+default_state = "off"
+launch_path = "privileged aa-ebpf-loaderd at /run/aa-ebpf-loaderd.sock"
+evidence_runs_on_main = "path_gated_with_schedule"
+platform = ["linux_x86_64"]
+released_platforms = ["linux_x86_64"]
+released_channels = ["crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "P2"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "platform"
+capability = "Linux aarch64 host-level interception"
+coverage = "observed"
+decision_timing = "post"
+observe_or_enforce = "observe"
+sync_or_best_effort = "best_effort"
+failure_posture = "fail_open"
+reachability = "shipped_crates_io_only"
+default_state = "on"
+launch_path = "privileged aa-ebpf-loaderd"
+evidence_runs_on_main = "path_gated_with_schedule"
+platform = ["linux_aarch64"]
+released_platforms = ["linux_aarch64"]
+released_channels = ["crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "P3"
+component = "aa-proxy"
+repository = "agent-assembly"
+domain = "platform"
+capability = "macOS host-level interception"
+coverage = "unsupported"
+decision_timing = "in_line"
+observe_or_enforce = "enforce"
+sync_or_best_effort = "sync"
+failure_posture = "fail_closed"
+reachability = "shipped_crates_io_only"
+default_state = "on"
+launch_path = "proxy start (CA install attempted automatically); managed-settings write"
+evidence_runs_on_main = "standing"
+platform = ["macos"]
+released_platforms = ["macos"]
+released_channels = ["crates_io"]
+evidence_kinds = ["test"]
+preconditions = []
+
+[[capability]]
+id = "P4"
+component = "none"
+repository = "agent-assembly"
+domain = "platform"
+capability = "Windows mediation"
+coverage = "unsupported"
+decision_timing = "none"
+observe_or_enforce = "none"
+sync_or_best_effort = "none"
+failure_posture = "not_applicable"
+reachability = "absent_mechanism"
+default_state = "not_applicable"
+launch_path = "none"
+evidence_runs_on_main = "none"
+platform = ["windows"]
+released_platforms = ["not_applicable"]
+released_channels = ["not_applicable"]
+evidence_kinds = ["gap"]
+preconditions = []

@@ -40,6 +40,8 @@ lookups and both are in [Reference](compatibility.md):
 - [Compatibility matrix](compatibility.md) pairs versions across components.
 - [Status map](source-of-truth.md) says who owns each area and how mature its
   documentation is.
+- [Choose your enforcement path](choose-your-enforcement-path.md) says which governed
+  paths exist, what each one needs on a host, and what each one does not cover.
 
 ## The managed service is not an operating route today
 
