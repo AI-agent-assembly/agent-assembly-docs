@@ -7,6 +7,8 @@
 
 # Evaluate
 
+- [What ships today](what-ships-today.md)
+- [Choose your enforcement path](choose-your-enforcement-path.md)
 - [Product Promise & Message Hierarchy](product-promise.md)
 - [Risk Scenarios](risk-scenarios.md)
 - [Security Model](security-model.md)
