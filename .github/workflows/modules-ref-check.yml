@@ -24,6 +24,27 @@ on:
       - modules.json
       - .github/workflows/modules-ref-check.yml
   workflow_dispatch:
+  # The path filters above only fire when THIS repo edits modules.json — but the
+  # event this gate exists to catch happens in ANOTHER repo and touches nothing
+  # here. Measured on 2026-08-13: 130 commits landed on main after the gate was
+  # added and exactly one touched modules.json, so the gate evaluated 0 times in
+  # 20 days. A drift check that only runs when you edit the thing it checks
+  # cannot catch drift that arrives from outside (AAASM-5688).
+  #
+  # Note the two drift shapes are NOT equally visible. If a repo renames its
+  # default branch, the old ref stops existing and aggregate.sh's `git checkout`
+  # fails loudly within a scheduled cycle. But a ref that names a branch which
+  # still EXISTS and is merely no longer the default (a stale release branch, a
+  # gh-pages pin) clones and builds green forever while publishing a frozen
+  # tree — silently stale, which is the failure this ticket is about. Only a
+  # time-based run catches that one.
+  #
+  # Daily, not aggregate.yml's */30: this compares config against upstream
+  # default branches, which change on human timescales, and each run is five
+  # `git ls-remote` calls. Offset from the top of the hour because GitHub's
+  # scheduler is congested there and `schedule` is best-effort (AAASM-4508).
+  schedule:
+    - cron: "17 6 * * *"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
