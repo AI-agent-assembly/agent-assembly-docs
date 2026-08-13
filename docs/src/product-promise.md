@@ -31,8 +31,10 @@ that would need either of those to be verified are collected under
 [Provisional](#provisional) rather than asserted.
 
 > **Precedence.** Where this hub still carries the superseded three-layer or
-> "IronClaw five-layer" framing — [Security model](security-model.md) and
-> [Glossary](glossary.md) both do, at the time of writing — **ADR 0033 wins**, and
+> "IronClaw five-layer" framing — [Security model](security-model.md) still
+> carries the five-layer model, at the time of writing; AAASM-5727 removed the
+> three-layer framing and the fallback-chain wording from it and from
+> [Glossary](glossary.md) — **ADR 0033 wins**, and
 > ADR 0033 records the gap as a tracked, accepted window. Do not resolve a conflict in
 > the superseded model's favour.
 >
@@ -40,9 +42,10 @@ that would need either of those to be verified are collected under
 > checklist and is covered by AAASM-5586 / AAASM-5609. **`glossary.md` was named by
 > neither** — not by the checklist and not by the claim inventory, whose `docs` rows
 > reach only `README.md` and `comparison.md` — so its residuals sat unowned while
-> looking tracked. Now **AAASM-5658**, which covers both defects: the eBPF entry
-> still says the sensor catches what the layers above miss, and the SDK entry still
-> says the SDK applies allow/deny decisions, which contradicts the advisory finding.
+> looking tracked. Now **AAASM-5658**, which covered two defects: the eBPF entry
+> saying the sensor catches what the layers above miss — corrected by AAASM-5727 —
+> and the SDK entry, which still
+> says the SDK applies allow/deny decisions, contradicting the advisory finding.
 > That ticket also adds the file to ADR 0033 §E, so the next sweep cannot miss it for
 > the same reason this one did.
 >

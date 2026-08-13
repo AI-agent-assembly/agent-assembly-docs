@@ -667,11 +667,13 @@ Two stronger constraints, because linking is not enough on its own:
   hub pages are routers, and the bound in their table is what keeps them that way: a
   router that starts explaining a mechanism has become a fourth copy of it.
 - **The existing duplicate is not made load-bearing.** The hub and Core each publish an
-  independent policy reference, and [`README.md`](index.html) still frames the product
-  with a three-layer model ADR 0033 supersedes. Neither is this ticket's to fix — they
+  independent policy reference, and [`README.md`](index.html) framed the product
+  with a three-layer model ADR 0033 supersedes. Neither was this ticket's to fix — they
   are AAASM-5586 / AAASM-5609 and AAASM-5611 respectively — but **AAASM-5608 must not
   build the Evaluate route on top of that `README.md` section**, because a navigation
   that routes readers into superseded framing makes the framing harder to remove.
+  AAASM-5727 has since replaced that section's framing; the constraint stands, because
+  the route must be built on the corrected wording, not the superseded one.
 
 ## Navigation constraints, desktop and mobile
 
