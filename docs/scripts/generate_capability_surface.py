@@ -192,8 +192,13 @@ ABSENCE_STATUS: Final[frozenset[str]] = frozenset({"not_published", "not_surveye
 # Unsupported.
 #
 # Fixing that one row left the CLASS open. This table closes it: every field below
-# is checked against the exact key set of the mapping that renders it, so a value
-# the renderer cannot display stops the build instead of vanishing from a table.
+# is checked against the key set of the mapping that renders it, so a value the
+# renderer cannot display stops the build instead of vanishing from a table.
+#
+# Note "the key set", not "the exact set the table renders". For `platform` the two
+# differ — this entry allows five keys and the table renders four, since
+# `not_applicable` is labelable but is not a platform row. That residual gap is
+# closed by the per-row conservation block in `validate`, not here.
 #
 # The trigger is not hypothetical. `PLATFORM_LABEL` has no key `linux`, and `linux`
 # appears on 68 of the manifest's 80 rows in the `platform` field. One upstream
@@ -356,9 +361,7 @@ def validate(extract: dict[str, object]) -> None:
     # `unsupported`, at exit 0, and a regenerate then freezes that forever.
     # ---------------------------------------------------------------
     covered: set[str] = set()
-    for row in rows:
-        if str(row["domain"]) != "platform":
-            continue
+    for row in _platform_rows(rows):
         for value in row["platform"]:
             if str(value) not in RENDERED_PLATFORMS:
                 raise ValueError(
@@ -406,6 +409,19 @@ def _pick(extract: dict[str, object], ids: list[str]) -> list[dict[str, object]]
     """Return the extract rows for ``ids``, in the extract's own order."""
     wanted = set(ids)
     return [r for r in _rows(extract) if str(r["id"]) in wanted]
+
+
+def _platform_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    """Return the rows whose ``platform`` values the platform table renders.
+
+    The selector is single-sourced for the same reason ``RENDERED_PLATFORMS`` is:
+    ``validate``'s conservation check and ``render_platforms`` must agree on which
+    rows are in scope, and two hand-written copies of a predicate agree only until
+    one is edited. Today they were character-identical, so
+    ``set(by_platform) == covered`` held by construction; this makes that hold by
+    definition instead.
+    """
+    return [r for r in rows if str(r["domain"]) == "platform"]
 
 
 def _census(rows: list[dict[str, object]], key: str, order: list[str]) -> list[tuple[str, int]]:
@@ -528,9 +544,7 @@ def render_platforms(extract: dict[str, object]) -> str:
     # [not_applicable]` because no artifact ships for it, so keying on distribution
     # silently drops the one row whose whole content is that Windows is Unsupported.
     by_platform: dict[str, list[dict[str, object]]] = {}
-    for row in rows:
-        if str(row["domain"]) != "platform":
-            continue
+    for row in _platform_rows(rows):
         for value in row["platform"]:
             by_platform.setdefault(str(value), []).append(row)
 
