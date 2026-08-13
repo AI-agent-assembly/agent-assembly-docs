@@ -19,14 +19,18 @@ Checks that run before anything is rendered, each failing loudly rather than
 emitting a page:
 
 1. **Every value of every rendered vocabulary has a label**, checked against the
-   exact key set of the mapping that renders it — see ``VOCABULARIES``. An
+   key set of the mapping that renders it — see ``VOCABULARIES``. An
    order-list drops what it cannot label *silently*, which publishes an absence the
    manifest never stated, so an unlabelled value must stop the build. ``coverage``
    is the strictest case: it must map to one of ADR 0033 §6's eleven terms
    verbatim, because §6 owns that vocabulary and a twelfth value is the ADR's to
    add, never this table's.
 2. **Every census accounts for every row it summarises**, so a breakdown can never
-   print beside a row count it does not sum to.
+   print beside a row count it does not sum to. The platform table gets the same
+   treatment per *row* rather than per *value*, in both directions — see the
+   conservation block in ``validate``. Labelability alone is not enough there,
+   because that table renders a strict subset of ``PLATFORM_LABEL`` and selects its
+   rows by domain.
 3. **Every capability id named in a path definition exists in the extract.** A
    renamed or retired id would otherwise silently shrink a path.
 4. **No capability id appears in two path definitions**, and the ids not in any
@@ -125,6 +129,15 @@ PLATFORM_LABEL: Final[dict[str, str]] = {
     "not_applicable": "No platform question",
 }
 PLATFORM_ORDER: Final[list[str]] = list(PLATFORM_LABEL)
+
+# The platform table has a row for each of these and for nothing else. It is a
+# STRICT SUBSET of PLATFORM_LABEL: `not_applicable` is labelable but is not a
+# platform, so it gets no row. That gap between "labelable" and "rendered" is where
+# the Windows bug survived a per-value guard, so the set is named once here and read
+# by both `validate` and `render_platforms` rather than being re-derived in each.
+RENDERED_PLATFORMS: Final[list[str]] = [
+    p for p in PLATFORM_ORDER if p != "not_applicable"
+]
 
 TIMING_LABEL: Final[dict[str, str]] = {
     "pre": "before the action takes effect",
@@ -322,6 +335,47 @@ def validate(extract: dict[str, object]) -> None:
             "manifest never stated. Add the value to its label mapping, deliberately."
         )
 
+    # ---------------------------------------------------------------
+    # Per-ROW conservation for the platform table.
+    #
+    # The vocabulary loop above is per-VALUE: it proves every value can be
+    # labelled. That is necessary and not sufficient, because this table renders a
+    # strictly smaller set than PLATFORM_LABEL and selects its rows by domain. Two
+    # ways a platform-domain row silently leaves the table while every value it
+    # carries is labelable:
+    #
+    #   * it carries `platform = ["not_applicable"]` — labelable, but no row is
+    #     rendered for it. Not exotic: P4 already carries exactly that in
+    #     `released_platforms`, for the same stated reason, so one editor
+    #     propagating that reasoning one field across reproduces the Windows bug.
+    #   * it is re-tagged out of the `platform` domain — then the platform it was
+    #     the answer for has no row covering it, and macOS or Windows simply
+    #     vanishes from the table.
+    #
+    # Both print "— *no `platform`-area row*" against a manifest that says
+    # `unsupported`, at exit 0, and a regenerate then freezes that forever.
+    # ---------------------------------------------------------------
+    covered: set[str] = set()
+    for row in rows:
+        if str(row["domain"]) != "platform":
+            continue
+        for value in row["platform"]:
+            if str(value) not in RENDERED_PLATFORMS:
+                raise ValueError(
+                    f"platform-domain row {row['id']} carries platform "
+                    f"{str(value)!r}, which the platform table renders no row for. "
+                    "The row's answer would be dropped silently. Use one of: "
+                    + ", ".join(RENDERED_PLATFORMS)
+                )
+            covered.add(str(value))
+    uncovered = [p for p in RENDERED_PLATFORMS if p not in covered]
+    if uncovered:
+        raise ValueError(
+            "the platform table renders row(s) no platform-domain capability "
+            f"covers: {', '.join(uncovered)}. Each would print as "
+            "'no platform-area row' regardless of what the manifest says about it."
+        )
+
     for absence in extract.get("channel_absence", []):
         channel = str(absence["channel"])
         status = str(absence["status"])
@@ -485,9 +539,7 @@ def render_platforms(extract: dict[str, object]) -> str:
         "Host-level interception today | Reachability of that row |",
         "|---|---|---|---|",
     ]
-    for platform in PLATFORM_ORDER:
-        if platform == "not_applicable":
-            continue
+    for platform in RENDERED_PLATFORMS:
         released = [r for r in rows if platform in r["released_platforms"]]
         host = by_platform.get(platform, [])
         if host:
@@ -572,7 +624,7 @@ def render_evidence(extract: dict[str, object]) -> str:
         "|---|---|",
     ]
     for value, count in _census(
-        rows, "evidence_runs_on_main", ["standing", "path_gated_with_schedule", "none"]
+        rows, "evidence_runs_on_main", list(RUNS_LABEL)
     ):
         lines.append(f"| {RUNS_LABEL[value]} | {count} |")
     return "\n".join(lines)
