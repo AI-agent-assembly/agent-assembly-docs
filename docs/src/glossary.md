@@ -18,7 +18,7 @@ observing what it did after the fact.
 
 **Gateway (`aa-gateway`)**
 : The central service that holds the agent registry, evaluates policy, and
-tracks per-team budgets. Every interception layer reports to it.
+tracks per-team budgets. Every interception mechanism reports to it.
 
 **Agent**
 : An autonomous or semi-autonomous program that calls tools, models, or
@@ -36,7 +36,7 @@ and deployed through normal Git workflows, instead of clicking through a UI.
 : A per-team cap on token or dollar spend. When exceeded, the gateway can deny
 further agent calls.
 
-## Interception layers
+## Interception mechanisms
 
 **SDK layer**
 : In-process governance: the language SDK wraps your agent's calls and applies
@@ -48,7 +48,10 @@ enforce policy without changing the agent's code.
 
 **eBPF sensor (`aa-ebpf`)**
 : A kernel-level sensor (Linux only) that watches TLS libraries and process
-syscalls to catch actions — and bypass attempts — that the layers above miss.
+syscalls and *reports* what it sees. Observe-only: it returns no verdict, blocks
+nothing, and is consulted in no allow/deny decision, so it observes and detects
+rather than preventing. It is deployed on its own, not as a tier the other
+mechanisms fall back to.
 
 ## Security & identity terms
 
@@ -118,8 +121,8 @@ no log-signing key anywhere in the codebase; see **Audit log** below.
 **IronClaw five-layer defense**
 : The name for AI Agent Assembly's defense-in-depth model — five security
 *layers* (Boundary, Identity, Policy, Vault, Telemetry). These are distinct
-from the three *interception points* (SDK, proxy, eBPF), which all live inside
-the Boundary layer. **The Vault layer is largely aspirational:** an in-memory
+from the *interception mechanisms* (SDK, proxy, eBPF), which each live inside
+the Boundary layer and are deployed independently of one another. **The Vault layer is largely aspirational:** an in-memory
 secrets store is mounted but is empty in every shipped build with nothing able to
 populate it, there is no encryption at rest or key management, and where
 resolution does succeed the plaintext is returned to the caller. See
