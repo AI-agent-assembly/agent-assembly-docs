@@ -15,16 +15,28 @@ committed pages already match the extract. This mirrors
 the marker shape and the ``--check`` contract, so the three gates behave the same
 way for a contributor and in CI.
 
-Three checks run before anything is rendered, and each fails loudly rather than
+Checks that run before anything is rendered, each failing loudly rather than
 emitting a page:
 
-1. **Every ``coverage`` value maps to one of ADR 0033 §6's eleven terms, verbatim.**
-   §6 owns that vocabulary. If the upstream manifest ever introduces a twelfth
-   value, this script must stop rather than invent a display name for it.
-2. **Every capability id named in a path definition exists in the extract.** A
+1. **Every value of every rendered vocabulary has a label**, checked against the
+   exact key set of the mapping that renders it — see ``VOCABULARIES``. An
+   order-list drops what it cannot label *silently*, which publishes an absence the
+   manifest never stated, so an unlabelled value must stop the build. ``coverage``
+   is the strictest case: it must map to one of ADR 0033 §6's eleven terms
+   verbatim, because §6 owns that vocabulary and a twelfth value is the ADR's to
+   add, never this table's.
+2. **Every census accounts for every row it summarises**, so a breakdown can never
+   print beside a row count it does not sum to.
+3. **Every capability id named in a path definition exists in the extract.** A
    renamed or retired id would otherwise silently shrink a path.
-3. **No capability id appears in two path definitions**, and the ids not in any
+4. **No capability id appears in two path definitions**, and the ids not in any
    path are rendered rather than dropped.
+5. **Exactly one marker pair exists per key** — see ``splice``.
+
+Scope of what ``--check`` proves, stated because the stronger reading is the
+tempting one: **the generated tables match the extract.** Prose outside the markers
+is not checked, and nothing here proves the extract matches the upstream manifest
+(AAASM-5600).
 
 See AAASM-5609 (Epic AAASM-3659).
 """
@@ -150,6 +162,58 @@ RUNS_LABEL: Final[dict[str, str]] = {
     "none": "It does not run",
 }
 
+DEFAULT_STATE_ORDER: Final[list[str]] = [
+    "on", "off", "open", "closed", "mixed", "not_applicable",
+]
+
+ABSENCE_STATUS: Final[frozenset[str]] = frozenset({"not_published", "not_surveyed"})
+
+# --------------------------------------------------------------------------
+# Every manifest vocabulary this script renders through an order-list.
+#
+# An order-list renders the values it knows and SILENTLY DROPS the rest, so an
+# unlisted value does not raise — it disappears, and the page then publishes an
+# absence the manifest never stated. That failure already happened once here: the
+# platform table keyed on `released_platforms`, and P4 (Windows, Unsupported) fell
+# out of it, so the page said "no platform-area row" where the manifest said
+# Unsupported.
+#
+# Fixing that one row left the CLASS open. This table closes it: every field below
+# is checked against the exact key set of the mapping that renders it, so a value
+# the renderer cannot display stops the build instead of vanishing from a table.
+#
+# The trigger is not hypothetical. `PLATFORM_LABEL` has no key `linux`, and `linux`
+# appears on 68 of the manifest's 80 rows in the `platform` field. One upstream
+# revision normalising a `platform`-domain row to that spelling is enough.
+#
+# `only_domain` scopes a check to the rows whose values are actually rendered.
+# It is set for exactly one field, and the reason is measured rather than assumed:
+# `platform` is rendered ONLY for `platform`-domain rows (the per-platform
+# host-adapter answer). Across all 80 rows that field also carries the coarser
+# `linux` (68 rows), `macos` (69) and `windows` (39) — spellings PLATFORM_LABEL has
+# no key for and deliberately should not, since they are not table rows. Checking
+# the field unscoped would fail the build on data that renders correctly today.
+#
+# Every other field IS rendered across all rows, so every other check is unscoped —
+# which is the strict direction, and the right one: a value that cannot be
+# displayed should stop the build rather than vanish from a table.
+#
+# (value_field, allowed_keys, is_list, only_domain)
+# --------------------------------------------------------------------------
+VOCABULARIES: Final[tuple[tuple[str, frozenset[str], bool, str | None], ...]] = (
+    ("coverage", frozenset(TERM_LABEL), False, None),
+    ("domain", frozenset(DOMAIN_LABEL), False, None),
+    ("decision_timing", frozenset(TIMING_LABEL), False, None),
+    ("failure_posture", frozenset(POSTURE_LABEL), False, None),
+    ("reachability", frozenset(REACHABILITY_LABEL), False, None),
+    ("default_state", frozenset(DEFAULT_STATE_ORDER), False, None),
+    ("evidence_runs_on_main", frozenset(RUNS_LABEL), False, None),
+    ("platform", frozenset(PLATFORM_LABEL), True, "platform"),
+    ("released_platforms", frozenset(PLATFORM_LABEL), True, None),
+    ("released_channels", frozenset(CHANNEL_LABEL), True, None),
+    ("evidence_kinds", frozenset(EVIDENCE_LABEL), True, None),
+)
+
 # --------------------------------------------------------------------------
 # Path definitions.
 #
@@ -231,17 +295,44 @@ def validate(extract: dict[str, object]) -> None:
     rows = _rows(extract)
     by_id = {str(r["id"]): r for r in rows}
 
-    unknown = sorted({str(r["coverage"]) for r in rows} - set(TERM_LABEL))
-    if unknown:
+    for field, allowed, is_list, only_domain in VOCABULARIES:
+        present: set[str] = set()
+        for row in rows:
+            if only_domain is not None and str(row["domain"]) != only_domain:
+                continue
+            value = row[field]
+            if is_list:
+                present.update(str(v) for v in value)
+            else:
+                present.add(str(value))
+        unknown = sorted(present - allowed)
+        if not unknown:
+            continue
+        if field == "coverage":
+            raise ValueError(
+                "coverage value(s) with no ADR 0033 §6 term: "
+                + ", ".join(unknown)
+                + " — §6 owns this vocabulary; extend §6 first, never this table"
+            )
+        scope = f" (on {only_domain}-domain rows)" if only_domain else ""
         raise ValueError(
-            "coverage value(s) with no ADR 0033 §6 term: "
-            + ", ".join(unknown)
-            + " — §6 owns this vocabulary; extend §6 first, never this table"
+            f"{field} value(s) this script cannot render{scope}: "
+            f"{', '.join(unknown)}. An unlisted value is dropped silently by the "
+            "order-list that renders it, so the page would publish an absence the "
+            "manifest never stated. Add the value to its label mapping, deliberately."
         )
 
-    unknown_domain = sorted({str(r["domain"]) for r in rows} - set(DOMAIN_LABEL))
-    if unknown_domain:
-        raise ValueError("domain value(s) with no display label: " + ", ".join(unknown_domain))
+    for absence in extract.get("channel_absence", []):
+        channel = str(absence["channel"])
+        status = str(absence["status"])
+        if channel not in CHANNEL_LABEL:
+            raise ValueError(f"channel_absence names unrenderable channel {channel!r}")
+        if status not in ABSENCE_STATUS:
+            raise ValueError(
+                f"channel_absence status {status!r} is neither not_published nor "
+                "not_surveyed; the channel table counts only those two, so any "
+                "other value would be silently uncounted"
+            )
 
     seen: dict[str, str] = {}
     for group_key, ids in [(str(p["key"]), list(p["ids"])) for p in PATHS] + [
@@ -264,11 +355,26 @@ def _pick(extract: dict[str, object], ids: list[str]) -> list[dict[str, object]]
 
 
 def _census(rows: list[dict[str, object]], key: str, order: list[str]) -> list[tuple[str, int]]:
-    """Return ``(value, count)`` for ``key`` across ``rows``, in ``order``."""
+    """Return ``(value, count)`` for ``key`` across ``rows``, in ``order``.
+
+    Asserts the census accounts for every row. ``order`` filters as well as sorts,
+    so a value missing from it is dropped rather than raised — which prints a
+    breakdown summing to less than the row count stated beside it, with no error.
+    ``validate`` should already have made that impossible; this is the second lock,
+    because the failure is silent and the two numbers sit in the same table.
+    """
     counts: dict[str, int] = {}
     for row in rows:
         counts[str(row[key])] = counts.get(str(row[key]), 0) + 1
-    return [(value, counts.get(value, 0)) for value in order if counts.get(value, 0)]
+    census = [(value, counts.get(value, 0)) for value in order if counts.get(value, 0)]
+    total = sum(count for _, count in census)
+    if total != len(rows):
+        dropped = sorted(set(counts) - set(order))
+        raise ValueError(
+            f"census of {key!r} accounts for {total} of {len(rows)} rows; "
+            f"value(s) missing from the order list: {', '.join(dropped)}"
+        )
+    return census
 
 
 def _terms_phrase(rows: list[dict[str, object]]) -> str:
@@ -310,9 +416,10 @@ def render_pin(extract: dict[str, object]) -> str:
             f"**declared fix version** {pin['fix_version']}.",
             ">",
             "> The extract is refreshed by hand, so it can lag the manifest. What this "
-            "repository's CI proves is that these pages match the extract; proving the "
-            "extract matches the manifest needs a cross-repository check, which is "
-            "AAASM-5600.",
+            "repository's CI proves is that **the generated tables** on these pages "
+            "match the extract — prose outside the generated blocks is not checked, "
+            "and proving the extract itself matches the manifest needs a "
+            "cross-repository check, which is AAASM-5600.",
         ]
     )
 
@@ -502,9 +609,7 @@ def render_path(extract: dict[str, object], path: dict[str, object]) -> str:
     rows = _pick(extract, list(path["ids"]))
     preconditions = sorted({p for r in rows for p in r["preconditions"]})
     launch_paths = sorted({str(r["launch_path"]) for r in rows})
-    defaults = _census(
-        rows, "default_state", ["on", "off", "open", "closed", "mixed", "not_applicable"]
-    )
+    defaults = _census(rows, "default_state", DEFAULT_STATE_ORDER)
 
     lines = [
         "| | |",
@@ -608,6 +713,18 @@ def render_unattached(extract: dict[str, object]) -> str:
 
 def splice(page: str, begin: str, end: str, body: str) -> str:
     """Replace the content between ``begin`` and ``end`` markers in ``page``."""
+    # A duplicate marker pair is a forgery vector, not a typo. ``find`` returns the
+    # FIRST pair, so a second hand-written block carrying the same key is never
+    # rewritten and never compared — it survives --check at exit 0 while wearing the
+    # "generated, do not hand-edit" provenance of the block above it. Counting the
+    # markers is what makes "the generated tables match the extract" true of ALL of
+    # them rather than of the first one.
+    if page.count(begin) != 1 or page.count(end) != 1:
+        raise ValueError(
+            f"expected exactly one {begin!r} / {end!r} pair, found "
+            f"{page.count(begin)} / {page.count(end)}; a duplicate block would be "
+            "left unchecked by the splice below"
+        )
     start = page.find(begin)
     stop = page.find(end)
     if start == -1 or stop == -1 or stop < start:
