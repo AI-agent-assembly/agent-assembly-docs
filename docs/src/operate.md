@@ -29,7 +29,7 @@ assumes the previous is already true.
 | 4 | Why did a control not fire? | [Troubleshooting](troubleshooting.md) | L2 |
 
 Question 1 is first for a reason: what reaches a checkpoint at all depends on how the
-agent was launched, so an agent started outside that path is the most common answer to
+agent was launched, so an agent started outside that path is a common answer to
 question 4.
 
 ## Before you start

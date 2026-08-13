@@ -96,8 +96,8 @@ is the fallback for any repository that does not publish its own, and the rows a
 were checked rather than assumed.
 
 If you are unsure which repository owns the code, file against
-[core](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/SECURITY.md) and
-it will be routed.
+[core](https://github.com/ai-agent-assembly/agent-assembly/blob/HEAD/SECURITY.md) so it
+can be routed.
 
 The reporting address is deliberately not repeated on this page. Each `SECURITY.md`
 above is the canonical source for its own route, and a copied address is one that keeps
