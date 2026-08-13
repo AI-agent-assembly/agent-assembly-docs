@@ -494,7 +494,18 @@
      python-sdk and arena). If modules.json is absent — a hub built standalone with
      no aggregation — the block silently no-ops, exactly like the search and switcher
      widgets. Skipped inside the toc.html iframe fallback, which has its own copy of
-     this head partial but no page chrome. -->
+     this head partial but no page chrome.
+
+     TWO LIMITATIONS, RECORDED RATHER THAN LEFT TO BE DISCOVERED. This block is
+     script-only, so with JavaScript disabled it does not render and GAP-7's sidebar
+     half stays open for that reader — the mounts keep their one-hop prefix route via
+     documentation.md and README.md, which pre-dates this change and is unaffected. And
+     its strings ("Component documentation", and the breadcrumb's "Home" below) are
+     built in JS rather than authored in Markdown, so mdbook-i18n-helpers never extracts
+     them: they are outside the gettext catalog and stay English under /zh-Hant/ with no
+     msgid to translate. Both belong in accessibility.md's Known limitations, which this
+     ticket may not edit — its sitemap row bars it from touching any existing page body
+     — so they are recorded here and handed on as a follow-up. -->
 <style>
   .aa-mounts { margin: 1.25rem 0 .5rem; padding: .75rem .85rem 0; border-top: 1px solid rgba(127,127,127,.25); }
   .aa-mounts__title { font-size: 12px; font-weight: 700; text-transform: uppercase;
