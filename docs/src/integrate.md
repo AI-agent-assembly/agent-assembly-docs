@@ -33,8 +33,8 @@ walk-throughs for all three languages.
 ### Two different words spelled the same way
 
 The **Documentation-area maturity** column above is the maturity of a *documentation
-area*, read from the [status map](source-of-truth.md). It describes how far that area's
-documentation has been written and reviewed.
+area*, read from the [status map](source-of-truth.md), which defines what each label
+means. That page owns the definitions and this one does not restate them.
 
 It is **not** a statement about what happens to one of your agent's actions. That is a
 separate vocabulary, defined once in ADR 0033 §6, and this page makes no claim in it.
