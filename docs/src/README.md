@@ -21,7 +21,7 @@ AI Agent Assembly is a governance layer for AI agents. It sits between your agen
 
 - **Enforces policy** — decides, before each *governed* action runs, whether an agent is allowed to call a tool, reach a domain, or spend more budget.
 - **Tracks cost** — meters token and dollar spend per team and blocks agents that exceed their budget.
-- **Intercepts unsafe actions** — blocks risky calls at the proxy layer, advises in-process at the SDK layer, and *detects* activity that skipped both at the kernel layer.
+- **Intercepts unsafe actions** — the sidecar proxy denies a routed call before it leaves the machine, the SDK advises in-process, and the Linux eBPF sensor *detects* activity without returning a verdict. Each is deployed on its own and covers only what it is on the path of.
 
 Governance applies per agent, on the paths you wire up — you do not have to rewrite your agent's logic, but each agent has to be launched through a governed path (an SDK your code initializes, or the sidecar proxy). An agent started outside those paths is not governed. See [Known limitations](https://docs.agent-assembly.com/core/latest/devtools/limitations.html) for what is measured, unmeasured, and unsupported today.
 
@@ -76,17 +76,17 @@ Node.js/TypeScript, Go, policy enforcement, approvals, audit, trace, and runtime
 workflows. Clone it and run an example end to end to see governance in action
 before instrumenting your own agents.
 
-## The three-layer interception model
+## The interception mechanisms
 
-AI Agent Assembly enforces governance through three layers. You can deploy them independently, and each one catches what the layer above it might miss:
+Governance is assembled from independently-deployable interception mechanisms, and a deployment runs whichever subset it installs. They are **not** a fallback chain and **not** a ranking: each reaches a different claim level, and a mechanism you do not deploy is reported as absent rather than picked up by another. Listed lowest-latency first:
 
 1. **SDK layer (in-process)** — the language SDK wraps your agent's framework tool calls and raises on a deny before the wrapped call runs. Fastest path, but **advisory**: it requires you to adopt the SDK and call its initializer, a non-cooperating process simply never calls it, and it does not intercept raw HTTP, subprocess spawns, or file access. Treat it as defense-in-depth, not the gate.
 2. **Sidecar proxy (`aa-proxy`)** — intercepts outbound HTTP/1.1 that is routed to it, using per-host certificates minted from a local root CA, so it can govern agents that do not use the SDK. No *agent code* changes, but the process must honour `HTTP_PROXY`/`HTTPS_PROXY` and trust the CA (on macOS the install is *attempted* at proxy start via `security add-trusted-cert`, which requires admin authorization — macOS prompts, and a refusal fails proxy startup; on Linux run `sudo aasm proxy install-ca`; Windows is unsupported). On MitM'd hosts, HTTP/2, gRPC, and WebSocket cannot be inspected — on other hosts they are tunnelled uninspected.
-3. **eBPF sensor (`aa-ebpf`)** — kernel hooks that watch OpenSSL and process syscalls to *detect* activity that skipped the layers above. Observe-only: it reports, it does not block. Linux only (the file-I/O kprobes are x86_64-only), and it degrades rather than failing closed if it cannot attach.
+3. **eBPF sensor (`aa-ebpf`)** — kernel hooks that watch OpenSSL and process syscalls. **Observe-only**: it reports what it sees and is consulted in no allow/deny decision, so its claim level is *Observed* and *Detected* — never prevention. It does not block, and it is not a mechanism the others fall back to. Linux only (the file-I/O kprobes are x86_64-only), and it degrades rather than failing closed if it cannot attach.
 
-All three layers report to the **gateway**, which evaluates policy and tracks per-team budgets. Coverage is the union of the layers you deploy, bounded by each layer's own precondition — see [Known limitations](https://docs.agent-assembly.com/core/latest/devtools/limitations.html).
+Each mechanism reports to the **gateway**, which evaluates policy and tracks per-team budgets. Coverage is the union of the layers you deploy, bounded by each layer's own precondition — see [Known limitations](https://docs.agent-assembly.com/core/latest/devtools/limitations.html).
 
-These three interception points describe *where* enforcement happens; they sit inside the **Boundary** layer of the broader [five-layer defense model](security-model.md), which describes *what* is protected. Same system, two views.
+These interception points describe *where* a decision is applied; they sit inside the **Boundary** layer of the broader [five-layer defense model](security-model.md), which describes *what* is protected. Same system, two views.
 
 <div class="aa-cta-next">
   <span class="aa-cta-next__label">Next step</span>
