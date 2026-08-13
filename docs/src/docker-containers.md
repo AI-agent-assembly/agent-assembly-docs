@@ -383,7 +383,7 @@ you can self-host and what the SaaS adds.
 - [Self-Host Observability](self-host-observability.md) — health, readiness, and Prometheus metrics for the images above.
 - [Open core boundary](open-core-boundary.md) — OSS vs SaaS feature split and crate licensing.
 - [Cloud Deployment](cloud-deployment.md) — the managed SaaS platform.
-- [Security model](security-model.md) — the three-layer interception model and defense-in-depth posture.
+- [Security model](security-model.md) — the interception mechanisms and defense-in-depth posture.
 - [Troubleshooting](troubleshooting.md) — common issues when running the stack.
 
 ---
