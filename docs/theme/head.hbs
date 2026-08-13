@@ -475,3 +475,228 @@
     } else { init(); }
   })();
 </script>
+
+<!-- Component-mount block in the sidebar (AAASM-5608, closing AAASM-5591 GAP-7).
+     AAASM-5594 measured that SUMMARY.md cannot carry this: an external URL entry
+     aborts the build at exit 101 ("failed to write src/https://…"), a second entry
+     for an already-listed page aborts at exit 101 ("Duplicate file in SUMMARY.md"),
+     and the draft form `- [Python SDK]()` renders a <span> with no anchor. A
+     theme-level block is therefore the only shape that puts the literal mount names
+     in the sidebar, and it is the one option that costs no existing route — the
+     documentation.md and README.md prefix chapters keep their two routes that sit
+     outside every task section.
+
+     Module names and subpaths are read from {{ path_to_root }}modules.json, the same
+     manifest the module switcher above reads, so adding a component to
+     hub-components.toml/modules.json surfaces it here with no navigation edit and
+     there are NO hard-coded module strings. It reads only 'name' and 'subpath'; it
+     does not read 'ref', so it is unaffected by AAASM-5728 (ref is inert for
+     python-sdk and arena). If modules.json is absent — a hub built standalone with
+     no aggregation — the block silently no-ops, exactly like the search and switcher
+     widgets. Skipped inside the toc.html iframe fallback, which has its own copy of
+     this head partial but no page chrome.
+
+     TWO LIMITATIONS, RECORDED RATHER THAN LEFT TO BE DISCOVERED. This block is
+     script-only, so with JavaScript disabled it does not render and GAP-7's sidebar
+     half stays open for that reader — the mounts keep their one-hop prefix route via
+     documentation.md and README.md, which pre-dates this change and is unaffected. And
+     its strings ("Component documentation", and the breadcrumb's "Home" below) are
+     built in JS rather than authored in Markdown, so mdbook-i18n-helpers never extracts
+     them: they are outside the gettext catalog and stay English under /zh-Hant/ with no
+     msgid to translate. Both belong in accessibility.md's Known limitations, which this
+     ticket may not edit — its sitemap row bars it from touching any existing page body
+     — so they are recorded here and handed on as a follow-up. -->
+<style>
+  .aa-mounts { margin: 1.25rem 0 .5rem; padding: .75rem .85rem 0; border-top: 1px solid rgba(127,127,127,.25); }
+  .aa-mounts__title { font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .04em; opacity: .7; margin: 0 0 .5rem; }
+  .aa-mounts ul { list-style: none; margin: 0; padding: 0; }
+  .aa-mounts li { margin: 0 0 .15rem; }
+  .aa-mounts a { display: block; padding: .25rem .35rem; border-radius: 6px;
+    font-size: 14px; text-decoration: none; color: inherit; opacity: .85; }
+  .aa-mounts a:hover { opacity: 1; background: rgba(127,127,127,.12); }
+  .aa-mounts a:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 1px; opacity: 1; }
+</style>
+<script>
+  (function () {
+    if (document.querySelector('.sidebar-iframe-inner')) { return; } // toc.html fallback
+    var ROOT = '{{ path_to_root }}';
+
+    function prettyModule(name) {
+      // Display-only label; navigation always uses the manifest's subpath.
+      return name.replace(/-/g, ' ').replace(/\bsdk\b/gi, 'SDK')
+                 .replace(/^\w/, function (c) { return c.toUpperCase(); });
+    }
+
+    function build(modules) {
+      var box = document.querySelector('.sidebar-scrollbox');
+      if (!box || !modules.length || document.querySelector('.aa-mounts')) { return; }
+      var wrap = document.createElement('div');
+      wrap.className = 'aa-mounts';
+      var h = document.createElement('p');
+      h.className = 'aa-mounts__title';
+      h.id = 'aa-mounts-title';
+      h.textContent = 'Component documentation';
+      var ul = document.createElement('ul');
+      ul.setAttribute('aria-labelledby', 'aa-mounts-title');
+      modules.forEach(function (m) {
+        if (!m || !m.name || !m.subpath) { return; }
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = ROOT + m.subpath + '/';
+        a.textContent = prettyModule(m.name);
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+      wrap.appendChild(h);
+      wrap.appendChild(ul);
+      box.appendChild(wrap);
+    }
+
+    function init() {
+      fetch(ROOT + 'modules.json', { cache: 'no-cache' })
+        .then(function (r) { if (!r.ok) { throw new Error('no modules.json'); } return r.json(); })
+        .then(function (data) {
+          var mods = (data && data.modules) || [];
+          // The sidebar is populated by a custom element, so it may not exist yet.
+          if (document.querySelector('.sidebar-scrollbox ol.chapter')) { build(mods); return; }
+          var obs = new MutationObserver(function () {
+            if (document.querySelector('.sidebar-scrollbox ol.chapter')) { obs.disconnect(); build(mods); }
+          });
+          obs.observe(document.documentElement, { childList: true, subtree: true });
+          setTimeout(function () { obs.disconnect(); build(mods); }, 3000);
+        })
+        .catch(function () { /* standalone hub build (no aggregation) — silently no-op */ });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else { init(); }
+  })();
+</script>
+
+<!-- Contextual breadcrumbs (AAASM-5608).
+     AAASM-5594 recorded that mdBook renders no breadcrumb trail, so in mdBook this
+     is a theme change or it does not happen; this is the theme change.
+
+     The trail is DERIVED FROM THE SIDEBAR DOM rather than from a page->section map
+     kept in this file: it locates the sidebar anchor whose resolved path matches the
+     current page, then scans backwards for the nearest preceding `li.part-title`.
+     That means SUMMARY.md stays the single source of the section structure and a
+     re-filed page cannot desynchronise its breadcrumb from its sidebar position.
+     Prefix chapters have no preceding part title and correctly get a two-level
+     trail; the index gets none, because it is the crumb everything else points at.
+
+     Rendered as nav > ol so assistive technology announces it as a list of links
+     with the current page marked aria-current="page"; it wraps rather than scrolls
+     at narrow widths. Skipped inside the toc.html iframe fallback. -->
+<style>
+  .aa-crumbs { margin: 0 0 1rem; font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .aa-crumbs ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: .15rem .1rem; }
+  .aa-crumbs li { display: flex; align-items: center; }
+  .aa-crumbs li + li::before { content: "/"; opacity: .45; margin: 0 .45rem; }
+  .aa-crumbs a { color: inherit; opacity: .75; text-decoration: none; border-radius: 4px; padding: .1rem .2rem; }
+  .aa-crumbs a:hover { opacity: 1; text-decoration: underline; }
+  .aa-crumbs a:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 1px; opacity: 1; }
+  .aa-crumbs [aria-current="page"] { font-weight: 600; opacity: .95; }
+</style>
+<script>
+  (function () {
+    if (document.querySelector('.sidebar-iframe-inner')) { return; } // toc.html fallback
+    var ROOT = '{{ path_to_root }}';
+
+    function norm(p) { return p.replace(/index\.html$/, '').replace(/\/$/, ''); }
+
+    function build() {
+      if (document.querySelector('.aa-crumbs')) { return true; }
+      var box = document.querySelector('.sidebar-scrollbox');
+      var content = document.querySelector('#content main') || document.querySelector('main');
+      if (!box || !content) { return false; }
+      var nodes = box.querySelectorAll('li.part-title, ol.chapter a[href]');
+      if (!nodes.length) { return false; }
+
+      var here = norm(location.pathname);
+      // The index is the root crumb; it does not carry a trail to itself.
+      if (here === norm(new URL(ROOT || './', location.href).pathname)) { return true; }
+
+      var idx = -1;
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i];
+        if (n.tagName !== 'A') { continue; }
+        var href = n.getAttribute('href');
+        // Skip protocol links, and skip the current page's own H2 entries, which
+        // mdBook expands into the sidebar as bare '#fragment' anchors — they
+        // resolve to this same path and would otherwise match as the chapter.
+        if (!href || href.charAt(0) === '#' || /^[a-z]+:/i.test(href)) { continue; }
+        if (norm(new URL(href, location.href).pathname) === here) { idx = i; break; }
+      }
+      if (idx === -1) { return true; } // page not in the sidebar — no trail to draw
+
+      var section = null;
+      for (var j = idx - 1; j >= 0; j--) {
+        if (nodes[j].tagName !== 'A' && nodes[j].classList.contains('part-title')) {
+          section = nodes[j].textContent.trim();
+          break;
+        }
+      }
+
+      var nav = document.createElement('nav');
+      nav.className = 'aa-crumbs';
+      nav.setAttribute('aria-label', 'Breadcrumb');
+      var ol = document.createElement('ol');
+
+      function crumb(text, href, current) {
+        var li = document.createElement('li');
+        if (href) {
+          var a = document.createElement('a');
+          a.href = href; a.textContent = text;
+          li.appendChild(a);
+        } else {
+          var s = document.createElement('span');
+          s.textContent = text;
+          if (current) { s.setAttribute('aria-current', 'page'); }
+          li.appendChild(s);
+        }
+        ol.appendChild(li);
+      }
+
+      // mdBook prefixes a chapter link with <strong aria-hidden="true">9.</strong>.
+      // It is decorative and hidden from assistive technology in the sidebar, so
+      // copying textContent would both read oddly and promote a hidden number into
+      // announced breadcrumb content. Strip aria-hidden nodes before taking the text.
+      function label(a) {
+        var c = a.cloneNode(true);
+        Array.prototype.forEach.call(
+          c.querySelectorAll('[aria-hidden="true"]'),
+          function (el) { el.parentNode.removeChild(el); }
+        );
+        return c.textContent.replace(/\s+/g, ' ').trim();
+      }
+
+      crumb('Home', ROOT || './', false);
+      // A part title is plain text in mdBook, not a link, so the crumb is too.
+      if (section) { crumb(section, null, false); }
+      crumb(label(nodes[idx]), null, true);
+
+      nav.appendChild(ol);
+      // Anchor to the page's own <h1>, which is static markup, rather than to
+      // content.firstChild: the search box, module switcher and language banner all
+      // insert at firstChild from their own async callbacks, so competing for that
+      // slot makes the breadcrumb's position depend on which fetch resolves first.
+      // Sitting directly above the title is both deterministic and where a
+      // breadcrumb belongs; those utility bars stay above it.
+      var h1 = content.querySelector('h1');
+      content.insertBefore(nav, h1 || content.firstChild);
+      return true;
+    }
+
+    function init() {
+      if (build()) { return; }
+      var obs = new MutationObserver(function () { if (build()) { obs.disconnect(); } });
+      obs.observe(document.documentElement, { childList: true, subtree: true });
+      setTimeout(function () { obs.disconnect(); }, 3000);
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else { init(); }
+  })();
+</script>
