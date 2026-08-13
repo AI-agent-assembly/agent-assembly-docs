@@ -31,6 +31,14 @@ The eleven terms are:
 *Approval required* · *Degraded* · *Unmeasured* · *Experimental* · *Planned* ·
 *Unsupported*
 
+> **Two of those words appear on this site on a different axis.** *Planned* and
+> *Experimental* above are §6 terms about **an action**. The `🗺️ Planned` you may have
+> seen in the sidebar beside a page title is a **documentation-area** label from the
+> [status map](source-of-truth.md), about an area of this documentation. A page is
+> `🗺️ Planned` because its area is; an action is `Planned` in §6's sense. Neither
+> licenses a conclusion about the other, and when you are checking a sentence it is
+> the §6 sense that applies.
+
 What each one means, and which mechanism can legitimately reach it today, are defined
 in
 [ADR 0033 §6](https://docs.agent-assembly.com/core/latest/adr/0033-canonical-governance-and-enforcement-architecture.html).
