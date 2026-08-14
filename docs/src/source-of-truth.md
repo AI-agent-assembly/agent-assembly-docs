@@ -27,6 +27,15 @@ Every area below is tagged with one visibility label and one maturity label.
 | 🧪 **Release candidate** | Ships today as a release candidate; the API and behaviour are stabilizing but may still change before GA. The whole product is currently `v0.0.1-rc`. |
 | 🗺️ **Planned** | Designed and documented as intent, but **not yet generally available**. Treat as a roadmap, not a contract. |
 
+**This is a documentation-area maturity axis, not the only one.** The Horonomy
+company site separately labels each product's *portfolio* stage (`available`,
+`beta`, `release_candidate`, `coming_soon`), which ranges over a product in the
+company's portfolio, not an area of this hub's documentation. The two are
+deliberately distinct axes with distinct owners — this page owns the one above —
+and neither may be read as the other. See
+[ADR 0034 hand-off 7](https://github.com/ai-agent-assembly/agent-assembly/blob/main/docs/src/adr/0034-one-product-truth-and-cross-repository-documentation-governance.md#hand-off-7--the-two-maturity-vocabularies)
+for the full account.
+
 ## Area status map
 
 <!-- BEGIN GENERATED:hub-components:source-of-truth-table -->
