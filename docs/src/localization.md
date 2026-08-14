@@ -72,6 +72,38 @@ new language:
 3. Validate with `msgfmt -c po/<lang>.po` and preview the localized build with
    the command in step 3 above before opening a PR.
 
+### Emphasis in a CJK language: write `<em>`, not `*` or `_`
+
+In a language written without spaces, a one-character emphasis marker does not
+survive to the page. Use inline HTML instead:
+
+```text
+因此其宣告層級為<em>已觀測</em>與<em>已偵測</em>     ← renders
+因此其宣告層級為*已觀測*與*已偵測*                   ← renders as literal underscores
+```
+
+Two things stack up here, and the second is why the obvious fix does not work:
+
+- CommonMark's flanking rules treat `_` between two CJK characters as
+  *intraword*, so `_文字_` is not emphasis at all and the underscores are
+  printed.
+- The gettext preprocessor re-serialises every translated string through a
+  Markdown writer, and that writer emits emphasis as `_…_` **whatever you
+  wrote**. So `*文字*` is converted to `_文字_` before the page is rendered,
+  and lands in exactly the same place.
+
+Measured on this catalog: of the 13 broken spans, five had already been
+switched from `_` to `*` by someone applying the obvious fix. All five still
+rendered with literal underscores. Verifying against the catalog would have
+shown them as fixed — **check the built HTML**, which is the only place the
+difference is visible (AAASM-5742).
+
+`**strong**` also survives, because the writer emits `**` for strong. Prefer
+`<em>` where the English source uses emphasis, so the translation carries the
+same weight rather than being upgraded to bold. This matters most on the
+[ADR 0033 §6 claim terms](https://docs.agent-assembly.com/core/latest/adr/0033-canonical-governance-and-enforcement-architecture.html),
+where the emphasis marks controlled vocabulary rather than decorating it.
+
 If you would like to coordinate before starting, please
 [open an issue on the docs repository](https://github.com/ai-agent-assembly/docs/issues/new/choose)
 naming the language you want to work on.
