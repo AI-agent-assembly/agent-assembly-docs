@@ -151,8 +151,7 @@ msgid ""
 "eBPF sensor _detects_ activity without returning a verdict. Each is "
 "deployed on its own and covers only what it is on the path of."
 msgstr ""
-"**攔截不安全的動作** — 邊車代理會在有風險的呼叫離開機器之前拒絕已路由的呼叫，SDK 在行程內提供建議，而 Linux eBPF "
-"感測器則*偵測*活動但不回傳裁決。每一項都是獨立部署，且僅涵蓋它所在路徑上的事物。"
+"**攔截不安全的動作** — 邊車代理會在有風險的呼叫離開機器之前拒絕已路由的呼叫，SDK 在行程內提供建議，而 Linux eBPF 感測器則<em>偵測</em>活動但不回傳裁決。每一項都是獨立部署，且僅涵蓋它所在路徑上的事物。"
 
 #: src/index.md:26
 msgid ""
@@ -420,9 +419,7 @@ msgid ""
 "x86_64-only), and it degrades rather than failing closed if it cannot "
 "attach."
 msgstr ""
-"**eBPF 感測器（`aa-ebpf`）** — 監看 OpenSSL "
-"與行程系統呼叫的核心掛鉤。**僅供觀測**：它只回報所見，且不參與任何允許／拒絕決策，因此其宣告層級為*已觀測*與*已偵測* — "
-"絕非預防。它不會封鎖，也不是其他機制的後備。僅限 Linux（檔案 I/O kprobe 僅限 x86_64），且在無法掛載時會降級而非關閉。"
+"**eBPF 感測器（`aa-ebpf`）** — 監看 OpenSSL 與行程系統呼叫的核心掛鉤。**僅供觀測**：它只回報所見，且不參與任何允許／拒絕決策，因此其宣告層級為<em>已觀測</em>與<em>已偵測</em> — 絕非預防。它不會封鎖，也不是其他機制的後備。僅限 Linux（檔案 I/O kprobe 僅限 x86_64），且在無法掛載時會降級而非關閉。"
 
 #: src/index.md:87
 msgid ""
@@ -442,8 +439,7 @@ msgid ""
 "model](security-model.md), which describes _what_ is protected. Same "
 "system, two views."
 msgstr ""
-"這些攔截點描述的是決策套用的_位置_；它們位於更廣泛的[五層防禦模型](security-model.md)中的 **Boundary** "
-"層內，而該模型描述的是_受保護的對象_。同一套系統，兩種視角。"
+"這些攔截點描述的是決策套用的<em>位置</em>；它們位於更廣泛的[五層防禦模型](security-model.md)中的 **Boundary** 層內，而該模型描述的是<em>受保護的對象</em>。同一套系統，兩種視角。"
 
 #: src/index.md:101
 msgid "_Last reviewed: 2026-06-27 — AI Agent Assembly Team_"
@@ -1531,9 +1527,7 @@ msgid ""
 "actions _before_ they run. See the [Introduction](README.md) and [Why AI "
 "Agent Assembly?](comparison.md)."
 msgstr ""
-"它是 **AI 代理的治理層**：位於你的代理與外部世界之間，在不安全的動作執行_之前"
-"_，強制執行政策、追蹤成本並加以攔截。請參閱[簡介](README.md)與[為何選擇 AI "
-"Agent Assembly？](comparison.md)。"
+"它是 **AI 代理的治理層**：位於你的代理與外部世界之間，在不安全的動作執行<em>之前</em>，強制執行政策、追蹤成本並加以攔截。請參閱[簡介](README.md)與[為何選擇 AI Agent Assembly？](comparison.md)。"
 
 #: src/faq.md:13
 msgid "Do I have to change my agent's code?"
@@ -1564,7 +1558,7 @@ msgid ""
 "kernel level and reports it. It is observe-only: it returns no verdict "
 "and blocks nothing."
 msgstr ""
-"**eBPF 感測器**（`aa-ebpf`，僅限 Linux）在核心層級*觀測*活動並加以回報。它僅供觀測：不會回傳裁決，也不會封鎖任何行為。"
+"**eBPF 感測器**（`aa-ebpf`，僅限 Linux）在核心層級<em>觀測</em>活動並加以回報。它僅供觀測：不會回傳裁決，也不會封鎖任何行為。"
 
 #: src/faq.md:27
 msgid ""
@@ -1643,8 +1637,7 @@ msgid ""
 "Assembly makes a binding **allow/deny decision before the action executes**. "
 "The [comparison page](comparison.md) maps this against other tools."
 msgstr ""
-"可觀測性工具是在事後記錄代理_做過_什麼。AI Agent Assembly 則在**動作執行之前"
-"做出具約束力的允許／拒絕決策**。[比較頁面](comparison.md)將此與其他工具對照。"
+"可觀測性工具是在事後記錄代理<em>做過</em>什麼。AI Agent Assembly 則在**動作執行之前做出具約束力的允許／拒絕決策**。[比較頁面](comparison.md)將此與其他工具對照。"
 
 #: src/faq.md:61
 msgid "Where do I get started right now?"
@@ -7308,8 +7301,7 @@ msgid ""
 "_is_ — a control that evaluates and enforces what an agent is allowed to do, "
 "rather than only observing what it did after the fact."
 msgstr ""
-"**治理層** : 一句話描述 AI Agent Assembly _是_什麼 — 一種評估並強制規範代理被"
-"允許做什麼的控制機制，而非僅在事後觀察它做了什麼。"
+"**治理層** : 一句話描述 AI Agent Assembly <em>是</em>什麼 — 一種評估並強制規範代理被允許做什麼的控制機制，而非僅在事後觀察它做了什麼。"
 
 #: src/glossary.md:19
 msgid ""
@@ -7383,8 +7375,7 @@ msgid ""
 "preventing. It is deployed on its own, not as a tier the other "
 "mechanisms fall back to."
 msgstr ""
-"**eBPF 感測器（`aa-ebpf`）** : 一個核心層級的感測器（僅限 Linux），監看 TLS "
-"函式庫與行程系統呼叫，並*回報*所見。它僅供觀測：不會回傳裁決、不會封鎖任何行為，也不參與任何允許／拒絕決策，因此它是觀測與偵測，而非預防。它是獨立部署的，並非其他機制的後備層級。"
+"**eBPF 感測器（`aa-ebpf`）** : 一個核心層級的感測器（僅限 Linux），監看 TLS 函式庫與行程系統呼叫，並<em>回報</em>所見。它僅供觀測：不會回傳裁決、不會封鎖任何行為，也不參與任何允許／拒絕決策，因此它是觀測與偵測，而非預防。它是獨立部署的，並非其他機制的後備層級。"
 
 #: src/glossary.md:53
 msgid "Security & identity terms"
@@ -7424,9 +7415,7 @@ msgid ""
 "inspect or control it. The proxy performs _authorized_ MitM of an agent's "
 "HTTPS using a per-host certificate authority so it can apply egress policy."
 msgstr ""
-"**MitM**（man-in-the-middle，中間人） : 位於連線路徑之中以檢查或控制該連線。"
-"此代理使用每主機的憑證機構，對代理的 HTTPS 執行_經授權_的 MitM，以便套用出向"
-"（egress）政策。"
+"**MitM**（man-in-the-middle，中間人） : 位於連線路徑之中以檢查或控制該連線。此代理使用每主機的憑證機構，對代理的 HTTPS 執行<em>經授權</em>的 MitM，以便套用出向（egress）政策。"
 
 #: src/glossary.md:72
 msgid ""
@@ -7500,10 +7489,7 @@ msgid ""
 "succeed the plaintext is returned to the caller. See [Secrets "
 "management](security-model.md#secrets-management)."
 msgstr ""
-"**IronClaw 五層防禦** : AI Agent Assembly 縱深防禦模型的名稱 — "
-"五個安全_層_（Boundary、Identity、Policy、Vault、Telemetry）。這些不同於_攔截機制_（SDK、proxy、eBPF），後者各自位於 "
-"Boundary 層之內，且彼此獨立部署。**Vault 層在很大程度上仍是理想而非現實：** "
-"系統雖掛載了一個記憶體內的機密儲存區，但在每一個已發行的建置中它都是空的，且沒有任何途徑可以填入內容；既沒有靜態加密也沒有金鑰管理，而在解析確實成功的情況下，明文會被回傳給呼叫端。請參閱[機密管理](security-model.md#secrets-management)。"
+"**IronClaw 五層防禦** : AI Agent Assembly 縱深防禦模型的名稱 — 五個安全<em>層</em>（Boundary、Identity、Policy、Vault、Telemetry）。這些不同於<em>攔截機制</em>（SDK、proxy、eBPF），後者各自位於 Boundary 層之內，且彼此獨立部署。**Vault 層在很大程度上仍是理想而非現實：** 系統雖掛載了一個記憶體內的機密儲存區，但在每一個已發行的建置中它都是空的，且沒有任何途徑可以填入內容；既沒有靜態加密也沒有金鑰管理，而在解析確實成功的情況下，明文會被回傳給呼叫端。請參閱[機密管理](security-model.md#secrets-management)。"
 
 #: src/glossary.md:107
 msgid ""
