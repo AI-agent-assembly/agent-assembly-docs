@@ -577,6 +577,7 @@ Zero or more. Each entry:
 | --- | --- | --- | --- |
 | `term` | string | R | one of ADR 0033 §6's eleven terms, **verbatim** |
 | `evidence` | string | R | non-empty — a link, or an `E`-block reference into the public claim inventory |
+| `subject` | string | O | `self` (the default — this page's own subject), **or** an [`owner`](#owner-surfaces) value naming a *different* component the claim is actually about | error if present and neither `self` nor a valid `owner` value |
 
 The permitted `term` values are §6's whole set, not a subset:
 `Observed` · `Detected` · `Evaluated` · `Denied before execution` · `Redacted` ·
@@ -584,6 +585,12 @@ The permitted `term` values are §6's whole set, not a subset:
 `Unsupported`. Restricting the list here would be a redefinition of someone else's
 vocabulary; extending it would be worse. If §6 gains or loses a term, this enum
 follows it — §6 is the source, and a mismatch is a bug in this page.
+
+`claims[]` is a **complete index of every claim the page states**, including one
+about a different component — that completeness is the reason `subject` exists rather
+than leaving a foreign claim to prose alone. See
+[rule 4's foreign-subject carve-out](#rule-4-and-the-enumeration-carve-out) for why a
+`subject` other than `self` changes what rule 4 requires elsewhere on the page.
 
 ## Cross-field rules
 
@@ -595,9 +602,9 @@ validation value is.
 | 1 | `describes_capability: true` ⇒ `area`, `platforms`, `last_verified` and `claims` all present | error |
 | 2 | `describes_capability: false` ⇒ `area`, `availability`, `platforms`, `last_verified`, `claims`, `limitations` all **absent** | error |
 | 3 | `availability: available-with-limits` **or** `deprecated` ⇒ `limitations` present and non-empty | error |
-| 4 | `claims[]` contains `Planned` ⇒ `availability` **absent**, `platforms` exactly `[]`, and `claims` contains no other term | error |
+| 4 | `claims[]` contains a `Planned` entry with `subject: self` (or no `subject`) ⇒ `availability` **absent**, `platforms` exactly `[]`, and `claims` contains no other **self-subject** entry | error |
 | 5 | `availability: available-verified` ⇒ every `platforms[]` row has `status` ∈ {`available-verified`, `unsupported`} — no row may be `available-with-limits` | error |
-| 6 | `availability` is present **iff** `describes_capability: true` **and** `claims[]` does not contain `Planned` | error |
+| 6 | `availability` is present **iff** `describes_capability: true` **and** `claims[]` does not contain a self-subject `Planned` | error |
 | 7 | `platforms[].status` may never be `preview` or `deprecated`, and never a §6 term other than `unsupported` | error |
 | 8 | `claims[].term` may never be a value outside §6's eleven | error |
 | 9 | `canonical_source: self` ⇒ the `owner` surface names the repository the page is in; otherwise `canonical_source` must be a link | error |
@@ -654,6 +661,58 @@ The three `🗺️ Planned` areas today are `cloud`, `enterprise` and `operation
 is the path AAASM-5610 will take on `quickstart-saas.md` and `cloud-deployment.md` —
 the first hub pages it touches. Rules 4 and 6 are written to agree with each other
 on exactly that case.
+
+**A foreign-subject `Planned` claim does not take this path.** AAASM-5762: a page
+whose own subject genuinely ships — real `platforms[]` rows, a real `availability`
+value — may still need to honestly record a `Planned` gap in a **different**
+component (found first while drafting the evaluator guides: a page had to record the
+SDK-side audit gap, ADR 0033 §6 `Planned`, without that being a completeness
+statement about the page's own subject). Before `subject` existed, an author in this
+position had exactly three bad options: put the claim in `claims[]` and publish false
+`platforms`/`availability` for a subject that is not planned at all; state it in prose
+only, so `claims[]` silently stops being a complete index; or drop the claim.
+
+`subject` removes the fork. A `claims[]` entry whose `subject` names a different
+`owner` is a claim about *that* component, not this page's — rule 4 does not fire on
+it, rule 6 does not treat it as a reason to drop `availability`, and it may sit
+alongside the page's own real, present-tense claims. It still satisfies rule 8 (a §6
+term) and, if its term is one of rule 14's list, rule 14's `limitations` requirement —
+those are about the *claim*, not the *subject*, and apply unchanged. Only rules 4 and
+6, which are specifically about what a *self*-subject `Planned` implies for this
+page's own `platforms`/`availability`, are scoped by it.
+
+The control, worked by hand ahead of AAASM-5601 implementing it: this passes —
+
+```yaml
+describes_capability: true
+area: core
+availability: available-with-limits
+limitations: "#limits"
+platforms:
+  - {channel: github-release, platform: linux-x86_64, status: available-verified, evidence: "..."}
+claims:
+  - {term: Evaluated, evidence: "..."}
+  - {term: Planned, subject: L3:python-sdk, evidence: "AAASM-5750"}
+```
+
+Rule 4 does not see a self-subject `Planned` (the second entry's `subject` is
+`L3:python-sdk`, not `self`), so it does not require `availability` absent or
+`platforms: []` — the page's own, real `available-with-limits` and non-empty
+`platforms[]` stand. Rule 6 agrees for the same reason. This still fails —
+
+```yaml
+describes_capability: true
+area: core
+availability: available-with-limits
+limitations: "#limits"
+platforms:
+  - {channel: github-release, platform: linux-x86_64, status: available-verified, evidence: "..."}
+claims:
+  - {term: Planned, evidence: "..."}
+```
+
+— because this `Planned` entry has no `subject`, which defaults to `self`: rule 4
+fires, and `availability` present plus `platforms` non-empty both violate it.
 
 ### Rule 14 — why the verb list is not enough
 
