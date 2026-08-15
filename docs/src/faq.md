@@ -18,8 +18,9 @@ invasive to be:
 
 - The **SDK layer** needs a small amount of instrumentation in your code and is
   the fastest path.
-- The **sidecar proxy** (`aa-proxy`) governs an agent's network traffic with
-  **no code change**.
+- The **sidecar proxy** (`aa-proxy`) governs an agent's network traffic without
+  modifying the agent's own source, on traffic that is routed to it and trusts
+  its CA.
 - The **eBPF sensor** (`aa-ebpf`, Linux only) *observes* activity at the kernel
   level and reports it. It is observe-only: it returns no verdict and blocks
   nothing.
