@@ -195,9 +195,22 @@ def _is_repo_relative(root: Path, rel: str) -> bool:
     return (root / rel).exists() or not candidate.is_absolute()
 
 
+_SAFE_REF = re.compile(r"^[A-Za-z0-9._/~^@{}:-]+$")
+
+
 def _changed_lines(root: Path, base: str, targets: list[str]) -> dict[str, set[int]]:
     """Line numbers added or modified since `base`, per file. Raised, not
-    swallowed, on failure -- a silent "nothing changed" would pass everything."""
+    swallowed, on failure -- a silent "nothing changed" would pass everything.
+
+    `base` comes from `--diff-base`, a CLI argument -- validated against a
+    plain git-ref character set before it reaches subprocess, rather than
+    trusted as already-safe list-form argv (no shell is invoked here, but an
+    unvalidated ref is still the wrong shape to hand an OS command).
+    """
+    if not _SAFE_REF.match(base):
+        raise ValueError(
+            f"--diff-base {base!r} is not a plain git ref (letters, digits, '.', '_', '-', '/' only)"
+        )
     result = subprocess.run(
         ["git", "-c", "core.quotepath=false", "diff", "-U0", "--no-color",
          "--merge-base", base, "--", *targets],
@@ -639,7 +652,12 @@ def selftest() -> int:
     if in_scope("docs/src/adr/0034.txt"):
         failures.append("in_scope() accepts a non-Markdown extension")
 
-    total = len(SELFTEST_CASES) + 3
+    if not _SAFE_REF.match("origin/main") or not _SAFE_REF.match("HEAD~1"):
+        failures.append("_SAFE_REF rejects an ordinary git ref")
+    if _SAFE_REF.match("; rm -rf /") or _SAFE_REF.match("$(whoami)"):
+        failures.append("_SAFE_REF accepts a shell-metacharacter string as a git ref")
+
+    total = len(SELFTEST_CASES) + 5
     print(f"check_claim_vocabulary selftest: {total - len(failures)}/{total} checks passed")
     for f in failures:
         print("  FAIL:", f)
