@@ -28,9 +28,18 @@ name: Hub metadata drift check
 # outside the markers, and it does NOT prove the extract matches the upstream
 # manifest — that needs a cross-repository check, which is AAASM-5600's.
 #
+# And it runs the claim-vocabulary gate (AAASM-5797 / AAASM-5599): ADR 0033's
+# banned-absolute and undifferentiated-verb rules, ported from agent-assembly's
+# check_claim_vocabulary.py (AAASM-5679) and adapted to this repo's Markdown-only,
+# no-front-matter corpus. The tree's blocking baseline is zero (confirmed by this
+# same port's day-one run), so per claim-vocabulary.md's adoption sequence this
+# runs full-tree, not diff-scoped -- `--diff-base` is for a repo still working
+# down a non-empty baseline, which this one never had.
+#
 # See docs/scripts/generate_hub_components.py for the hub-component generator,
 # docs/scripts/check_repo_names.py for the stale-name audit,
 # docs/scripts/generate_compatibility.py for the compatibility-matrix generator,
+# docs/scripts/check_claim_vocabulary.py for the claim-vocabulary gate,
 # and hub-components.toml / compatibility.toml for the manifest schemas.
 
 on:
@@ -72,3 +81,9 @@ jobs:
 
       - name: Verify capability-surface.toml drives the evaluator guides
         run: python3 docs/scripts/generate_capability_surface.py --check
+
+      - name: Run the claim-vocabulary self-test
+        run: python3 docs/scripts/check_claim_vocabulary.py --selftest
+
+      - name: Check for banned-absolute and undifferentiated-verb claims
+        run: python3 docs/scripts/check_claim_vocabulary.py --root .
