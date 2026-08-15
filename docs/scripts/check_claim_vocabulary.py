@@ -211,7 +211,10 @@ def _changed_lines(root: Path, base: str, targets: list[str]) -> dict[str, set[i
         raise ValueError(
             f"--diff-base {base!r} is not a plain git ref (letters, digits, '.', '_', '-', '/' only)"
         )
-    result = subprocess.run(
+    # NOSONAR (python:S4721): list-form argv, no shell=True -- there is no
+    # shell to escape into regardless of `base`'s content, and `base` is
+    # additionally validated above against _SAFE_REF before reaching here.
+    result = subprocess.run(  # NOSONAR
         ["git", "-c", "core.quotepath=false", "diff", "-U0", "--no-color",
          "--merge-base", base, "--", *targets],
         cwd=root,
