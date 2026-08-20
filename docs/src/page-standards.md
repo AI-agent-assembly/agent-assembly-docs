@@ -58,10 +58,14 @@ reachable, which makes the reference look verified when it is not.
   (AAASM-5621).
 - **Documentation-area maturity.** `source-of-truth.md` owns it, and this page reads
   it rather than restating it — see [`area` ids](#area-ids).
-- **A capability identifier registry.** AAASM-5531 (Define a machine-readable
-  capability and evidence manifest) has not started, so `capability_ids` is reserved
-  and optional in schema version 1 — see [the field reference](#field-reference).
-  Requiring identifiers before a registry exists would only make authors invent them.
+- **A capability identifier registry.** AAASM-5531 has landed
+  (`governance/capability-manifest.yaml` in `agent-assembly`), and AAASM-5600 now
+  validates `capability_ids` against it wherever a page declares the field — see
+  [the field reference](#field-reference). It stays **optional** in schema
+  version 1 rather than becoming required: rolling every hub page onto a
+  populated `capability_ids` list is AAASM-5610's adoption work, not this
+  ticket's, so requiring the field here would fail every existing page for a
+  rollout this page does not own.
 
 ## The four disclosure levels
 
@@ -382,7 +386,7 @@ Every rule below resolves to exactly one of these, so 5601 needs no judgement ca
 | `limitations` | string | C | non-empty; a link or an in-page anchor | error |
 | `disclosure_levels` | list of integer, non-empty | R | subset of `[1,2,3,4]`, ascending, no duplicates | error |
 | `deeper` | string | C | a link in the canonical-link form | error |
-| `capability_ids` | list of string | O | **reserved** — pending AAASM-5531. Shape not validated in v1: the key is accepted and ignored | none |
+| `capability_ids` | list of string | O | each entry must resolve to a `capabilities[].id` row in `governance/capability-manifest.yaml` (validated by `docs/scripts/validate_capability_ids.py`, AAASM-5600); still optional in schema version 1 — see [what this page hands off](#what-this-page-hands-off) | error |
 
 There is deliberately **no `maturity` key** — see
 [the axis ruling](#which-axis-owns-which-word--settled-by-adr-0034). A page's
@@ -1035,7 +1039,7 @@ END AA-PAGE-META -->
 | **AAASM-5601** | Implement the validator: the parsing contract, the field reference, the 15 cross-field rules and the freshness thresholds are intended to be sufficient with no further decisions. If a rule needs judgement to implement, that is a defect in this page — report it rather than choosing. **Also**: replace the hand-maintained [`area` id table](#area-ids) with a generated one, by adding a stable `id` to each row of `hub-components.toml` and to the five literal rows in `generate_hub_components.py`. |
 | **AAASM-5610** | Apply metadata blocks to existing hub content. This page carries the only block today. Expect the three `🗺️ Planned` areas — `cloud`, `enterprise`, `operations` — to take the [rule 4](#cross-field-rules) path with `platforms: []`, and expect `product-promise.md` to need a block plus a rule 13 review. |
 | **AAASM-5621 / ADR 0034** | Precedence between the three axes, waivers, and cross-repository adoption records. The scope of forbidden design 12's coining clause is **settled** — it is claim-axis only — and is applied here, not deferred. |
-| **AAASM-5531** | The capability/evidence manifest. When it lands, `capability_ids` becomes validated and required, at `schema_version: 2`. |
+| **AAASM-5531 / AAASM-5600** | The capability/evidence manifest has landed and `capability_ids` is now **validated** wherever a page declares it (`docs/scripts/validate_capability_ids.py`). Making the field **required** — the `schema_version: 2` half of this hand-off — is still open, and belongs with AAASM-5610's rollout rather than being forced here. |
 
 ---
 

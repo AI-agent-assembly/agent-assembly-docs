@@ -26,7 +26,18 @@ name: Hub metadata drift check
 # that extract (`generate_capability_surface.py --check`). Note the bound: this proves
 # the GENERATED TABLES on those pages match the extract. It does not check prose
 # outside the markers, and it does NOT prove the extract matches the upstream
-# manifest — that needs a cross-repository check, which is AAASM-5600's.
+# manifest — that needs a cross-repository check (see below).
+#
+# And it runs the capability & protection status table gate (AAASM-5600):
+# docs/src/capability-status.md is generated from the same capability-surface.toml
+# extract (`generate_capability_tables.py --check`), and any page under docs/src/
+# that declares a `capability_ids` metadata field gets every id resolved against
+# that same extract (`validate_capability_ids.py`) — an id that does not resolve
+# fails CI. Both stay network-free in CI by reading the committed extract, the
+# same reuse decision the evaluator-guide gate above already made; proving the
+# EXTRACT itself still matches the LIVE upstream manifest is a cross-repository
+# comparison this repo's CI does not make (`check_capability_surface_upstream.py`,
+# run by hand — see that script's own docstring for why).
 #
 # And it runs the claim-vocabulary gate (AAASM-5797 / AAASM-5599): ADR 0033's
 # banned-absolute and undifferentiated-verb rules, ported from agent-assembly's
@@ -81,6 +92,12 @@ jobs:
 
       - name: Verify capability-surface.toml drives the evaluator guides
         run: python3 docs/scripts/generate_capability_surface.py --check
+
+      - name: Verify capability-surface.toml drives the capability & protection status table
+        run: python3 docs/scripts/generate_capability_tables.py --check
+
+      - name: Validate every page's capability_ids against the capability manifest
+        run: python3 docs/scripts/validate_capability_ids.py
 
       - name: Run the claim-vocabulary self-test
         run: python3 docs/scripts/check_claim_vocabulary.py --selftest

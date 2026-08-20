@@ -29,7 +29,17 @@ Division of labour, and why it is split this way:
 The consequence is stated rather than hidden: CI proves the *generated tables* on
 those pages match the *extract*. It does not check prose outside the markers, and it
 cannot prove the extract matches the *upstream manifest*. Closing that second gap
-needs a cross-repository check, which is AAASM-5600's.
+is `docs/scripts/check_capability_surface_upstream.py` (AAASM-5600) — also hand-run,
+for the same reason this script is: it needs the same sibling checkout.
+
+AAASM-5600 also reuses this extract, not just the upstream-drift check: two fields
+were added to ``SCALAR_KEYS``/``LIST_KEYS`` (``protection_state``,
+``governance_level_ceiling``, ``framework_or_tool``) that neither evaluator guide
+renders, so that `docs/scripts/generate_capability_tables.py`'s capability &
+protection status table can read the same committed projection instead of a second,
+parallel path to the upstream manifest. Extending the projected field set is
+additive and backward compatible — this script's existing two consumers simply
+ignore the new keys.
 
 See AAASM-5609 (Epic AAASM-3659) and ADR 0033 §6 for the claim vocabulary.
 """
@@ -64,11 +74,19 @@ SCALAR_KEYS: Final[tuple[str, ...]] = (
     "default_state",
     "launch_path",
     "evidence_runs_on_main",
+    # AAASM-5600: the two remaining rows of the manifest's own "three axes,
+    # three owners" split (protection state, ADR 0030 §4.1; adapter ceiling,
+    # ADR 0030 §4.3) — needed by the capability & protection status table this
+    # projection now also feeds, alongside the two evaluator guides.
+    "protection_state",
+    "governance_level_ceiling",
 )
 LIST_KEYS: Final[tuple[str, ...]] = (
     "platform",
     "released_platforms",
     "released_channels",
+    # AAASM-5600: the SDK/framework axis of the capability & protection status table.
+    "framework_or_tool",
 )
 
 
