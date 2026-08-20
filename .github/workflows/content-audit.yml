@@ -1,0 +1,108 @@
+name: Content audit
+
+# AAASM-5603. A recurring, repeatable sweep of the whole hub for claim, link,
+# maturity, platform, version and evidence-freshness drift, running the
+# checkers this repo already has (`scripts/content_audit.py` orchestrates
+# `check_repo_names.py`, `validate_page_metadata.py` full-tree,
+# `validate_capability_ids.py`, `generate_compatibility.py --check`) plus two
+# metrics nothing else computes: orphan pages and duplicate canonical claims.
+#
+# WHY THIS IS REPORT-ONLY, NOT A REQUIRED GATE: `hub-metadata-check.yml`
+# already gates every PR/push with the diff-scoped versions of these same
+# checkers (AAASM-5600/5601/5609/5679/5797). This workflow exists for what
+# that one deliberately does NOT cover: (1) a full-tree, not diff-scoped, view
+# — page-metadata's own ~30-item pre-existing rule-13 backlog (tracked on
+# AAASM-5610) is invisible to a diff-scoped PR gate by design, and someone has
+# to see the whole backlog somewhere; (2) drift that accrues with no PR at all
+# — evidence quietly crossing the 180-day freshness threshold with nobody
+# editing a file, the same reasoning capability-manifest.yml's weekly cron
+# backstop already established for AAASM-5531.
+#
+# WHY GITHUB ISSUES, NOT JIRA: AAASM-5603's own AC says "creates or updates
+# Jira work." Doing that from this workflow needs a Jira API credential
+# provisioned as a repository secret, which is an org/repo settings action
+# outside what this workflow can provision for itself. GitHub Issues is the
+# one precedent this org already has for CI-driven finding tracking
+# (agent-assembly's sdk-sha-drift.yml, ADR 0003) — same label-and-dedupe
+# shape reused here verbatim. If/when a Jira credential is provisioned, this
+# job is the one place that needs to change.
+#
+# Recorded, not solved here: this only audits `docs/src/` (the Docs Hub). The
+# official-website's own claim/link surface has its own separate CI
+# (`check-forbidden-claims.py`, `trust-evidence.py check`) with no scheduled
+# backstop of its own — out of this ticket's component scope (AAASM-5603's
+# Jira Components are agent-assembly + docs only).
+
+on:
+  schedule:
+    # Monday 07:00 UTC — one hour after capability-manifest.yml's own Monday
+    # 06:00 backstop in agent-assembly, so a real capability change has had a
+    # chance to land in capability-surface.toml before this reads it.
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  content-audit:
+    name: Run the full-hub content audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout hub
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Run the content audit's own test suite
+        run: python3 docs/scripts/test_content_audit.py
+
+      - name: Run the audit
+        run: python3 docs/scripts/content_audit.py
+
+      - name: Upload the dated report and provenance
+        uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v5
+        with:
+          name: content-audit-report
+          path: docs/audit-reports/
+          retention-days: 90
+
+      - name: Open or update the tracking issue on unresolved P0 findings
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          p0=$(python3 -c "import json; print(json.load(open('docs/audit-reports/latest.json'))['metrics']['p0_count'])")
+          if [ "$p0" -eq 0 ]; then
+            echo "No P0 findings — nothing to file."
+            exit 0
+          fi
+          BODY_FILE="$(mktemp)"
+          {
+            echo "Automated content audit (AAASM-5603) found $p0 unresolved P0 finding(s)."
+            echo
+            echo "Full dated report: see the \`content-audit-report\` artifact on this run."
+            echo
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo
+            echo "The page-metadata rule-13 backlog (~30 pre-existing findings) is tracked"
+            echo "separately on AAASM-5610 — this issue is for the count going UP, not for"
+            echo "that known baseline."
+          } > "$BODY_FILE"
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --label content-audit --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body-file "$BODY_FILE"
+            echo "Updated existing content-audit issue #${existing}."
+          else
+            gh label create content-audit --repo "$GITHUB_REPOSITORY" --color B60205 --description "Recurring content audit finding (AAASM-5603)" 2>/dev/null || true
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "Content audit: $p0 unresolved P0 finding(s)" --label content-audit --body-file "$BODY_FILE"
+          fi

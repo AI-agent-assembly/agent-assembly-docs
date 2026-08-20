@@ -9,3 +9,7 @@ docs/book/
 docs/po/html/
 docs/po/xgettext/
 __pycache__/
+
+# Content audit (AAASM-5603) — generated per run; CI stores it as a workflow
+# artifact, not committed history, so it never needs a bot-commit back to main.
+docs/audit-reports/
