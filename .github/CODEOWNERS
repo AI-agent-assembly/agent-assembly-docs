@@ -3,5 +3,12 @@
 # Routes review requests to the project lead for all paths.
 # Replace @Chisanan232 with a GitHub team (e.g. @ai-agent-assembly/<team>)
 # once one exists. Enforced only when branch protection requires Code Owner review.
+#
+# AAASM-5603: this repo is entirely ADR 0034's `truth-owner-docs-hub` reviewer
+# class (docs/src/development/content-ownership.md, agent-assembly repo, has
+# the full class-to-layer table). The class currently resolves to the same
+# single individual as every other path here — see the TODO above — but the
+# name is worth stating explicitly so a future CODEOWNERS entry that narrows
+# by path still reads as "which class does this belong to," not a guess.
 
 * @Chisanan232
