@@ -47,10 +47,24 @@ name: Hub metadata drift check
 # runs full-tree, not diff-scoped -- `--diff-base` is for a repo still working
 # down a non-empty baseline, which this one never had.
 #
+# And it runs the page-metadata validator (AAASM-5601): page-standards.md's own
+# AA-PAGE-META contract -- field reference, the 15 cross-field rules, and the
+# last_verified freshness thresholds (`validate_page_metadata.py`). Unlike the
+# claim-vocabulary gate above, this one's baseline is NOT zero: rule 13 (an
+# unbounded ADR 0033 §6 claim verb with no bounding metadata) fires on ~30
+# pre-existing occurrences across pages AAASM-5610 has not yet migrated onto a
+# metadata block. So this gate runs `--diff-base`, scoped exactly like
+# check_claim_vocabulary.py's own (unused, here, because ITS baseline is zero)
+# diff-scoping mechanism: only a NEW or MODIFIED violation blocks; a
+# pre-existing one is still reported, just not blocking. See that script's own
+# module docstring for why a page with no metadata block is not, by itself, an
+# error -- rolling every page onto one is AAASM-5610's adoption work.
+#
 # See docs/scripts/generate_hub_components.py for the hub-component generator,
 # docs/scripts/check_repo_names.py for the stale-name audit,
 # docs/scripts/generate_compatibility.py for the compatibility-matrix generator,
 # docs/scripts/check_claim_vocabulary.py for the claim-vocabulary gate,
+# docs/scripts/validate_page_metadata.py for the page-metadata validator,
 # and hub-components.toml / compatibility.toml for the manifest schemas.
 
 on:
@@ -73,6 +87,11 @@ jobs:
     steps:
       - name: Checkout hub
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # Full history: validate_page_metadata.py's --diff-base scoping
+          # (AAASM-5601) needs `git diff --merge-base` against the PR base /
+          # pre-push SHA, which a shallow (depth-1) clone cannot compute.
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -104,3 +123,25 @@ jobs:
 
       - name: Check for banned-absolute and undifferentiated-verb claims
         run: python3 docs/scripts/check_claim_vocabulary.py --root .
+
+      - name: Run the page-metadata validator's own test suite
+        run: python3 docs/scripts/test_validate_page_metadata.py
+
+      - name: Validate page metadata against page-standards.md (diff-scoped)
+        env:
+          # Base ref for the AAASM-5601 diff-scoping: the PR's base commit on a
+          # pull_request event, the pre-push SHA on a push event. Neither is
+          # free text -- both are commit SHAs GitHub itself supplies -- but
+          # routed through env rather than inlined into `run:` regardless.
+          DIFF_BASE_PR: ${{ github.event.pull_request.base.sha }}
+          DIFF_BASE_PUSH: ${{ github.event.before }}
+        run: |
+          BASE="${DIFF_BASE_PR:-$DIFF_BASE_PUSH}"
+          if [ -n "$BASE" ] && [ "$BASE" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$BASE" 2>/dev/null; then
+            python3 docs/scripts/validate_page_metadata.py --diff-base "$BASE"
+          else
+            # workflow_dispatch, or a base SHA this shallow-history checkout
+            # doesn't actually have (e.g. force-push, new branch) -- fail
+            # closed to full-tree validation rather than silently skip scoping.
+            python3 docs/scripts/validate_page_metadata.py
+          fi
