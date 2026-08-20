@@ -69,6 +69,11 @@ python3 docs/scripts/generate_compatibility.py --check   # fail on matrix drift 
 python3 docs/scripts/generate_compatibility.py           # regenerate compatibility.md in place
 python3 docs/scripts/generate_hub_components.py --check   # fail on hub-component drift (CI runs this)
 python3 docs/scripts/check_repo_names.py                 # fail on stale pre-rename repo names (CI runs this)
+python3 docs/scripts/generate_capability_tables.py --check   # fail on capability-status.md drift (CI runs this)
+python3 docs/scripts/validate_capability_ids.py           # fail on an unresolvable capability_ids entry (CI runs this)
+python3 docs/scripts/check_capability_surface_upstream.py --manifest <agent-assembly>/governance/capability-manifest.yaml
+                                                           # hand-run only: proves capability-surface.toml still
+                                                           # matches the live manifest (needs PyYAML + a sibling checkout)
 ```
 
 **Prerequisites:** mdBook (CI pins **`v0.5.2`**), `mdbook-mermaid` (the Mermaid
