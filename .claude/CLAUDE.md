@@ -74,6 +74,9 @@ python3 docs/scripts/validate_capability_ids.py           # fail on an unresolva
 python3 docs/scripts/check_capability_surface_upstream.py --manifest <agent-assembly>/governance/capability-manifest.yaml
                                                            # hand-run only: proves capability-surface.toml still
                                                            # matches the live manifest (needs PyYAML + a sibling checkout)
+python3 docs/scripts/validate_page_metadata.py --diff-base origin/main
+                                                           # validate AA-PAGE-META against page-standards.md; diff-scoped
+                                                           # since the rule-13 baseline is non-empty (CI runs this)
 ```
 
 **Prerequisites:** mdBook (CI pins **`v0.5.2`**), `mdbook-mermaid` (the Mermaid
