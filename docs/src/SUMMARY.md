@@ -37,6 +37,7 @@
 # Reference
 
 - [Policy Reference](policy-reference.md)
+- [Capability & Protection Status](capability-status.md)
 - [Glossary](glossary.md)
 - [Compatibility Matrix](compatibility.md)
 - [Source of Truth & Status](source-of-truth.md)
