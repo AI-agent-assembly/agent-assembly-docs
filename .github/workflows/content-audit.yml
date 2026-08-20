@@ -70,7 +70,7 @@ jobs:
         run: python3 docs/scripts/content_audit.py
 
       - name: Upload the dated report and provenance
-        uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v5
         with:
           name: content-audit-report
           path: docs/audit-reports/
