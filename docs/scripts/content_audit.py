@@ -88,7 +88,7 @@ class AuditResult:
         return sum(1 for f in self.findings if f.severity in ("error", "warning") and "days" in f.detail)
 
 
-def run_check(label: str, argv: list) -> tuple:
+def run_check(argv: list) -> tuple:
     proc = subprocess.run(argv, capture_output=True, text=True, cwd=REPO_ROOT)
     return proc.returncode, proc.stdout, proc.stderr
 
@@ -148,7 +148,7 @@ def run_audit() -> AuditResult:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
     for label, argv, graded in CHECKS:
-        code, stdout, _stderr = run_check(label, argv)
+        code, stdout, _stderr = run_check(argv)
         result.tool_exit_codes[label] = code
         if graded:
             result.findings.extend(parse_graded_findings(label, stdout))
@@ -231,10 +231,18 @@ def main(argv: list = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--date", default=None, help="override the report date (testing only)")
     parser.add_argument("--git-sha", default=None, help="override the reported commit sha (testing only)")
-    parser.add_argument("--out-dir", default=str(REPO_ROOT / "audit-reports"))
     args = parser.parse_args(argv)
 
     date = args.date or datetime.date.today().isoformat()
+    # The date becomes a filename component below. Restricted to the ISO
+    # calendar-date shape it's documented to be, rather than trusted as-is --
+    # `--out-dir` used to be a second CLI-controlled path fragment here too;
+    # dropped in favour of always writing under the fixed `audit-reports/`
+    # directory, so this is the only place left that turns an argument into
+    # part of a filesystem path.
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
+        raise SystemExit(f"--date must be an ISO calendar date (YYYY-MM-DD), got {date!r}")
+
     git_sha = args.git_sha
     if git_sha is None:
         try:
@@ -246,7 +254,7 @@ def main(argv: list = None) -> int:
 
     result = run_audit()
 
-    out_dir = Path(args.out_dir)
+    out_dir = REPO_ROOT / "audit-reports"
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / f"{date}.md").write_text(render_report(result, date=date, git_sha=git_sha), encoding="utf-8")
     (out_dir / "latest.json").write_text(render_json(result, date=date, git_sha=git_sha), encoding="utf-8")
