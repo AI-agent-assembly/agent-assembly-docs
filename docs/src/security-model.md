@@ -201,17 +201,23 @@ deletion or update, and the JSONL file is appended without `fsync`.
 
 **Emission is best-effort and decoupled from enforcement.** Entries are handed to a
 bounded in-process channel with a non-blocking send; on backpressure the entry is
-dropped, counted in an `audit_drops` metric, and the action proceeds anyway. A
-crash before flush loses whatever is still buffered. **Budget debits emit no
-dedicated audit entry at all** — the budget event types exist in the schema but are
-never constructed, so a debit is visible only via the surrounding decision entry,
-which is itself droppable. Absence of an entry is therefore not proof that an
-action did not occur.
+dropped and the action proceeds anyway. A crash before flush loses whatever is
+still buffered. **Budget debits emit no dedicated audit entry at all** — the budget
+event types exist in the schema but are never constructed, so a debit is visible
+only via the surrounding decision entry, which is itself droppable. Absence of an
+entry is therefore not proof that an action did not occur.
 
-**A dropped entry looks like tampering.** The chain head advances even when an
-entry is dropped, so `verify-chain` reports a failure for a gap caused by
-backpressure exactly as it would for a malicious edit. Treat a verification failure
-as "investigate", not as "compromise".
+**A dropped entry is now distinguishable from tampering.** The chain head only
+advances when an entry is actually written, so a drop leaves a visible sequence-
+number gap: `verify-chain` reports it as `INCOMPLETE` — hashes and links intact,
+some entries never arrived — separately from `FAIL`, which means an entry's hash
+or its link to the previous entry doesn't match (alteration or removal). Treat
+`FAIL` as "investigate a compromise" and `INCOMPLETE` as "investigate a capacity
+event", not the other way around. The distinction has two residual gaps worth
+knowing: a *tail* loss (nothing written after it) and a *prefix* loss (nothing
+written before it, indistinguishable from a chain that legitimately resumed
+mid-sequence after a restart) both still read the same whether the cause was a
+drop or a deletion — an interior gap is where the distinction holds.
 
 **Retention is an operator-set policy, not a per-tenant setting.** The storage
 drivers apply a retention policy that prunes rows past a configured age. This hub
