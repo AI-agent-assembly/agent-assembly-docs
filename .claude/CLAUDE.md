@@ -29,8 +29,10 @@ every prose/config reference to a component's repo name from drifting after a
 rename. See [`AGGREGATION.md`](../AGGREGATION.md) for the full
 contract. Alongside the aggregated component docs, this repo also authors the
 first-party cross-cutting material: the documentation index, the core↔SDK
-compatibility matrix, the security model, the comparison page, the open-core
-boundary, and the policy reference.
+compatibility matrix, the security model, the comparison page, and the
+open-core boundary. The policy reference (`docs/src/policy-reference.md`) is
+Core's to author (AAASM-5642) — this hub's copy is a summary with a canonical
+link, per the reuse pattern `content-ownership.md` defines.
 
 ## Site layout
 
