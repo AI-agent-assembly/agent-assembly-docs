@@ -39,8 +39,10 @@ further agent calls.
 ## Interception mechanisms
 
 **SDK layer**
-: In-process governance: the language SDK wraps your agent's calls and applies
-allow/deny decisions before any request leaves the process.
+: In-process governance: the language SDK wraps your agent's calls and asks the
+gateway for a decision. It is **advisory** — *Evaluated*, not *Denied before
+execution* — since whether a refusal actually holds depends on the calling
+shim honouring the answer. See [Security model](security-model.md).
 
 **Sidecar proxy (`aa-proxy`)**
 : A companion process that intercepts an agent's outbound HTTPS traffic to
