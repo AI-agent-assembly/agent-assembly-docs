@@ -11,7 +11,7 @@ works out of the box.
 > locally for evaluation and development. **Full functionality — team budgets, the
 > central registry, the operator dashboard, persistence, SSO/SCIM — remains
 > SaaS-only.** See [Open core boundary](open-core-boundary.md) for the split and
-> [Cloud Deployment](cloud-deployment.md) for the managed platform. This is not a
+> [Managed control plane (design preview)](cloud-deployment.md) for the managed platform. This is not a
 > production orchestration guide (no Helm / Terraform / Kubernetes).
 
 ---
@@ -371,8 +371,8 @@ responsible for operating and monitoring what you self-host.
 
 **Full functionality is SaaS-only**: team budgets, the central agent registry,
 the operator dashboard, persistence, identity federation (SSO/SCIM), regional
-data residency, tamper-evident audit, and the uptime SLAs run only in the
-managed [AI Agent Assembly cloud](cloud-deployment.md). See
+data residency, and tamper-evident audit are intended for the managed
+[AI Agent Assembly cloud](cloud-deployment.md) — planned, not available. See
 [Open core boundary](open-core-boundary.md) for the precise line between what
 you can self-host and what the SaaS adds.
 
@@ -382,7 +382,7 @@ you can self-host and what the SaaS adds.
 
 - [Self-Host Observability](self-host-observability.md) — health, readiness, and Prometheus metrics for the images above.
 - [Open core boundary](open-core-boundary.md) — OSS vs SaaS feature split and crate licensing.
-- [Cloud Deployment](cloud-deployment.md) — the managed SaaS platform.
+- [Managed control plane (design preview)](cloud-deployment.md) — the managed SaaS platform.
 - [Security model](security-model.md) — the interception mechanisms and defense-in-depth posture.
 - [Troubleshooting](troubleshooting.md) — common issues when running the stack.
 

@@ -264,7 +264,7 @@ here, and who must approve it.
 ## Related documentation
 
 - [Why AI Agent Assembly?](comparison.md) — competitive positioning and governance differentiation
-- [Cloud deployment](cloud-deployment.md) — the managed control plane, which is planned and not available
+- [Managed control plane (design preview)](cloud-deployment.md) — the managed control plane, which is planned and not available
 - [Open core boundary](open-core-boundary.md) — what is in the Apache-2.0 core today vs. intended for the commercial tier
 - [Source of truth & status](source-of-truth.md) — the canonical maturity label for every area of this hub
 - [SaaS claim publication checklist](saas-claim-publication-checklist.md) — what must be evidenced before managed-service or compliance claims are published

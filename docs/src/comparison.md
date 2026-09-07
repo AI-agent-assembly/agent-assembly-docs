@@ -100,7 +100,7 @@ Last validated 2026-05-05 against each vendor's documentation as of that date.
 
 - [Security model](security-model.md) — STRIDE threat model, IronClaw defense
 - [Open core boundary](open-core-boundary.md) — what is OSS vs. enterprise
-- [Quick start (SaaS)](quickstart-saas.md) — get started in minutes
+- [Managed SaaS onboarding — design preview](quickstart-saas.md) — planned, not available
 
 [^proxy]: No change to your *agent's* code, but the agent process must be
     launched so that it honours `HTTP_PROXY`/`HTTPS_PROXY` and trusts the

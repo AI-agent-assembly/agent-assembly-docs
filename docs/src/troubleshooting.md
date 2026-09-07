@@ -2,7 +2,8 @@
 
 This page is a starting point when something is not working the way the docs
 describe. It is for **operators and developers** who have already read the
-[Quick start](quickstart-saas.md) or an SDK page and hit a specific problem.
+[Docker Compose quickstart](docker-containers.md#compose) or an SDK page and
+hit a specific problem.
 
 Because AI Agent Assembly is composed of five independently versioned
 programs (core, three SDKs, and Arena), most concrete runtime symptoms are covered

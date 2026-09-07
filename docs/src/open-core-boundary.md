@@ -9,8 +9,8 @@ AI Agent Assembly follows an **open-core** model. The line is simple:
 > self-host a limited-function stack from the Apache-2.0 crates today — using the
 > published Docker Compose example — for local evaluation and development. The
 > managed service that is intended to deliver the commercial capabilities is not
-> running; see [Cloud deployment](cloud-deployment.md) and
-> [Quick start (SaaS)](quickstart-saas.md) for what that means in practice, and
+> running; see [Managed control plane (design preview)](cloud-deployment.md) and
+> [Managed SaaS onboarding (design preview)](quickstart-saas.md) for what that means in practice, and
 > [Source of truth & status](source-of-truth.md) for the canonical maturity label.
 
 ---
@@ -142,7 +142,7 @@ Requests for the capabilities intended for the commercial tier are tracked inter
 ## Related documentation
 
 - [Security model](security-model.md) — cryptographic primitives and audit log details
-- [Cloud deployment](cloud-deployment.md) — the managed control plane, which is planned and not available
+- [Managed control plane (design preview)](cloud-deployment.md) — the managed control plane, which is planned and not available
 - [Source of truth & status](source-of-truth.md) — the canonical maturity label for every area of this hub
 - [SaaS claim publication checklist](saas-claim-publication-checklist.md) — what must be evidenced before commercial-tier claims are published
 - [Why AI Agent Assembly?](comparison.md) — open-source posture vs. competitors

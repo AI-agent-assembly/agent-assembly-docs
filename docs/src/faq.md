@@ -65,7 +65,7 @@ The [comparison page](comparison.md) maps this against other tools.
 
 Clone the [examples repository](https://github.com/ai-agent-assembly/examples)
 and run a governed agent end to end — that is the path you can run today. The
-managed [Quick start (SaaS)](quickstart-saas.md) is coming soon.
+managed service is [planned and not available](quickstart-saas.md).
 
 ## What do the acronyms mean (eBPF, SCIM, mTLS, STRIDE…)?
 

@@ -48,7 +48,7 @@ lookups and both are in [Reference](compatibility.md):
 The **Cloud** area is marked `🗺️ Planned` in the
 [status map](source-of-truth.md), on the documentation-area axis. There is no managed
 service to operate from this section, and the two pages that discuss one
-([Quick start (SaaS)](quickstart-saas.md) and [Cloud deployment](cloud-deployment.md))
+([Managed SaaS onboarding (design preview)](quickstart-saas.md) and [Managed control plane (design preview)](cloud-deployment.md))
 sit in **Evaluate**, where their reader is someone deciding what to tell a stakeholder
 rather than someone running it.
 

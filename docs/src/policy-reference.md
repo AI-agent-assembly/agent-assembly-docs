@@ -66,5 +66,5 @@ detection, and a full policy exercising every section), see
 ## Related documentation
 
 - [Security model](security-model.md) — IronClaw layers and policy engine position in the stack
-- [Cloud deployment](cloud-deployment.md) — uploading and activating policies in the console
-- [Quick start (SaaS)](quickstart-saas.md) — create and activate your first policy
+- [Managed control plane — design preview](cloud-deployment.md) — planned, not available
+- [Managed SaaS onboarding — design preview](quickstart-saas.md) — planned, not available

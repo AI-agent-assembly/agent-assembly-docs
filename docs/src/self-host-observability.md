@@ -135,7 +135,7 @@ These endpoints live in the Apache-2.0 crates in the [`agent-assembly`](https://
 ## Related documentation
 
 - [Open core boundary](open-core-boundary.md) — what is in the Apache-2.0 core today vs. intended for the commercial tier.
-- [Cloud Deployment](cloud-deployment.md) — the managed control plane, which is planned and not available.
+- [Managed control plane (design preview)](cloud-deployment.md) — the managed control plane, which is planned and not available.
 - [Security model](security-model.md) — the Telemetry layer and the broader defense-in-depth posture.
 - [Troubleshooting](troubleshooting.md) — common issues when running the stack.
 

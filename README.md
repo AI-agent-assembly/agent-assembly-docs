@@ -36,7 +36,7 @@ The published site (see [`docs/src/SUMMARY.md`](docs/src/SUMMARY.md)) covers:
   - **[Security Model](docs/src/security-model.md)** — how the runtime governs agents.
   - **[Why AI Agent Assembly?](docs/src/comparison.md)** — comparison with alternatives.
   - **[Open Core Boundary](docs/src/open-core-boundary.md)** — what is open source vs. SaaS.
-- **Getting Started** — Quick Start (SaaS) and Cloud Deployment (both *Coming soon*).
+- **Getting Started** — Managed SaaS Onboarding and Managed Control Plane (both *design previews — planned, not available*).
 - **[Policy Reference](docs/src/policy-reference.md)** — the policy language reference.
 
 ## Component & SDK docs

@@ -38,11 +38,11 @@ Pick the page that matches what you are trying to do.
 | I want to… | Go to |
 |---|---|
 | Govern an agent right now (runnable today) | [Runnable examples](#runnable-examples) |
-| Preview the managed SaaS onboarding (coming soon) | [Quick start (SaaS)](quickstart-saas.md) |
+| Read the design preview for managed SaaS onboarding (planned, not available) | [Managed SaaS onboarding](quickstart-saas.md) |
 | Understand the security posture and threat model | [Security model](security-model.md) |
 | Compare AI Agent Assembly to other tools | [Why AI Agent Assembly?](comparison.md) |
 | Know what is open source vs. paid | [Open core boundary](open-core-boundary.md) |
-| Set up SSO, SCIM, regions, and billing | [Cloud deployment](cloud-deployment.md) |
+| See what the managed control plane is intended to add (planned, not available) | [Managed control plane](cloud-deployment.md) |
 | Look up a policy field or write a policy | [Policy reference](policy-reference.md) |
 
 ## SDKs & components
@@ -92,8 +92,8 @@ These interception points describe *where* a decision is applied; they sit insid
   <span class="aa-cta-next__label">Next step</span>
   <a href="https://github.com/ai-agent-assembly/examples?utm_source=docs&amp;utm_medium=docs_link&amp;utm_campaign=oss_install&amp;utm_content=landing_next_step" data-cta-location="body" rel="noopener">Run a governed example →</a>
   <p>Clone the <code>examples</code> repo and run a governed LangChain
-     agent end to end — the path you can run today. The managed
-     <a href="quickstart-saas.md">Quick start (SaaS)</a> is coming soon.</p>
+     agent end to end — the path you can run today. The managed control
+     plane is <a href="quickstart-saas.md">planned, not available</a>.</p>
 </div>
 
 ---
