@@ -436,12 +436,13 @@ def render_source_of_truth_table(manifest: dict[str, object]) -> str:
             "🧪 Release candidate | [Compatibility matrix](compatibility.md) |",
             "| **Cloud** (SaaS control plane) | `cloud` | "
             "🔒 Private / internal | 🗺️ Planned | "
-            "[Cloud deployment](cloud-deployment.md) |",
+            "[Managed control plane — design preview](cloud-deployment.md) |",
             "| **Enterprise** (SSO, SCIM, advanced audit) | "
             "`agent-assembly-enterprise` | 🔒 Private / internal | "
             "🗺️ Planned | [Open core boundary](open-core-boundary.md) |",
             "| **Operations** (running & onboarding) | this hub | "
-            "🟢 Public | 🗺️ Planned | [Quick start (SaaS)](quickstart-saas.md) |",
+            "🟢 Public | 🗺️ Planned | "
+            "[Managed SaaS onboarding — design preview](quickstart-saas.md) |",
         ]
     )
     return "\n".join(lines)

@@ -51,9 +51,9 @@ for the full account.
 | **Homebrew / install channel** | [`homebrew-tap`](https://github.com/ai-agent-assembly/homebrew-tap) | 🟢 Public | 🧪 Release candidate | repo `README` |
 | **Specs** (protocol & policy spec) | [`agent-assembly`](https://github.com/ai-agent-assembly/agent-assembly) monorepo | 🟢 Public | 🧪 Release candidate | [Policy reference](policy-reference.md) · core docs |
 | **Releases** (versions & compatibility) | this hub + each component's tags | 🟢 Public | 🧪 Release candidate | [Compatibility matrix](compatibility.md) |
-| **Cloud** (SaaS control plane) | `cloud` | 🔒 Private / internal | 🗺️ Planned | [Cloud deployment](cloud-deployment.md) |
+| **Cloud** (SaaS control plane) | `cloud` | 🔒 Private / internal | 🗺️ Planned | [Managed control plane — design preview](cloud-deployment.md) |
 | **Enterprise** (SSO, SCIM, advanced audit) | `agent-assembly-enterprise` | 🔒 Private / internal | 🗺️ Planned | [Open core boundary](open-core-boundary.md) |
-| **Operations** (running & onboarding) | this hub | 🟢 Public | 🗺️ Planned | [Quick start (SaaS)](quickstart-saas.md) |
+| **Operations** (running & onboarding) | this hub | 🟢 Public | 🗺️ Planned | [Managed SaaS onboarding — design preview](quickstart-saas.md) |
 
 <!-- END GENERATED:hub-components:source-of-truth-table -->
 
