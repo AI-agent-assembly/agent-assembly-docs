@@ -661,10 +661,10 @@ that is `Planned` is in no artifact, so there is no channel row to write and no
 availability to state — enumerating five `unsupported` rows for it would assert a
 platform *result* where §6 requires a ticket reference and **no capability claim**.
 
-The three `🗺️ Planned` areas today are `cloud`, `enterprise` and `operations`, so this
-is the path AAASM-5610 will take on `quickstart-saas.md` and `cloud-deployment.md` —
-the first hub pages it touches. Rules 4 and 6 are written to agree with each other
-on exactly that case.
+The three `🗺️ Planned` areas today are `cloud`, `enterprise` and `operations`.
+`quickstart-saas.md` and `cloud-deployment.md` already take this path, landed
+under AAASM-5613 rather than AAASM-5610's later sweep. Rules 4 and 6 are
+written to agree with each other on exactly that case.
 
 **A foreign-subject `Planned` claim does not take this path.** AAASM-5762: a page
 whose own subject genuinely ships — real `platforms[]` rows, a real `availability`

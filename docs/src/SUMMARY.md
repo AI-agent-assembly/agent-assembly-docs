@@ -15,8 +15,8 @@
 - [Why AI Agent Assembly?](comparison.md)
 - [Open Core Boundary](open-core-boundary.md)
 - [FAQ](faq.md)
-- [Quick Start (SaaS) (🗺️ Planned)](quickstart-saas.md)
-- [Cloud Deployment (🗺️ Planned)](cloud-deployment.md)
+- [Managed SaaS Onboarding — Design Preview (🗺️ Planned)](quickstart-saas.md)
+- [Managed Control Plane — Design Preview (🗺️ Planned)](cloud-deployment.md)
 
 # Integrate
 

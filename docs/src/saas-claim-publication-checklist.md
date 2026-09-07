@@ -55,7 +55,7 @@ it first.
 ## Register of removed claims
 
 Removed by AAASM-5612 on 2026-08-06 from
-[Quick start (SaaS)](quickstart-saas.md), [Cloud deployment](cloud-deployment.md),
+[Managed SaaS onboarding (design preview)](quickstart-saas.md), [Managed control plane (design preview)](cloud-deployment.md),
 [Open core boundary](open-core-boundary.md), and
 [Security model](security-model.md).
 
@@ -168,8 +168,8 @@ These apply even after an owner approves a claim.
 ## Related documentation
 
 - [Source of truth & status](source-of-truth.md) — the canonical maturity label for every area of this hub
-- [Quick start (SaaS)](quickstart-saas.md) — managed onboarding, planned
-- [Cloud deployment](cloud-deployment.md) — the managed control plane, planned
+- [Managed SaaS onboarding (design preview)](quickstart-saas.md) — managed onboarding, planned
+- [Managed control plane (design preview)](cloud-deployment.md) — the managed control plane, planned
 - [Open core boundary](open-core-boundary.md) — the open-source / commercial split
 - [Security model](security-model.md) — the security posture of the open-source enforcement path, including the audit log's actual integrity properties
 
